@@ -11,17 +11,17 @@ namespace GravityGame
         
         public List<GradientKey> Keys
         {
-            private get => Keys;
+            private get => keys;
             set
             {
                 keys = value;
-                Keys.Sort();
+                keys.Sort();
             }
         }
 
         public Gradient()
         {
-            Keys = new List<GradientKey>();
+
         }
 
         public Gradient(List<GradientKey> keys)

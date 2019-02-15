@@ -20,6 +20,8 @@ namespace GravityGame
             get => mass;
             set
             {
+                //Conserve momentum
+                Velocity -= Velocity * mass / value;
                 mass = value;
                 radius = Mathf.Sqrt(Mass / Mathf.PI * Density);
             }
@@ -27,12 +29,17 @@ namespace GravityGame
         public Vector2f Velocity { get; set; }
         public bool IsSelected { get; set; }
         //Used for resolving collisions
-        public bool Exists { get; set; }
+        public bool Exists { get; set; } = true;
 
         public float Radius => radius;
         public float Area => Mathf.PI * Radius * Radius;
         public float Circumference => Mathf.PI * Radius * 2;
-        public Vector2f Momentum => Velocity * Mass;
+
+        public Vector2f Momentum
+        {
+            get => Velocity * Mass;
+            set => Velocity = value / Mass;
+        }
 
         public Body() : this(new Vector2f(0, 0), 0, new Vector2f(0, 0), 1)
         {
@@ -67,12 +74,8 @@ namespace GravityGame
             Velocity += force / Mass * time;
         }
 
-        public void AddMomentum(Vector2f momentum)
-        {
-            Velocity += momentum / Mass;
-        }
-
-        public bool CheckCollide(Body other) => DistanceSquared(other) <= Mathf.Pow(Radius + other.Radius, 2);
+        public bool CheckCollide(Body other) => DistanceSquared(other) <= Mathf.Pow(Radius + other.Radius, 2) && this != other;
+        public bool Contains(Vector2f point) => DistanceSquared(point) <= radius * radius;
         public Vector2f GetForceFrom(Point other)
         {
             Vector2f displacement = other.Position - Position;

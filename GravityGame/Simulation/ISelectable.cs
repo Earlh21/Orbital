@@ -4,8 +4,7 @@ namespace GravityGame
 {
     public interface ISelectable
     {
-        Vector2f Position { get; }
-        float Radius { get; }
+        bool Contains(Vector2f point);
         bool IsSelected { get; set; }
     }
 }

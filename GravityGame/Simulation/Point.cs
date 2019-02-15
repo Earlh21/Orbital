@@ -19,14 +19,24 @@ namespace GravityGame
             Mass = mass;
         }
 
+        public float DistanceSquared(Vector2f position)
+        {
+            return (Position - position).LengthSquared();
+        }
+        
         public float DistanceSquared(Point other)
         {
-            return (Position - other.Position).LengthSquared();
+            return DistanceSquared(other.Position);
+        }
+
+        public float Distance(Vector2f position)
+        {
+            return (Position - position).Length();
         }
         
         public float Distance(Point other)
         {
-            return (Position - other.Position).Length();
+            return Distance(other.Position);
         }
 
         public static Point CenterOfMass(Point[] points)

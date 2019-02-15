@@ -53,13 +53,14 @@ namespace GravityGame
                 
                 //Add momentum of smaller to bigger, but convert some of the momentum into heat
                 bigger.Heat += smaller.Momentum.Length() * Mathf.HeatRatio;
-                bigger.AddMomentum(smaller.Momentum * (1 - Mathf.HeatRatio));
+                bigger.Momentum += smaller.Momentum;
+                bigger.Momentum *= 1 - Mathf.HeatRatio;
                 
                 //Add heat of smaller to bigger
                 bigger.Heat += smaller.Heat;
                 
                 //Add heat simply because of the collision
-                bigger.Heat += bigger.Area + smaller.Area;
+                bigger.Heat += Mathf.Pow(smaller.Area, 3);
                 
                 //Flag smaller for deletion
                 smaller.Exists = false;
