@@ -15,14 +15,22 @@ namespace GravityGame
         {
             window = new RenderWindow(new VideoMode(800, 600), "The Game of Life");
 
+            //Scene specification
             List<RenderBody> bodies = new List<RenderBody>();
-            bodies.Add(new RenderBody(new Vector2f(5, 0), 100));
-            bodies.Add(new RenderBody(new Vector2f(-5, 0), 100));
+            bodies.Add(new Planet(new Vector2f(0, 0), 100, new Vector2f(0,0), 1, 300));
             
             view = new View();
             SetView(new Vector2f(0, 0), 2.5f);
 
             Clock clock = new Clock();
+
+            Gradient g = new Gradient();
+            List < GradientKey > keys = new List<GradientKey>();
+            keys.Add(new GradientKey(0, new Colorf(0, 0, 1, 1)));
+            keys.Add(new GradientKey(300, new Colorf(0, 1, 0, 1)));
+            keys.Add(new GradientKey(10000, new Colorf(1, 0, 0, 1)));
+            g.Keys = keys;
+            Mathf.TemperatureColorGradient = g;
             
             while (window.IsOpen)
             {
@@ -91,6 +99,11 @@ namespace GravityGame
             {
                 window.Draw(body);
             }
+        }
+
+        public static void ResolveCollision(Pair pair, List<RenderBody> bodies)
+        {
+            
         }
 
         public static void SetView(Vector2f position, float scale)

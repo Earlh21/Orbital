@@ -32,10 +32,10 @@ namespace GravityGame
             
         }
         
-        public TemperatureBody(Vector2f position, float mass, Vector2f velocity, float density, float heat) : base(
+        public TemperatureBody(Vector2f position, float mass, Vector2f velocity, float density, float temperature) : base(
             position, mass, velocity, density)
         {
-            Heat = heat;
+            Heat = temperature * Area;
         }
         
         public override void Update(float time)

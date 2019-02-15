@@ -7,12 +7,14 @@ namespace GravityGame
 {
     public class Gradient
     {
+        private List<GradientKey> keys;
+        
         public List<GradientKey> Keys
         {
             private get => Keys;
             set
             {
-                Keys = value;
+                keys = value;
                 Keys.Sort();
             }
         }
@@ -33,15 +35,15 @@ namespace GravityGame
             {
                 throw new ArgumentException("Keys is empty.");
             }
-
-            if (Keys.Count == 1)
+            
+            if (Keys.Count == 1 || value < Keys[0].T)
             {
                 return Keys[0].Colorf.ToColor();
             }
-            
-            if (value < Keys[0].T || value > Keys[Keys.Count - 1].T)
+
+            if (value > Keys[Keys.Count - 1].T)
             {
-                throw new ArgumentException("Value exceeds gradient range.");
+                return Keys[Keys.Count - 1].Colorf.ToColor();
             }
 
             for (int i = 0; i < Keys.Count; i++)
@@ -52,7 +54,7 @@ namespace GravityGame
                 }
             }
             
-            throw new Exception("Something has gone very wrong. This shouldn't be reached.");
+            throw new Exception("Something has gone wrong. This shouldn't be reached.");
         }
 
         private Colorf Interpolate(GradientKey a, GradientKey b, float value)

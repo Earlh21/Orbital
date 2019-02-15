@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Data;
 using System.Runtime.ConstrainedExecution;
 using GravityGame.Extension;
@@ -25,10 +26,13 @@ namespace GravityGame
         }
         public Vector2f Velocity { get; set; }
         public bool IsSelected { get; set; }
+        //Used for resolving collisions
+        public bool Exists { get; set; }
 
         public float Radius => radius;
         public float Area => Mathf.PI * Radius * Radius;
         public float Circumference => Mathf.PI * Radius * 2;
+        public Vector2f Momentum => Velocity * Mass;
 
         public Body() : this(new Vector2f(0, 0), 0, new Vector2f(0, 0), 1)
         {
@@ -63,11 +67,51 @@ namespace GravityGame
             Velocity += force / Mass * time;
         }
 
+        public void AddMomentum(Vector2f momentum)
+        {
+            Velocity += momentum / Mass;
+        }
+
         public bool CheckCollide(Body other) => DistanceSquared(other) <= Mathf.Pow(Radius + other.Radius, 2);
         public Vector2f GetForceFrom(Point other)
         {
             Vector2f displacement = other.Position - Position;
             return Mathf.G * Mass * other.Mass / displacement.LengthSquared() * displacement;
+        }
+
+        public List<Pair> GetCollisions(QuadTree tree)
+        {
+            List<Pair> collisions = new List<Pair>();
+            
+            if (tree == null)
+            {
+                return collisions;
+            }
+
+            if (tree.IsLeaf && tree.HasNode)
+            {
+                if (this != tree.Node && CheckCollide(tree.Node))
+                {
+                    collisions.Add(new Pair(this, tree.Node));
+                }
+            }
+            else
+            {
+                float sd = tree.Size.X / Distance(tree.CenterOfMass);
+                if (sd < approximate_threshold)
+                {
+                    //Skip this line
+                }
+                else
+                {
+                    collisions.AddRange(GetCollisions(tree.top_left));
+                    collisions.AddRange(GetCollisions(tree.top_right));
+                    collisions.AddRange(GetCollisions(tree.bottom_left));
+                    collisions.AddRange(GetCollisions(tree.bottom_right));
+                }
+            }
+
+            return collisions;
         }
         
         public Vector2f GetForceFrom(QuadTree tree)

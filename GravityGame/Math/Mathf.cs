@@ -9,6 +9,7 @@ namespace GravityGame
         public static float Insulation = 5.0f;
         public static float G = 1.0f;
         public static Gradient TemperatureColorGradient;
+        public static float HeatRatio = 0.1f;
         
         public static float Pow(float val, float exponent)
         {
