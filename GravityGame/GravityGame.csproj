@@ -58,12 +58,15 @@
         <Compile Include="Extension\Vector2fExtension.cs" />
         <Compile Include="Math\Mathf.cs" />
         <Compile Include="Math\QuadTree.cs" />
+        <Compile Include="Math\Rectangle.cs" />
         <Compile Include="Simulation\Body.cs" />
         <Compile Include="Simulation\Life.cs" />
         <Compile Include="Simulation\Pair.cs" />
         <Compile Include="Simulation\Planet.cs" />
         <Compile Include="Simulation\RenderBody.cs" />
         <Compile Include="Simulation\ISelectable.cs" />
+        <Compile Include="Simulation\Scene.cs" />
+        <Compile Include="Simulation\Star.cs" />
         <Compile Include="Simulation\TemperatureBody.cs" />
         <Compile Include="Simulation\Point.cs" />
         <Compile Include="Program.cs" />

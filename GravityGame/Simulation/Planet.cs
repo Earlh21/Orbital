@@ -17,10 +17,15 @@ namespace GravityGame
             
         }
 
+        public void EvolveLife()
+        {
+            Life = new Life(Temperature);
+        }
+        
         public Planet(Vector2f position, float mass, Vector2f velocity, float density, float temperature) : base(position,
             mass, velocity, density, temperature)
         {
-            
+            Life = null;
         }
     }
 }

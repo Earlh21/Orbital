@@ -14,11 +14,18 @@ namespace GravityGame
         public QuadTree bottom_right;
 
         private Point center_of_mass;
+        private int body_count;
 
         public Point CenterOfMass => center_of_mass;
+        public int BodyCount => body_count;
 
-        public Vector2f Position { get; set; }
-        public Vector2f Size { get; set; }
+        public Rectangle Domain { get; set; }
+        public Vector2f Position => Domain.Position;
+        public Vector2f Size => Domain.Size;
+        public float X => Position.X;
+        public float Y => Position.Y;
+        public float Width => Size.X;
+        public float Height => Size.Y;
 
         public bool IsLeaf => top_left == null;
         public bool HasNode => Node != null;
@@ -32,14 +39,18 @@ namespace GravityGame
                 if (HasNode)
                 {
                     center_of_mass = new Point(Node.Position, Node.Mass);
+                    body_count = 1;
                     return;
                 }
                 else
                 {
                     center_of_mass = new Point(new Vector2f(0, 0), 0);
+                    body_count = 0;
                     return;
                 }
             }
+
+            body_count = 0;
             
             top_left.CalculateCenterOfMass();
             top_right.CalculateCenterOfMass();
@@ -48,9 +59,13 @@ namespace GravityGame
 
             Point[] points = new Point[4];
             points[0] = top_left.CenterOfMass;
+            body_count += top_left.body_count;
             points[1] = top_right.CenterOfMass;
+            body_count += top_right.body_count;
             points[2] = bottom_left.CenterOfMass;
+            body_count += bottom_left.body_count;
             points[3] = bottom_right.CenterOfMass;
+            body_count += bottom_right.body_count;
 
             center_of_mass = Point.CenterOfMass(points);
         }
@@ -105,23 +120,17 @@ namespace GravityGame
 
         public bool Contains(Body node)
         {
-            if (node.Position.X < Position.X || node.Position.X > Position.X + Size.X)
-            {
-                return false;
-            }
-
-            if (node.Position.Y < Position.Y || node.Position.Y > Position.Y + Size.Y)
-            {
-                return false;
-            }
-
-            return true;
+            return Domain.Contains(node.Position);
         }
         
         public QuadTree(Vector2f position, Vector2f size)
         {
-            Position = position;
-            Size = size;
+            Domain = new Rectangle(position, size);
+        }
+
+        public QuadTree(Rectangle domain)
+        {
+            Domain = domain;
         }
     }
 }

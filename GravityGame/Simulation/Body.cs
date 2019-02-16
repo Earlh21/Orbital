@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Runtime.ConstrainedExecution;
@@ -8,7 +9,10 @@ namespace GravityGame
 {
     public class Body : Point, ISelectable
     {
-        private const float approximate_threshold = 0.5f;
+        private const float base_theta = 0.5f;
+        //When a node has this many bodies, effective theta will be base_theta
+        private const float max_bodies = 100;
+        private const float min_theta = 0.1f;
         
         private float radius;
         private float mass;
@@ -21,7 +25,7 @@ namespace GravityGame
             set
             {
                 //Conserve momentum
-                Velocity -= Velocity * mass / value;
+                Velocity = Velocity * mass / value;
                 mass = value;
                 radius = Mathf.Sqrt(Mass / Mathf.PI * Density);
             }
@@ -100,8 +104,8 @@ namespace GravityGame
             }
             else
             {
-                float sd = tree.Size.X / Distance(tree.CenterOfMass);
-                if (sd < approximate_threshold)
+                float sd = tree.Domain.Width / Distance(tree.CenterOfMass);
+                if (sd < 0.5f)
                 {
                     //Skip this line
                 }
@@ -119,23 +123,20 @@ namespace GravityGame
         
         public Vector2f GetForceFrom(QuadTree tree)
         {
-            Vector2f total_force = new Vector2f(0, 0);
-
-            if (tree == null)
-            {
-                return total_force;
-            }
+            float approximate_threshold = Math.Max(min_theta, base_theta / Math.Max(1, max_bodies - tree.BodyCount));
             
-            if (tree.IsLeaf && tree.HasNode)
+            Vector2f total_force = new Vector2f(0, 0);
+            
+            if (tree.IsLeaf)
             {
-                if (this != tree.Node)
+                if (tree.HasNode && this != tree.Node)
                 {
                     total_force += GetForceFrom(tree.CenterOfMass);
                 }
             }
             else
             {
-                float sd = tree.Size.X / Distance(tree.CenterOfMass);
+                float sd = tree.Domain.Width / Distance(tree.CenterOfMass);
                 if (sd < approximate_threshold)
                 {
                     total_force += GetForceFrom(tree.CenterOfMass);

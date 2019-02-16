@@ -1,6 +1,6 @@
 namespace GravityGame
 {
-    public struct Life
+    public class Life
     {
         private static int last_faction;
 
@@ -11,7 +11,7 @@ namespace GravityGame
         public int TechLevel { get; set; }
         
         public int Faction => faction;
-
+        
         public Life(float temperature)
         {
             NormalTemp = temperature;

@@ -54,6 +54,11 @@ namespace GravityGame
             Heat -= Circumference * (Temperature - Mathf.AmbientTemp) / Mathf.Insulation * time;
         }
 
+        public float GetHeatFlowFrom(Star star)
+        {
+            return star.Area * 1000.0f / Distance(star);
+        }
+
         protected override Color GetColor()
         {
             return Mathf.TemperatureColorGradient.GetColor(Temperature);
