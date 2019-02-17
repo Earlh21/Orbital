@@ -12,6 +12,11 @@ namespace GravityGame
         
         protected override Color GetColor()
         {
+            if (IsSelected)
+            {
+                return new Color(255, 0, 255, 255);
+            }
+            
             return Color.Yellow;
         }
     }

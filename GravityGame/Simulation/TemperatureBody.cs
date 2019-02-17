@@ -46,6 +46,7 @@ namespace GravityGame
 
         private void UpdateTemperature(float time)
         {
+            
             if (Temperature == Mathf.AmbientTemp)
             {
                 return;
@@ -56,11 +57,16 @@ namespace GravityGame
 
         public float GetHeatFlowFrom(Star star)
         {
-            return star.Area * 1000.0f / Distance(star);
+            return star.Area * 500.0f / Distance(star);
         }
 
         protected override Color GetColor()
         {
+            if (IsSelected)
+            {
+                return new Color(200, 0, 200, 255);
+            }
+            
             return Mathf.TemperatureColorGradient.GetColor(Temperature);
         }
     }

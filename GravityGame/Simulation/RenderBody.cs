@@ -1,3 +1,5 @@
+using System;
+using System.Text;
 using GravityGame.Extension;
 using SFML.Graphics;
 using SFML.System;
@@ -7,6 +9,8 @@ namespace GravityGame
     public class RenderBody : Body, Drawable
     {
         private CircleShape shape;
+
+        public bool DrawOutline { get; set; } = false;
 
         public RenderBody() : base()
         {
@@ -29,14 +33,26 @@ namespace GravityGame
 
         public void Draw(RenderTarget target, RenderStates states)
         {
-            target.Draw(shape);
-        }
-
-        public override void Update(float time)
-        {
-            base.Update(time);
+            RenderWindow window = (RenderWindow) target;
+            View view = window.GetView();
             
             UpdateGraphic();
+            
+            shape.SetPointCount((uint)Mathf.Clamp(10, 80, 8 + 200000 * shape.Radius / window.Size.X / view.Size.X));
+
+            target.Draw(shape);
+
+            if (DrawOutline)
+            {
+
+                shape.Radius = view.Size.X / 50.0f;
+                shape.Position = new Vector2f(Position.X - shape.Radius, -Position.Y - shape.Radius);
+                shape.OutlineColor = shape.FillColor;
+                shape.FillColor = Color.Transparent;
+                shape.SetPointCount(20);
+                shape.OutlineThickness = view.Size.X / 500.0f;
+                target.Draw(shape);
+            }
         }
 
         private void UpdateGraphic()
@@ -51,13 +67,14 @@ namespace GravityGame
             Color color = GetColor();
             shape.FillColor = color;
             shape.OutlineColor = color;
+            shape.OutlineThickness = 0.0f;
         }
 
         protected virtual Color GetColor()
         {
             if (IsSelected)
             {
-                return Color.Yellow;
+                return new Color(200, 0, 200, 255);
             }
             return Color.Green;
         }

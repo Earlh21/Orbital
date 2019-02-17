@@ -8,11 +8,12 @@ using SFML.Window;
 
 namespace GravityGame
 {
+    //TODO: Try to find some way to simplify dealing with the selected object or at least make variables more descriptive
     internal class Program
     {
         public static RenderWindow window;
         public static View view;
-        public static Vector2f view_position = new Vector2f(0, 0);
+        public static Vector2f view_offset = new Vector2f(0, 0);
         public static float view_scale = 2.5f;
         public static Scene scene;
 
@@ -20,6 +21,7 @@ namespace GravityGame
         public static bool firing = false;
         public static float spawn_radius = 5;
         public static Vector2f mouse_original_pos;
+        public static Vector2f mouse_fire_offset;
 
         public static void Main(string[] args)
         {
@@ -27,9 +29,6 @@ namespace GravityGame
 
             //Scene specification
             scene = new Scene();
-            scene.AddBody(new Planet(new Vector2f(0, 50), 100, new Vector2f(-5, 0), 1, 300));
-            scene.AddBody(new Planet(new Vector2f(0, -50), 100, new Vector2f(8, 0), 1, 300));
-            scene.AddBody(new Planet(new Vector2f(0, -70), 50, new Vector2f(3, 0), 1, 300));
             
             view = new View();
             UpdateView();
@@ -45,46 +44,43 @@ namespace GravityGame
             Mathf.TemperatureColorGradient = g;
 
             window.Closed += OnClose;
-            window.Resized += OnResize;
             window.MouseWheelMoved += OnMouseWheelScroll;
             window.MouseButtonPressed += OnMouseButtonPress;
             window.MouseButtonReleased += OnMouseButtonRelease;
+            window.KeyPressed += OnKeyPress;
 
+            float max_time_step = 1 / 60.0f;
+            
             while (window.IsOpen)
             {
                 window.DispatchEvents();
 
-                float time = clock.ElapsedTime.AsSeconds() * 3.0f;
+                float time = Math.Min(max_time_step, clock.ElapsedTime.AsSeconds() * 3.0f);
                 clock.Restart();
 
                 scene.Update(time);
-                
-                //DEBUGGING: write the total momentum of the system to the console
-                Vector2f momentum = new Vector2f(0, 0);                
-                foreach (Body body in scene.Bodies)
+                    
+                if (panning)
                 {
-                    momentum += body.Momentum;
+                    Vector2f diff = (Vector2f) Mouse.GetPosition() - mouse_original_pos;
+                    view_offset -= 0.5f * diff / view_scale;
+                    Mouse.SetPosition((Vector2i)mouse_original_pos);
                 }
-                Console.WriteLine(momentum.Length());
-
+                
                 //Start drawing
+                UpdateView();
+                
                 window.Clear();
 
                 window.Draw(scene);
-                
-                if (panning)
-                {
-                    view_position -= GetMouseCoordsWorld() - mouse_original_pos;
-                    UpdateView();
-                    mouse_original_pos = GetMouseCoordsWorld();
-                }
+                window.Draw(scene.Tree);
 
                 if (firing)
                 {
                     Vector2f mouse_pos = GetMouseCoordsWorld();
 
                     VertexArray arr = new VertexArray();
-                    arr.Append(new Vertex(mouse_original_pos, Color.Green));
+                    arr.Append(new Vertex(InvY( scene.GetSelectedPosition()) + mouse_fire_offset, Color.Green));
                     arr.Append(new Vertex(mouse_pos, Color.Red));
 
                     arr.PrimitiveType = PrimitiveType.Lines;
@@ -92,14 +88,17 @@ namespace GravityGame
                     window.Draw(arr);
                 }
 
-                CircleShape ghost = new CircleShape();
-                ghost.Radius = spawn_radius;
-                ghost.FillColor = new Color(0, 255, 0, 100);
-                ghost.OutlineColor = new Color(0, 255, 0, 100);
-                ghost.Position = firing ? mouse_original_pos : GetMouseCoordsWorld();
-                ghost.Position -= new Vector2f(spawn_radius, spawn_radius);
-                window.Draw(ghost);
-                
+                if (!panning)
+                {
+                    CircleShape ghost = new CircleShape();
+                    ghost.Radius = spawn_radius;
+                    ghost.FillColor = new Color(0, 255, 0, 100);
+                    ghost.OutlineColor = new Color(0, 255, 0, 100);
+                    ghost.Position = firing ? InvY(scene.GetSelectedPosition()) + mouse_fire_offset : GetMouseCoordsWorld();
+                    ghost.Position -= new Vector2f(spawn_radius, spawn_radius);
+                    window.Draw(ghost);
+                }
+
                 window.Display();
             }
         }
@@ -115,7 +114,7 @@ namespace GravityGame
         public static void UpdateView()
         {
             view.Size = (Vector2f) window.Size / view_scale;
-            view.Center = view_position;
+            view.Center = scene.Selected == null ? view_offset : InvY(scene.GetSelectedPosition()) + view_offset;
             window.SetView(view);
         }
 
@@ -124,11 +123,58 @@ namespace GravityGame
             ((Window) sender).Close();
         }
 
-        public static void OnResize(object sender, EventArgs e)
+        public static void OnKeyPress(object sender, EventArgs e)
         {
-            UpdateView();
+            KeyEventArgs args = (KeyEventArgs) e;
+
+            if (args.Code == Keyboard.Key.Delete)
+            {
+                scene.DrawOutlines = !scene.DrawOutlines;
+            }
+            else if (args.Code == Keyboard.Key.Escape)
+            {
+                scene.Deselect();
+            }
+            else if(args.Code == Keyboard.Key.P)
+            {
+                Random R = new Random(1);
+                
+                float n = 2000;
+                float radius = 8000;
+                float mass = 100;
+                float mass_variance = 50;
+                float velocity = 400;
+                float velocity_variance = 50;
+
+                scene.AddBody(new Star(new Vector2f(0, 0), 100000, new Vector2f(0, 0), 1));
+                
+                for (int i = 0; i < n; i++)
+                {
+                    float angle = NextFloatAbs(R, 2 * Mathf.PI);
+                    float distance = NextFloatAbs(R, radius);
+                    float n_mass = mass + NextFloat(R, mass_variance);
+                    
+                    Vector2f velocity_unit = new Vector2f((float)Math.Cos(angle + Mathf.PI / 2), (float)Math.Sin(angle + Mathf.PI / 2));
+                    Vector2f n_velocity = velocity_unit * (velocity + NextFloat(R, velocity_variance));// / Mathf.Pow(distance / 100, 0.05f);
+                    
+                    Vector2f n_position = new Vector2f((float)Math.Cos(angle), (float)Math.Sin(angle)) * distance;
+                    
+                    scene.AddBody(new Planet(n_position, n_mass, n_velocity, 1, 300));
+                }
+            }
         }
 
+        private static float NextFloat(Random R, float amplitude)
+        {
+            float t = ((float)R.NextDouble() - 0.5f) * 2;
+            return t * amplitude;
+        }
+
+        private static float NextFloatAbs(Random R, float amplitude)
+        {
+            return Math.Abs(NextFloat(R, amplitude));
+        }
+        
         public static void OnMouseWheelScroll(object sender, EventArgs e)
         {
             MouseWheelEventArgs args = (MouseWheelEventArgs) e;
@@ -143,8 +189,6 @@ namespace GravityGame
                 {
                     view_scale /= 1.1f;
                 }
-
-                UpdateView();
             }
             else
             {
@@ -167,16 +211,26 @@ namespace GravityGame
             {
                 if (args.Button == Mouse.Button.Left)
                 {
-                    firing = true;
+                    Vector2f mouse_pos = GetMouseCoordsWorld();
+                    bool found = scene.SelectAt(InvY(mouse_pos));
 
-                    mouse_original_pos = GetMouseCoordsWorld();
+                    if (!found)
+                    {
+                        firing = true;
+
+                        mouse_fire_offset = GetMouseCoordsRelative();
+                    }
+                    else
+                    {
+                        view_offset = new Vector2f(0, 0);
+                    }
                 }
                 else if (args.Button == Mouse.Button.Right)
                 {
                     panning = true;
-
+                    
                     window.SetMouseCursorVisible(false);
-                    mouse_original_pos = GetMouseCoordsWorld();
+                    mouse_original_pos = (Vector2f)Mouse.GetPosition();
                 }
                 else if(args.Button == Mouse.Button.Middle)
                 {
@@ -193,6 +247,11 @@ namespace GravityGame
             return window.MapPixelToCoords(mouse, view);
         }
 
+        public static Vector2f GetMouseCoordsRelative()
+        {
+            return GetMouseCoordsWorld() - InvY(scene.GetSelectedPosition());
+        }
+
         public static Vector2f InvY(Vector2f vector)
         {
             return new Vector2f(vector.X, -vector.Y);
@@ -207,7 +266,8 @@ namespace GravityGame
                 firing = false;
 
                 Vector2f mouse_pos = GetMouseCoordsWorld();
-                Planet p = new Planet(InvY(mouse_original_pos), Mathf.PI * spawn_radius * spawn_radius, InvY(mouse_pos - mouse_original_pos), 1, 300);
+                Vector2f position = scene.GetSelectedPosition() + InvY(mouse_fire_offset);
+                Planet p = new Planet(position, Mathf.PI * spawn_radius * spawn_radius, scene.GetSelectedVelocity() + InvY(mouse_pos) - position, 1, 300);
                 scene.AddBody(p);
             }
 

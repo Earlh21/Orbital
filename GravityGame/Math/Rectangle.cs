@@ -18,7 +18,7 @@ namespace GravityGame
             Size = size;
         }
 
-        public bool Contains(Vector2f position)
+        public bool ContainsPoint(Vector2f position)
         {
             if (position.X < X || position.Y < Y)
             {
@@ -26,6 +26,36 @@ namespace GravityGame
             }
 
             if (position.X > X + Width || position.Y > Y + Height)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public bool FullyContains(Body body)
+        {
+            if (body.Position.X - body.Radius < X || body.Position.X + body.Radius > X + Width)
+            {
+                return false;
+            }
+
+            if (body.Position.Y - body.Radius < Y || body.Position.Y + body.Radius > Y + Height)
+            {
+                return false;
+            }
+
+            return true;
+        }
+        
+        public bool PartiallyContains(Body body)
+        {
+            if (body.Position.X + body.Radius < X || body.Position.X - body.Radius > X + Width)
+            {
+                return false;
+            }
+
+            if (body.Position.Y + body.Radius < Y || body.Position.Y - body.Radius > Y + Height)
             {
                 return false;
             }

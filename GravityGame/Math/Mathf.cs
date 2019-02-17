@@ -21,5 +21,20 @@ namespace GravityGame
         {
             return (float) Math.Sqrt(val);
         }
+
+        public static float Clamp(float a, float b, float t)
+        {
+            if (t < a)
+            {
+                return a;
+            }
+
+            if (t > b)
+            {
+                return b;
+            }
+
+            return t;
+        }
     }
 }

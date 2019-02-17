@@ -20,7 +20,7 @@ namespace GravityGame
             this.b = b;
         }
 
-        public void Resolve()
+        public void Resolve(Scene scene)
         {
             if (!A.Exists || !B.Exists)
             {
@@ -36,16 +36,16 @@ namespace GravityGame
 
             if (a_type == planet && b_type == planet)
             {
-                ResolvePlanetPlanet();
+                ResolvePlanetPlanet(scene);
             }
 
             if (a_type == star || b_type == star)
             {
-                ResolveBodyStar();
+                ResolveBodyStar(scene);
             }
         }
 
-        private void ResolveBodyStar()
+        private void ResolveBodyStar(Scene scene)
         {
             Star star;
             Body body;
@@ -65,6 +65,12 @@ namespace GravityGame
             Vector2f displacement = body.Position - star.Position;
             star.Position += displacement * body.Mass / (star.Mass + body.Mass);
             
+            if (body.IsSelected)
+            {
+                scene.Deselect();
+                scene.SelectAt(star.Position);
+            }
+            
             //Add mass of planet to star
             star.Mass += body.Mass;
             
@@ -75,7 +81,7 @@ namespace GravityGame
             body.Exists = false;
         }
         
-        private void ResolvePlanetPlanet()
+        private void ResolvePlanetPlanet(Scene scene)
         {
             Planet bigger;
             Planet smaller;
@@ -93,6 +99,12 @@ namespace GravityGame
             //Move the bigger planet towards the smaller planet
             Vector2f displacement = smaller.Position - bigger.Position;
             bigger.Position += displacement * smaller.Mass / (bigger.Mass + smaller.Mass);
+            
+            if (smaller.IsSelected)
+            {
+                scene.Deselect();
+                scene.SelectAt(bigger.Position);
+            }
                 
             //Add mass of smaller to bigger
             bigger.Mass += smaller.Mass;

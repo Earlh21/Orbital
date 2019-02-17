@@ -2,17 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using SFML.Graphics;
 using SFML.System;
 
 namespace GravityGame
 {
-    public class QuadTree
+    public class QuadTree : Drawable
     {
-        public QuadTree top_left;
-        public QuadTree top_right;
-        public QuadTree bottom_left;
-        public QuadTree bottom_right;
-
+        public QuadTree TopLeft { get; set; }
+        public QuadTree TopRight { get; set; }
+        public QuadTree BottomLeft { get; set; }
+        public QuadTree BottomRight { get; set; }
+        public QuadTree Parent { get; set; }
+        
         private Point center_of_mass;
         private int body_count;
 
@@ -27,8 +29,9 @@ namespace GravityGame
         public float Width => Size.X;
         public float Height => Size.Y;
 
-        public bool IsLeaf => top_left == null;
+        public bool IsLeaf => TopLeft == null;
         public bool HasNode => Node != null;
+        public bool IsRoot => Parent != null;
         
         public Body Node { get; set; }
 
@@ -52,27 +55,27 @@ namespace GravityGame
 
             body_count = 0;
             
-            top_left.CalculateCenterOfMass();
-            top_right.CalculateCenterOfMass();
-            bottom_left.CalculateCenterOfMass();
-            bottom_right.CalculateCenterOfMass();
+            TopLeft.CalculateCenterOfMass();
+            TopRight.CalculateCenterOfMass();
+            BottomLeft.CalculateCenterOfMass();
+            BottomRight.CalculateCenterOfMass();
 
             Point[] points = new Point[4];
-            points[0] = top_left.CenterOfMass;
-            body_count += top_left.body_count;
-            points[1] = top_right.CenterOfMass;
-            body_count += top_right.body_count;
-            points[2] = bottom_left.CenterOfMass;
-            body_count += bottom_left.body_count;
-            points[3] = bottom_right.CenterOfMass;
-            body_count += bottom_right.body_count;
+            points[0] = TopLeft.CenterOfMass;
+            body_count += TopLeft.body_count;
+            points[1] = TopRight.CenterOfMass;
+            body_count += TopRight.body_count;
+            points[2] = BottomLeft.CenterOfMass;
+            body_count += BottomLeft.body_count;
+            points[3] = BottomRight.CenterOfMass;
+            body_count += BottomRight.body_count;
 
             center_of_mass = Point.CenterOfMass(points);
         }
         
         public void Insert(Body node)
         {
-            if (!Contains(node))
+            if (!ContainsPoint(node))
             {
                 throw new ArgumentException("Node isn't within quadtree bounds.");
             }
@@ -81,27 +84,27 @@ namespace GravityGame
             {
                 if (IsLeaf)
                 {
-                    bottom_left = new QuadTree(Position, Size / 2);
-                    bottom_right = new QuadTree(Position + new Vector2f(bottom_left.Size.X, 0), bottom_left.Size);
-                    top_left = new QuadTree(Position + new Vector2f(0, bottom_left.Size.Y), bottom_left.Size);
-                    top_right = new QuadTree(Position + bottom_left.Size, bottom_left.Size);
+                    BottomLeft = new QuadTree(Position, Size / 2,this);
+                    BottomRight = new QuadTree(Position + new Vector2f(BottomLeft.Size.X, 0), BottomLeft.Size, this);
+                    TopLeft = new QuadTree(Position + new Vector2f(0, BottomLeft.Size.Y), BottomLeft.Size, this);
+                    TopRight = new QuadTree(Position + BottomLeft.Size, BottomLeft.Size, this);
                 }
 
-                if (top_left.Contains(node))
+                if (TopLeft.ContainsPoint(node))
                 {
-                    top_left.Insert(node);
+                    TopLeft.Insert(node);
                 }
-                else if (top_right.Contains(node))
+                else if (TopRight.ContainsPoint(node))
                 {
-                    top_right.Insert(node);
+                    TopRight.Insert(node);
                 }
-                else if (bottom_left.Contains(node))
+                else if (BottomLeft.ContainsPoint(node))
                 {
-                    bottom_left.Insert(node);
+                    BottomLeft.Insert(node);
                 }
                 else
                 {
-                    bottom_right.Insert(node);
+                    BottomRight.Insert(node);
                 }
                 
                 //Make sure the old node gets put into a lower quadtree
@@ -118,19 +121,48 @@ namespace GravityGame
             }
         }
 
-        public bool Contains(Body node)
+        public bool ContainsPoint(Body node)
         {
-            return Domain.Contains(node.Position);
-        }
-        
-        public QuadTree(Vector2f position, Vector2f size)
-        {
-            Domain = new Rectangle(position, size);
+            return Domain.ContainsPoint(node.Position);
         }
 
-        public QuadTree(Rectangle domain)
+        public bool Contains(Body node)
+        {
+            return Domain.FullyContains(node);
+        }
+        
+        public QuadTree(Vector2f position, Vector2f size, QuadTree parent)
+        {
+            Domain = new Rectangle(position, size);
+            Parent = parent;
+        }
+
+        public QuadTree(Rectangle domain, QuadTree parent)
         {
             Domain = domain;
+            Parent = parent;
+        }
+
+        public void Draw(RenderTarget target, RenderStates states)
+        {
+            RenderWindow window = (RenderWindow) target;
+            View view = window.GetView();
+            
+            RectangleShape rs = new RectangleShape();
+            rs.Position = new Vector2f(X, -Y - Height);
+            rs.Size = Size;
+            rs.FillColor = Color.Transparent;
+            rs.OutlineColor = Color.Green;
+            rs.OutlineThickness = window.GetView().Size.X / 1000.0f;
+            target.Draw(rs);
+            
+            if (!IsLeaf)
+            {
+                target.Draw(TopLeft);
+                target.Draw(BottomRight);
+                target.Draw(BottomLeft);
+                target.Draw(TopRight);
+            }
         }
     }
 }
