@@ -10,6 +10,7 @@ namespace GravityGame
 
         public float Temperature => Heat / Area;
         public float Heat { get; set; }
+        public bool DrawText { get; set; }
 
         public TemperatureBody() : base()
         {

@@ -11,27 +11,7 @@ namespace GravityGame
         public static float life_chance = 1 / 1200.0f;
         public static float tech_chance = 1 / 1200.0f;
         public Life Life { get; set; }
-        public bool DrawText { get; set; }
         public bool HasLife => Life != null;
-
-        public float CarryingCapacity
-        {
-            get
-            {
-                if (!HasLife) return 0;
-                float temp_diff = Math.Abs(Temperature - Life.NormalTemp);
-                float temp_mod = temp_diff / (float)Math.Pow(Life.TechLevel, 2) / 10;
-                float temp_divisor = 1 + temp_mod;
-                float value = 1000 * Mathf.Pow(Life.TechLevel, 8) / temp_divisor - temp_mod * 100;
-                
-                if (value < 1)
-                {
-                    return 1;
-                }
-
-                return value;
-            }
-        }
 
         private void FormatText(Text text, float level, RenderWindow window)
         {
@@ -88,19 +68,10 @@ namespace GravityGame
         {
             if (HasLife)
             {
-                float growth = time * growth_rate * Life.Population * (1 - Life.Population / CarryingCapacity);
-                
-                if (Life.Population < 2)
+                if (Life.IsDead)
                 {
                     Life = null;
                     return;
-                }
-
-                Life.Population += growth;
-
-                if (Program.R.NextDouble() > 1 - tech_chance)
-                {
-                    Life.TechLevel++;
                 }
             }
             else

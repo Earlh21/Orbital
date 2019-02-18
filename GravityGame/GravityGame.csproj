@@ -75,6 +75,7 @@
         <Compile Include="Simulation\RenderBody.cs" />
         <Compile Include="Simulation\ISelectable.cs" />
         <Compile Include="Simulation\Scene.cs" />
+        <Compile Include="Simulation\Ship.cs" />
         <Compile Include="Simulation\Star.cs" />
         <Compile Include="Simulation\TemperatureBody.cs" />
         <Compile Include="Simulation\Point.cs" />
