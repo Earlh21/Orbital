@@ -1,3 +1,4 @@
+using System;
 using SFML.System;
 
 namespace GravityGame.Extension
@@ -12,6 +13,26 @@ namespace GravityGame.Extension
         public static float Length(this Vector2f v)
         {
             return Mathf.Sqrt(v.LengthSquared());
+        }
+
+        public static Vector2f Multiply(this Vector2f v, Vector2f other)
+        {
+            return new Vector2f(v.X * other.X, v.Y * other.Y);
+        }
+        
+        public static Vector2f Divide(this Vector2f v, Vector2f other)
+        {
+            return new Vector2f(v.X / other.X, v.Y / other.Y);
+        }
+        
+        public static Vector2i Floor(this Vector2f v)
+        {
+            return new Vector2i((int)v.X, (int)v.Y);
+        }
+
+        public static Vector2f InvY(this Vector2f v)
+        {
+            return new Vector2f(v.X, -v.Y);
         }
     }
 }

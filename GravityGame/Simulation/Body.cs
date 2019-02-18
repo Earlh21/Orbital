@@ -149,7 +149,10 @@ namespace GravityGame
             {
                 if (tree.HasNode)
                 {
-                    return tree.Node.GetCollisions(tree.Node.GetSmallestContainingTree(tree));
+                    if (tree.Node.Exists)
+                    {
+                        return tree.Node.GetCollisions(tree.Node.GetSmallestContainingTree(tree));
+                    }
                 }
             }
             else
@@ -163,6 +166,12 @@ namespace GravityGame
             return collisions;
         }
 
+        public void ApplyForceFrom(VectorFieldL field, float time)
+        {
+            Vector2f value = field.GetValue(Position);
+            ApplyForce(value * Mass * Mathf.G, time);
+        }
+        
         public Vector2f GetForceFrom(QuadTree tree)
         {
             float approximate_threshold = Math.Max(min_theta, base_theta / Math.Max(1, max_bodies - tree.BodyCount));
@@ -179,7 +188,7 @@ namespace GravityGame
             else
             {
                 float sd = tree.Domain.Width / Distance(tree.CenterOfMass);
-                if (sd < approximate_threshold)
+                if (sd < 0.5f)
                 {
                     total_force += GetForceFrom(tree.CenterOfMass);
                 }

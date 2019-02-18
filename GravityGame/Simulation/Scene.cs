@@ -16,8 +16,9 @@ namespace GravityGame
         private QuadTree tree;
 
         public bool DrawOutlines { get; set; }
+        public bool DrawText { get; set; }
         public RenderBody Selected => selected;
-        
+
         public List<RenderBody> Bodies => bodies;
 
         public QuadTree Tree => tree;
@@ -27,14 +28,25 @@ namespace GravityGame
             bodies = new List<RenderBody>();
             star_cache = new List<Star>();
         }
-        
+
         public void AddBody(RenderBody body)
         {
             bodies.Add(body);
             if (body is Star)
             {
-                star_cache.Add((Star)body);
+                star_cache.Add((Star) body);
             }
+        }
+
+        public Vector2f GetTotalMomentum()
+        {
+            Vector2f total = new Vector2f(0, 0);
+            foreach (Body body in bodies)
+            {
+                total += body.Momentum;
+            }
+
+            return total;
         }
 
         public void RemoveBody(RenderBody body)
@@ -43,7 +55,7 @@ namespace GravityGame
             {
                 selected = null;
             }
-            
+
             bodies.Remove(body);
             if (body is Star)
             {
@@ -56,13 +68,14 @@ namespace GravityGame
             if (selected != null)
             {
                 selected.IsSelected = false;
+                selected = null;
             }
         }
-        
+
         public bool SelectAt(Vector2f position)
         {
             bool found = false;
-            
+
             foreach (RenderBody body in bodies)
             {
                 if (body.Contains(position))
@@ -83,7 +96,7 @@ namespace GravityGame
             {
                 return new Vector2f(0, 0);
             }
-            
+
             return selected.Position;
         }
 
@@ -103,16 +116,16 @@ namespace GravityGame
             {
                 selected.IsSelected = false;
             }
-                    
+
             selected = body;
             body.IsSelected = true;
         }
-        
+
         public bool MakeStarAt(Vector2f position)
         {
             RenderBody b = null;
             bool found = false;
-            
+
             foreach (RenderBody body in bodies)
             {
                 if (body.Contains(position) && !(body is Star))
@@ -132,59 +145,58 @@ namespace GravityGame
             return found;
         }
 
-        //TODO: See if there's a way to cache some of this
+        public Rectangle WorldSize()
+        {
+            return new Rectangle(new Vector2f(-100000, -100000), new Vector2f(200000, 200000));
+        }
+
         public Rectangle GetAABB()
         {
-            float topx = float.MinValue;
-            float bottomx = float.MaxValue;
-            float topy = float.MinValue;
-            float bottomy = float.MaxValue;
+            float highest = 0;
 
             foreach (Body body in bodies)
             {
-                if (body.Position.X + body.Radius > topx)
+                if (body.Position.X + body.Radius > highest)
                 {
-                    topx = body.Position.X + body.Radius;
+                    highest = body.Position.X + body.Radius;
                 }
 
-                if (body.Position.X - body.Radius < bottomx)
+                if (body.Position.X - body.Radius < -highest)
                 {
-                    bottomx = body.Position.X - body.Radius;
+                    highest = -body.Position.X + body.Radius;
                 }
 
-                if (body.Position.Y + body.Radius > topy)
+                if (body.Position.Y + body.Radius > highest)
                 {
-                    topy = body.Position.Y + body.Radius;
+                    highest = body.Position.Y + body.Radius;
                 }
 
-                if (body.Position.Y - body.Radius < bottomy)
+                if (body.Position.Y - body.Radius < -highest)
                 {
-                    bottomy = body.Position.Y - body.Radius;
+                    highest = -body.Position.Y + body.Radius;
                 }
             }
 
-            float high_x = topx > Math.Abs(bottomx) ? topx : Math.Abs(bottomx);
-            float high_y = topy > Math.Abs(bottomy) ? topy : Math.Abs(bottomy);
-
-            Vector2f bottomleftbound = new Vector2f(-high_x, -high_y) * 1.1f;
+            Vector2f bottomleftbound = new Vector2f(-highest, -highest) * 1.1f;
             Vector2f size = bottomleftbound * -2;
-            
-            /**Vector2f bottomleftbound = new Vector2f(bottomx, bottomy);
-            Vector2f range = (new Vector2f(topx, topy) - bottomleftbound);
-            
-            Vector2f size = range + new Vector2f(2, 2) + range * 20.0f;
-            bottomleftbound -= new Vector2f(1, 1) + range * 10.0f;**/
 
             return new Rectangle(bottomleftbound, size);
         }
 
         private QuadTree GetQuadTree()
         {
-            QuadTree tree = new QuadTree(GetAABB(), null);
+            QuadTree tree = new QuadTree(WorldSize(), null);
 
             foreach (Body body in bodies)
             {
-                tree.Insert(body);
+                if (WorldSize().ContainsPoint(body.Position))
+                {
+                    tree.Insert(body);
+                }
+                else
+                {
+                    body.Exists = false;
+                }
             }
 
             //Cache centers of mass
@@ -192,21 +204,25 @@ namespace GravityGame
 
             return tree;
         }
-        
+
         public void Draw(RenderTarget target, RenderStates states)
         {
             RenderWindow window = (RenderWindow) target;
             View view = window.GetView();
-            
+
             Vector2f real_center = new Vector2f(view.Center.X, -view.Center.Y);
             Vector2f bottom_left = real_center - view.Size / 2;
             Rectangle domain = new Rectangle(bottom_left, view.Size);
 
             foreach (RenderBody body in bodies)
             {
-                if (domain.FullyContains(body))
+                if (domain.PartiallyContains(body))
                 {
                     body.DrawOutline = DrawOutlines;
+                    if (body is Planet)
+                    {
+                        ((Planet) body).DrawText = DrawText;
+                    }
 
                     target.Draw(body);
                 }
@@ -251,7 +267,7 @@ namespace GravityGame
                 }
             }
         }
-        
+
         private void ApplyStarHeat(float time)
         {
             foreach (Body body in bodies)
@@ -266,8 +282,8 @@ namespace GravityGame
                 }
             }
         }
-        
-        public void Update(float time)
+
+        public void Update(float time, RenderWindow window)
         {
             tree = GetQuadTree();
             ApplyForces(time);

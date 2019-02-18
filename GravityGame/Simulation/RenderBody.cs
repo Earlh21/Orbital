@@ -31,14 +31,14 @@ namespace GravityGame
         {
         }
 
-        public void Draw(RenderTarget target, RenderStates states)
+        public virtual void Draw(RenderTarget target, RenderStates states)
         {
             RenderWindow window = (RenderWindow) target;
             View view = window.GetView();
             
             UpdateGraphic();
             
-            shape.SetPointCount((uint)Mathf.Clamp(10, 80, 8 + 200000 * shape.Radius / window.Size.X / view.Size.X));
+            shape.SetPointCount((uint)Mathf.Clamp(10, 80, 18 + shape.Radius * (window.Size.X / view.Size.X) / 3.5f));
 
             target.Draw(shape);
 

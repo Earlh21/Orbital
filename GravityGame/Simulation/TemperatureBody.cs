@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.CompilerServices;
 using SFML.Graphics;
 using SFML.System;
@@ -52,12 +53,12 @@ namespace GravityGame
                 return;
             }
             
-            Heat -= Circumference * (Temperature - Mathf.AmbientTemp) / Mathf.Insulation * time;
+            Heat -= Circumference * (Temperature / Mathf.AmbientTemp) / Mathf.Insulation * time;
         }
 
         public float GetHeatFlowFrom(Star star)
         {
-            return star.Area * 500.0f / Distance(star);
+            return star.Area * 200000.0f / Mathf.Pow(Distance(star), 2);
         }
 
         protected override Color GetColor()

@@ -16,30 +16,32 @@ namespace GravityGame
         public static Vector2f view_offset = new Vector2f(0, 0);
         public static float view_scale = 2.5f;
         public static Scene scene;
-
+        public static float time_scale = 1;
+        public static Font font;
+        
         public static bool panning = false;
         public static bool firing = false;
         public static float spawn_radius = 5;
         public static Vector2f mouse_original_pos;
         public static Vector2f mouse_fire_offset;
+        public static Random R;
 
         public static void Main(string[] args)
         {
             window = new RenderWindow(new VideoMode(800, 600), "The Game of Life");
-
-            //Scene specification
-            scene = new Scene();
-            
             view = new View();
-            UpdateView();
 
-            Clock clock = new Clock();
+            font = new Font(GetDirectory() + "monsterrat.ttf");
+
+            R = new Random();
+            
+            scene = new Scene();
 
             Gradient g = new Gradient();
             List<GradientKey> keys = new List<GradientKey>();
             keys.Add(new GradientKey(0, new Colorf(0, 0, 1, 1)));
             keys.Add(new GradientKey(300, new Colorf(0, 1, 0, 1)));
-            keys.Add(new GradientKey(10000, new Colorf(1, 0, 0, 1)));
+            keys.Add(new GradientKey(5000, new Colorf(1, 0, 0, 1)));
             g.Keys = keys;
             Mathf.TemperatureColorGradient = g;
 
@@ -49,6 +51,7 @@ namespace GravityGame
             window.MouseButtonReleased += OnMouseButtonRelease;
             window.KeyPressed += OnKeyPress;
 
+            Clock clock = new Clock();
             float max_time_step = 1 / 60.0f;
             
             while (window.IsOpen)
@@ -58,7 +61,10 @@ namespace GravityGame
                 float time = Math.Min(max_time_step, clock.ElapsedTime.AsSeconds() * 3.0f);
                 clock.Restart();
 
-                scene.Update(time);
+                                
+                window.Clear();
+                
+                scene.Update(time_scale * time, window);
                     
                 if (panning)
                 {
@@ -69,11 +75,8 @@ namespace GravityGame
                 
                 //Start drawing
                 UpdateView();
-                
-                window.Clear();
 
                 window.Draw(scene);
-                window.Draw(scene.Tree);
 
                 if (firing)
                 {
@@ -139,8 +142,8 @@ namespace GravityGame
             {
                 Random R = new Random(1);
                 
-                float n = 2000;
-                float radius = 8000;
+                float n = 1000;
+                float radius = 20000;
                 float mass = 100;
                 float mass_variance = 50;
                 float velocity = 400;
@@ -162,8 +165,28 @@ namespace GravityGame
                     scene.AddBody(new Planet(n_position, n_mass, n_velocity, 1, 300));
                 }
             }
+            else if(args.Code == Keyboard.Key.Return)
+            {
+                if (Keyboard.IsKeyPressed(Keyboard.Key.LShift))
+                {
+                    time_scale = 1;
+                }
+                else
+                {
+                    view_offset = new Vector2f(0, 0);
+                }
+            }
+            else if(args.Code == Keyboard.Key.BackSpace)
+            {
+                scene.DrawText = !scene.DrawText;
+            }
         }
 
+        public static string GetDirectory()
+        {
+            return AppDomain.CurrentDomain.BaseDirectory;
+        }
+        
         private static float NextFloat(Random R, float amplitude)
         {
             float t = ((float)R.NextDouble() - 0.5f) * 2;
@@ -188,6 +211,17 @@ namespace GravityGame
                 else
                 {
                     view_scale /= 1.1f;
+                }
+            }
+            else if (Keyboard.IsKeyPressed(Keyboard.Key.LShift))
+            {
+                if (args.Delta > 0)
+                {
+                    time_scale *= 1.1f;
+                }
+                else
+                {
+                    time_scale /= 1.1f;
                 }
             }
             else

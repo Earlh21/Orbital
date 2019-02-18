@@ -1,3 +1,4 @@
+using System.Xml;
 using SFML.System;
 
 namespace GravityGame
@@ -16,6 +17,12 @@ namespace GravityGame
         {
             Position = position;
             Size = size;
+        }
+
+        public Rectangle(float x, float y, float width, float height)
+        {
+            Position = new Vector2f(x, y);
+            Size = new Vector2f(width, height);
         }
 
         public bool ContainsPoint(Vector2f position)
@@ -50,6 +57,11 @@ namespace GravityGame
         
         public bool PartiallyContains(Body body)
         {
+            if (ContainsPoint(body.Position))
+            {
+                return true;
+            }
+            
             if (body.Position.X + body.Radius < X || body.Position.X - body.Radius > X + Width)
             {
                 return false;

@@ -17,7 +17,7 @@ namespace GravityGame
             NormalTemp = temperature;
             last_faction++;
             faction = last_faction;
-            TechLevel = 0;
+            TechLevel = 1;
             Population = 2;
         }
     }

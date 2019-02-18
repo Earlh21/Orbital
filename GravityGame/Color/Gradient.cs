@@ -53,8 +53,8 @@ namespace GravityGame
                     return Interpolate(Keys[i], Keys[i + 1], value).ToColor();
                 }
             }
-            
-            throw new Exception("Something has gone wrong. This shouldn't be reached.");
+
+            return Color.Cyan;
         }
 
         private Colorf Interpolate(GradientKey a, GradientKey b, float value)

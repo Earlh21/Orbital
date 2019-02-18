@@ -6,7 +6,7 @@ namespace GravityGame
     {
         public static float PI = (float) Math.PI;
         public static float AmbientTemp = 2.73f;
-        public static float Insulation = 15.0f;
+        public static float Insulation = 10.0f;
         public static float G = 1.0f;
         public static Gradient TemperatureColorGradient;
         //Amount of momentum converted into heat on collision
