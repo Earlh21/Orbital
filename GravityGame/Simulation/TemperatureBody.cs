@@ -40,10 +40,10 @@ namespace GravityGame
             Heat = temperature * Area;
         }
         
-        public override void Update(float time)
+        public override void Update(Scene scene, float time)
         {
             UpdateTemperature(time);
-            base.Update(time);
+            base.Update(scene, time);
         }
 
         private void UpdateTemperature(float time)
@@ -54,7 +54,7 @@ namespace GravityGame
                 return;
             }
             
-            Heat -= Circumference * (Temperature / Mathf.AmbientTemp) / Mathf.Insulation * time;
+            Heat -= Circumference * (Temperature - Mathf.AmbientTemp) / Mathf.Insulation * time;
         }
 
         public float GetHeatFlowFrom(Star star)

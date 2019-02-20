@@ -23,11 +23,11 @@ namespace GravityGame
             }
         }
 
-        public void Affect(Point point)
+        public void Affect(PointMass point_mass)
         {
             foreach (VectorField level in levels)
             {
-                level.AffectAdjacent(point);
+                level.AffectAdjacent(point_mass);
             }
         }
         

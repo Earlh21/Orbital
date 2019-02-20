@@ -37,21 +37,21 @@ namespace GravityGame
             }
         }
 
-        public void AffectAdjacent(Point point)
+        public void AffectAdjacent(PointMass point_mass)
         {
-            Vector2i index = GetIndex(point.Position);
+            Vector2i index = GetIndex(point_mass.Position);
 
-            TryAffectCell(point, index.X - 1, index.Y + 1);
-            TryAffectCell(point, index.X - 1, index.Y);
-            TryAffectCell(point, index.X - 1, index.Y - 1);
-            TryAffectCell(point, index.X, index.Y - 1);
-            TryAffectCell(point, index.X, index.Y + 1);
-            TryAffectCell(point, index.X + 1, index.Y - 1);
-            TryAffectCell(point, index.X + 1, index.Y);
-            TryAffectCell(point, index.X + 1, index.Y + 1);
+            TryAffectCell(point_mass, index.X - 1, index.Y + 1);
+            TryAffectCell(point_mass, index.X - 1, index.Y);
+            TryAffectCell(point_mass, index.X - 1, index.Y - 1);
+            TryAffectCell(point_mass, index.X, index.Y - 1);
+            TryAffectCell(point_mass, index.X, index.Y + 1);
+            TryAffectCell(point_mass, index.X + 1, index.Y - 1);
+            TryAffectCell(point_mass, index.X + 1, index.Y);
+            TryAffectCell(point_mass, index.X + 1, index.Y + 1);
         }
 
-        private void TryAffectCell(Point point, int i, int j)
+        private void TryAffectCell(PointMass point_mass, int i, int j)
         {
             if (i < 0)
             {
@@ -73,14 +73,14 @@ namespace GravityGame
                 return;
             }
 
-            AffectCell(point, i, j);
+            AffectCell(point_mass, i, j);
         }
 
-        private void AffectCell(Point point, int i, int j)
+        private void AffectCell(PointMass point_mass, int i, int j)
         {
             Vector2f cell_position = GetPosition(i, j);
-            Vector2f displacement = point.Position - cell_position;
-            data[i, j] += displacement * point.Mass / displacement.LengthSquared();
+            Vector2f displacement = point_mass.Position - cell_position;
+            data[i, j] += displacement * point_mass.Mass / displacement.LengthSquared();
         }
 
         public Vector2f GetPosition(int i, int j)

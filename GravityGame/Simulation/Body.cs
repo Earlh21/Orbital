@@ -2,52 +2,59 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Runtime.ConstrainedExecution;
+using System.Runtime.Remoting.Messaging;
 using GravityGame.Extension;
 using SFML.System;
 
 namespace GravityGame
 {
-    public class Body : Point, ISelectable
+    public class Body : ISelectable
     {
-        private const float base_theta = 0.7f;
+        private Vector2f last_position;
+        private Vector2f next_position;
+        private Vector2f position;
 
-        //When a node has this many bodies, effective theta will be base_theta
-        private const float max_bodies = 5;
-        private const float min_theta = 0.1f;
+        public virtual float Theta => 0.5f;
 
         private float radius;
         private float mass;
 
         public readonly float Density;
 
-        public override float Mass
+        public Vector2f Velocity => Momentum / Mass;
+        public Vector2f LastPosition => last_position;
+        public Vector2f NextPosition => next_position;
+        public Vector2f Position => position;
+        public Vector2f Force { get; set; }
+        public Vector2f Acceleration => Force / Mass;
+
+        public bool Started { get; set; } = false;
+
+        public bool ForcesDone { get; set; } = false;
+
+        public virtual bool DoesGravity => true;
+
+        public virtual float Mass
         {
             get => mass;
             set
             {
-                //Conserve momentum
-                Velocity = Velocity * mass / value;
                 mass = value;
                 radius = Mathf.Sqrt(Mass / Mathf.PI * Density);
             }
         }
 
-        public Vector2f Velocity { get; set; }
-
         public bool IsSelected { get; set; }
+        public virtual bool IsSelectable => true;
 
         //Used for resolving collisions
         public bool Exists { get; set; } = true;
 
-        public float Radius => radius;
+        public virtual float Radius => radius;
         public float Area => Mathf.PI * Radius * Radius;
         public float Circumference => Mathf.PI * Radius * 2;
 
-        public Vector2f Momentum
-        {
-            get => Velocity * Mass;
-            set => Velocity = value / Mass;
-        }
+        public Vector2f Momentum { get; set; }
 
         public Body() : this(new Vector2f(0, 0), 0, new Vector2f(0, 0), 1)
         {
@@ -61,22 +68,73 @@ namespace GravityGame
         {
         }
 
-        public Body(Vector2f position, float mass, Vector2f velocity, float density) : base(position, mass)
+        public Body(Vector2f position, float mass, Vector2f velocity, float density)
         {
             Density = density;
-            Velocity = velocity;
-            Position = position;
             Mass = mass;
+            Momentum = velocity * Mass;
+            last_position = position;
+            next_position = position;
+            this.position = position;
         }
 
-        public virtual void Update(float time)
+        public void InterpolatePosition(float t)
         {
-            Position += Velocity * time;
+            position = Mathf.Lerp(last_position, next_position, t);
         }
 
-        public void ApplyForce(Vector2f force, float time)
+        private Vector2f SlopeFunction(Vector2f pos, float t)
         {
-            Velocity += force / Mass * time;
+            return Velocity + Acceleration * t;
+        }
+        
+        public void Iterate(float time)
+        {
+            //Using Runge-Kutta fourth order
+            last_position = next_position;
+            Vector2f k1 = SlopeFunction(last_position, 0);
+            Vector2f k2 = SlopeFunction(last_position + k1 * time / 2, time / 2);
+            Vector2f k3 = SlopeFunction(last_position + k2 * time / 2, time / 2);
+            Vector2f k4 = SlopeFunction(last_position + k3 * time, time);
+            next_position = last_position + (k1 + 2 * k2 + 2 * k3 + k4) / 6 * time;
+
+            Momentum += Force * time;
+            Force = new Vector2f(0, 0);
+        }
+
+        public virtual void Update(Scene scene, float time)
+        {
+            //Nothing to see here
+        }
+
+        public float DistanceSquared(Body other)
+        {
+            return (other.Position - Position).LengthSquared();
+        }
+
+        public float Distance(Body other)
+        {
+            return (other.Position - Position).Length();
+        }
+
+        public float DistanceSquared(PointMass other)
+        {
+            return (other.Position - Position).LengthSquared();
+        }
+
+        public float Distance(PointMass other)
+        {
+            return (other.Position - Position).Length();
+        }
+
+        public float DistanceSquared(Vector2f other)
+        {
+            return (other - Position).LengthSquared();
+        }
+
+        public float Distance(Vector2f other)
+        {
+            return (other - Position).Length();
         }
 
         public bool CheckCollide(Body other) =>
@@ -84,10 +142,10 @@ namespace GravityGame
 
         public bool Contains(Vector2f point) => DistanceSquared(point) <= radius * radius;
 
-        public Vector2f GetForceFrom(Point other)
+        public Vector2f GetForceFrom(PointMass other)
         {
-            Vector2f displacement = other.Position - Position;
-            return Mathf.G * Mass * other.Mass / displacement.LengthSquared() * displacement;
+            Vector2f displacement = other.Position - NextPosition;
+            return displacement.Unit() * Mathf.G * Mass * other.Mass / displacement.LengthSquared();
         }
 
         /// <summary>
@@ -97,7 +155,7 @@ namespace GravityGame
         /// <returns>The smallest quad</returns>
         public QuadTree GetSmallestContainingTree(QuadTree leaf)
         {
-            if (leaf.Contains(this))
+            if (leaf.FullyContains(this))
             {
                 return leaf;
             }
@@ -118,7 +176,6 @@ namespace GravityGame
             {
                 if (tree.HasNode)
                 {
-
                     if (this != tree.Node && CheckCollide(tree.Node))
                     {
                         collisions.Add(new Pair(this, tree.Node));
@@ -134,6 +191,13 @@ namespace GravityGame
             }
 
             return collisions;
+        }
+
+        public void Translate(Vector2f amount)
+        {
+            next_position += amount;
+            last_position += amount;
+            position += amount;
         }
 
         public static List<Pair> GetAllCollisions(QuadTree tree)
@@ -166,16 +230,8 @@ namespace GravityGame
             return collisions;
         }
 
-        public void ApplyForceFrom(VectorFieldL field, float time)
-        {
-            Vector2f value = field.GetValue(Position);
-            ApplyForce(value * Mass * Mathf.G, time);
-        }
-        
         public Vector2f GetForceFrom(QuadTree tree)
         {
-            float approximate_threshold = Math.Max(min_theta, base_theta / Math.Max(1, max_bodies - tree.BodyCount));
-
             Vector2f total_force = new Vector2f(0, 0);
 
             if (tree.IsLeaf)
@@ -188,7 +244,7 @@ namespace GravityGame
             else
             {
                 float sd = tree.Domain.Width / Distance(tree.CenterOfMass);
-                if (sd < 0.5f)
+                if (sd < Theta)
                 {
                     total_force += GetForceFrom(tree.CenterOfMass);
                 }

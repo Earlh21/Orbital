@@ -1,18 +1,18 @@
 using System;
+using System.Runtime.Remoting.Messaging;
 using GravityGame.Extension;
 using SFML.Graphics;
 using SFML.System;
 
 namespace GravityGame
 {
-    public class Planet : TemperatureBody
+    public class Planet : TemperatureBody, IDrawsText
     {
         public static float growth_rate = 1;
-        public static float life_chance = 1 / 1200.0f;
-        public static float tech_chance = 1 / 1200.0f;
+        //This number is stupidly sensitive
+        public static float life_chance = 1 / 1000.0f;
         public Life Life { get; set; }
         public bool HasLife => Life != null;
-
         private void FormatText(Text text, float level, RenderWindow window)
         {
             View view = window.GetView();
@@ -21,6 +21,19 @@ namespace GravityGame
             text.CharacterSize = 50;
             float scale = view.Size.X / window.Size.X;
             text.Scale = 0.5f * new Vector2f(scale, scale);
+        }
+
+        private void FireShip(Scene scene, float angle)
+        {
+            float speed = Mathf.Sqrt(2 * Mathf.G * Mass / Radius) * 1.1f;
+
+            Vector2f direction = new Vector2f((float)Math.Cos(angle), (float)Math.Sin(angle));
+            Vector2f ship_vel = Velocity + direction * speed;
+            Life life = new Life(Temperature, Life.Faction, Life.TechLevel, Life.Population * 0.1f);
+            Life.Population *= 0.9f;
+
+            Ship ship = new Ship(Position + direction * Radius * 1.5f, ship_vel, life);
+            scene.AddBody(ship);
         }
         
         public override void Draw(RenderTarget target, RenderStates states)
@@ -40,7 +53,7 @@ namespace GravityGame
 
                 if (HasLife)
                 {
-                    Text population_text = new Text(((int) Life.Population).ToString(), Program.font);
+                    Text population_text = new Text(Format.PopulationText(Life.Population), Program.font);
                     population_text.Color = Color.White;
                     Text tech_level_text = new Text(Life.TechLevel.ToString(), Program.font);
                     tech_level_text.Color = Color.White;
@@ -58,13 +71,13 @@ namespace GravityGame
             }
         }
 
-        public override void Update(float time)
+        public override void Update(Scene scene, float time)
         {
-            base.Update(time);
-            UpdateLife(time);
+            base.Update(scene, time);
+            UpdateLife(scene, time);
         }
 
-        public void UpdateLife(float time)
+        public void UpdateLife(Scene scene, float time)
         {
             if (HasLife)
             {
@@ -73,11 +86,18 @@ namespace GravityGame
                     Life = null;
                     return;
                 }
+                
+                if (Program.R.NextDouble() < 1 - Math.Pow(1 - (1 / 15.0f), time))
+                {
+                    FireShip(scene, (float)Program.R.NextDouble() * Mathf.PI * 2);
+                }
+                
+                Life.Update(time, Temperature);
             }
             else
             {
                 //Randomly evolve life
-                if (Program.R.NextDouble() > 1 - life_chance)
+                if (Program.R.NextDouble() < 1 - Math.Pow(1 - life_chance, time))
                 {
                     EvolveLife();
                 }

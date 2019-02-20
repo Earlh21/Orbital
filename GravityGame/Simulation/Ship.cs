@@ -1,17 +1,61 @@
+using System;
 using GravityGame.Extension;
 using SFML.Graphics;
 using SFML.System;
 
 namespace GravityGame
 {
-    public class Ship : TemperatureBody
+    public class Ship : TemperatureBody, IDrawsText
     {
-        public Life Life { get; set; }
+        private float kill_time = 60.0f;
+        private float life_time = 0.0f;
+        
+        public override bool IsSelectable => false;
+        public override float Theta => 0.3f;
 
-        public override void Update(float time)
+        public override bool DoesGravity => false;
+        public Life Life { get; set; }
+        public bool HasLife => Life != null;
+
+        public Ship(Vector2f position, Vector2f velocity, Life life) : base(position, 10, velocity, 1, life.NormalTemp)
         {
-            base.Update(time);
-            
+            Life = life;
+        }
+
+        public override void Update(Scene scene, float time)
+        {
+            base.Update(scene, time);
+            if (HasLife)
+            {
+
+                Heat -= Circumference * (Temperature - Life.NormalTemp) / Mathf.Insulation * time;
+                life_time += time;
+                if (life_time > kill_time)
+                {
+                    Exists = false;
+                }
+
+                UpdateLife(scene, time);
+            }
+            else
+            {
+                Exists = false;
+            }
+        }
+
+        private void UpdateLife(Scene scene, float time)
+        {
+            if (HasLife)
+            {
+                if (Life.IsDead)
+                {
+                    Life = null;
+                    Exists = false;
+                    return;
+                }
+                
+                Life.Update(time, Temperature);
+            }
         }
 
         private void FormatText(Text text, float level, RenderWindow window)
@@ -28,18 +72,18 @@ namespace GravityGame
         {
             base.Draw(target, states);
 
-            if (DrawText)
+            if (DrawText && HasLife)
             {
                 RenderWindow window = (RenderWindow) target;
                 View view = window.GetView();
 
-                Text temperature_text = new Text((int) Temperature + " K", Program.font);
+                Text temperature_text = new Text((int) Temperature + " K (S)", Program.font);
                 temperature_text.Color = Mathf.TemperatureColorGradient.GetColor(Temperature);
                 FormatText(temperature_text, 0, window);
 
                 target.Draw(temperature_text);
 
-                Text population_text = new Text(((int) Life.Population).ToString(), Program.font);
+                Text population_text = new Text(Format.PopulationText(Life.Population), Program.font);
                 population_text.Color = Color.White;
                 Text tech_level_text = new Text(Life.TechLevel.ToString(), Program.font);
                 tech_level_text.Color = Color.White;

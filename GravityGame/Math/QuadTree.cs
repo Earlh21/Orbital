@@ -15,10 +15,10 @@ namespace GravityGame
         public QuadTree BottomRight { get; set; }
         public QuadTree Parent { get; set; }
         
-        private Point center_of_mass;
+        private PointMass center_of_mass;
         private int body_count;
 
-        public Point CenterOfMass => center_of_mass;
+        public PointMass CenterOfMass => center_of_mass;
         public int BodyCount => body_count;
 
         public Rectangle Domain { get; set; }
@@ -39,15 +39,15 @@ namespace GravityGame
         {
             if (IsLeaf)
             {
-                if (HasNode)
+                if (HasNode && Node.DoesGravity)
                 {
-                    center_of_mass = new Point(Node.Position, Node.Mass);
+                    center_of_mass = new PointMass(Node.Position, Node.Mass);
                     body_count = 1;
                     return;
                 }
                 else
                 {
-                    center_of_mass = new Point(new Vector2f(0, 0), 0);
+                    center_of_mass = new PointMass(new Vector2f(0, 0), 0);
                     body_count = 0;
                     return;
                 }
@@ -60,17 +60,17 @@ namespace GravityGame
             BottomLeft.CalculateCenterOfMass();
             BottomRight.CalculateCenterOfMass();
 
-            Point[] points = new Point[4];
-            points[0] = TopLeft.CenterOfMass;
+            PointMass[] points_mass = new PointMass[4];
+            points_mass[0] = TopLeft.CenterOfMass;
             body_count += TopLeft.body_count;
-            points[1] = TopRight.CenterOfMass;
+            points_mass[1] = TopRight.CenterOfMass;
             body_count += TopRight.body_count;
-            points[2] = BottomLeft.CenterOfMass;
+            points_mass[2] = BottomLeft.CenterOfMass;
             body_count += BottomLeft.body_count;
-            points[3] = BottomRight.CenterOfMass;
+            points_mass[3] = BottomRight.CenterOfMass;
             body_count += BottomRight.body_count;
 
-            center_of_mass = Point.CenterOfMass(points);
+            center_of_mass = PointMass.CenterOfMass(points_mass);
         }
         
         public void Insert(Body node)
@@ -126,7 +126,7 @@ namespace GravityGame
             return Domain.ContainsPoint(node.Position);
         }
 
-        public bool Contains(Body node)
+        public bool FullyContains(Body node)
         {
             return Domain.FullyContains(node);
         }

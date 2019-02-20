@@ -12,12 +12,15 @@ namespace GravityGame
     {
         private List<RenderBody> bodies;
         private List<Star> star_cache;
-        private RenderBody selected;
+        private List<RenderBody> body_buffer;
+        private Body selected;
         private QuadTree tree;
+        public float TimeStep { get; set; } = 0.15f;
+        private float last_step;
 
         public bool DrawOutlines { get; set; }
         public bool DrawText { get; set; }
-        public RenderBody Selected => selected;
+        public Body Selected => selected;
 
         public List<RenderBody> Bodies => bodies;
 
@@ -27,15 +30,32 @@ namespace GravityGame
         {
             bodies = new List<RenderBody>();
             star_cache = new List<Star>();
+            body_buffer = new List<RenderBody>();
+            last_step = TimeStep;
         }
 
         public void AddBody(RenderBody body)
         {
-            bodies.Add(body);
-            if (body is Star)
+            body_buffer.Add(body);
+        }
+
+        private void AddBodies()
+        {
+            foreach (RenderBody body in body_buffer)
             {
-                star_cache.Add((Star) body);
+                bodies.Add(body);
+                if (body is Star)
+                {
+                    star_cache.Add((Star)body);
+                }
+
+                if (body is Ship)
+                {
+                    int d = 3;
+                }
             }
+
+            body_buffer.Clear();
         }
 
         public Vector2f GetTotalMomentum()
@@ -110,15 +130,18 @@ namespace GravityGame
             return selected.Velocity;
         }
 
-        public void Select(RenderBody body)
+        public void Select(Body body)
         {
             if (selected != null)
             {
                 selected.IsSelected = false;
             }
 
-            selected = body;
-            body.IsSelected = true;
+            if (body.IsSelectable)
+            {
+                selected = body;
+                body.IsSelected = true;
+            }
         }
 
         public bool MakeStarAt(Vector2f position)
@@ -133,7 +156,6 @@ namespace GravityGame
                     body.Exists = false;
                     Star star = new Star(body.Position, body.Mass, body.Velocity, body.Density);
                     AddBody(star);
-                    Select(star);
                     b = body;
 
                     found = true;
@@ -141,13 +163,17 @@ namespace GravityGame
                 }
             }
 
-            RemoveBody(b);
+            if (found)
+            {
+                RemoveBody(b);
+            }
+
             return found;
         }
 
         public Rectangle WorldSize()
         {
-            return new Rectangle(new Vector2f(-100000, -100000), new Vector2f(200000, 200000));
+            return new Rectangle(new Vector2f(-50000, -50000), new Vector2f(100000, 100000));
         }
 
         public Rectangle GetAABB()
@@ -189,7 +215,7 @@ namespace GravityGame
 
             foreach (Body body in bodies)
             {
-                if (WorldSize().ContainsPoint(body.Position))
+                if (WorldSize().FullyContains(body))
                 {
                     tree.Insert(body);
                 }
@@ -216,12 +242,12 @@ namespace GravityGame
 
             foreach (RenderBody body in bodies)
             {
-                if (domain.PartiallyContains(body))
+                if (domain.PartiallyContains(body) && body.Exists)
                 {
                     body.DrawOutline = DrawOutlines;
-                    if (body is Planet)
+                    if (body is IDrawsText)
                     {
-                        ((Planet) body).DrawText = DrawText;
+                        ((IDrawsText) body).DrawText = DrawText;
                     }
 
                     target.Draw(body);
@@ -229,19 +255,28 @@ namespace GravityGame
             }
         }
 
-        private void ApplyForces(float time)
+        private void Iterate()
         {
             foreach (Body body in bodies)
             {
-                body.ApplyForce(body.GetForceFrom(Tree), time);
+                if (body.Exists)
+                {
+                    body.Iterate(TimeStep);
+                    body.Started = true;
+                    body.ForcesDone = false;
+                }
             }
         }
-
-        private void UpdateAll(float time)
+        
+        private void MoveAll(float time)
         {
             foreach (Body body in bodies)
             {
-                body.Update(time);
+                if (body.Exists)
+                {
+                    body.Update(this, time);
+                    body.InterpolatePosition(last_step / TimeStep);
+                }
             }
         }
 
@@ -283,13 +318,72 @@ namespace GravityGame
             }
         }
 
-        public void Update(float time, RenderWindow window)
+        public void DoForces(float time)
         {
+            for (int i = (int) ((last_step - time) / TimeStep * bodies.Count); i < (int) (last_step / TimeStep *
+                                                                                          bodies.Count) && i < bodies.Count; i++)
+            {
+                if (i < 0)
+                {
+                    continue;
+                }
+                
+                Body body = bodies[i];
+                if (body.Exists && !body.ForcesDone)
+                {
+                    body.Force += body.GetForceFrom(tree);
+                    body.ForcesDone = true;
+                }
+            }
+        }
+        
+        public void FinishForces()
+        {
+            foreach (Body body in bodies)
+            {
+                if (!body.ForcesDone)
+                {
+                    body.Force += body.GetForceFrom(tree);
+                    body.ForcesDone = true;
+                }
+            }
+        }
+
+        public void StartBodies()
+        {
+            foreach (Body body in bodies)
+            {
+                if (!body.Started && body.Exists)
+                {
+                    body.Iterate(TimeStep - last_step);
+                    body.Started = true;
+                }
+            }
+        }
+
+        public void Update(float time, RenderWindow window)
+        {         
+            last_step += time;
+            
             tree = GetQuadTree();
-            ApplyForces(time);
-            UpdateAll(time);
+
+            if (last_step < TimeStep)
+            {
+                DoForces(time);
+            }
+            
+            while(last_step > TimeStep)
+            {
+                last_step -= TimeStep;
+                FinishForces();
+                Iterate();
+            }
+            
+            StartBodies();
             ResolveCollisions();
+            MoveAll(time);
             ApplyStarHeat(time);
+            AddBodies();
         }
     }
 }

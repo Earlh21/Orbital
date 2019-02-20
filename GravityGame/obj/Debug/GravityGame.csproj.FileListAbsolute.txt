@@ -1,0 +1,14 @@
+C:\Users\Idrialite\RiderProjects\GravityGame\GravityGame\bin\Debug\GravityGame.exe
+C:\Users\Idrialite\RiderProjects\GravityGame\GravityGame\bin\Debug\GravityGame.pdb
+C:\Users\Idrialite\RiderProjects\GravityGame\GravityGame\bin\Debug\sfmlnet-audio-2.dll
+C:\Users\Idrialite\RiderProjects\GravityGame\GravityGame\bin\Debug\sfmlnet-graphics-2.dll
+C:\Users\Idrialite\RiderProjects\GravityGame\GravityGame\bin\Debug\sfmlnet-system-2.dll
+C:\Users\Idrialite\RiderProjects\GravityGame\GravityGame\bin\Debug\sfmlnet-window-2.dll
+C:\Users\Idrialite\RiderProjects\GravityGame\GravityGame\obj\Debug\GravityGame.csprojAssemblyReference.cache
+C:\Users\Idrialite\RiderProjects\GravityGame\GravityGame\obj\Debug\GravityGame.csproj.CoreCompileInputs.cache
+C:\Users\Idrialite\RiderProjects\GravityGame\GravityGame\obj\Debug\GravityGame.csproj.CopyComplete
+C:\Users\Idrialite\RiderProjects\GravityGame\GravityGame\obj\Debug\GravityGame.exe
+C:\Users\Idrialite\RiderProjects\GravityGame\GravityGame\obj\Debug\GravityGame.pdb
+C:\Users\Idrialite\RiderProjects\GravityGame\GravityGame\bin\Debug\nunit.framework.dll
+C:\Users\Idrialite\RiderProjects\GravityGame\GravityGame\bin\Debug\nunit.framework.pdb
+C:\Users\Idrialite\RiderProjects\GravityGame\GravityGame\bin\Debug\nunit.framework.xml

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using GravityGame.Extension;
+using NUnit.Framework.Constraints;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -36,6 +37,7 @@ namespace GravityGame
             R = new Random();
             
             scene = new Scene();
+            //scene.AddBody(new Ship(new Vector2f(0, 0), new Vector2f(0, 0), new Life(300, 1, 1, 1000)));
 
             Gradient g = new Gradient();
             List<GradientKey> keys = new List<GradientKey>();
@@ -52,13 +54,13 @@ namespace GravityGame
             window.KeyPressed += OnKeyPress;
 
             Clock clock = new Clock();
-            float max_time_step = 1 / 60.0f;
+            float max_time_step = scene.TimeStep;
             
             while (window.IsOpen)
             {
                 window.DispatchEvents();
 
-                float time = Math.Min(max_time_step, clock.ElapsedTime.AsSeconds() * 3.0f);
+                float time = Math.Min(max_time_step, clock.ElapsedTime.AsSeconds());
                 clock.Restart();
 
                                 
@@ -142,8 +144,8 @@ namespace GravityGame
             {
                 Random R = new Random(1);
                 
-                float n = 1000;
-                float radius = 20000;
+                float n = 3000;
+                float radius = 15000;
                 float mass = 100;
                 float mass_variance = 50;
                 float velocity = 400;
@@ -158,7 +160,7 @@ namespace GravityGame
                     float n_mass = mass + NextFloat(R, mass_variance);
                     
                     Vector2f velocity_unit = new Vector2f((float)Math.Cos(angle + Mathf.PI / 2), (float)Math.Sin(angle + Mathf.PI / 2));
-                    Vector2f n_velocity = velocity_unit * (velocity + NextFloat(R, velocity_variance));// / Mathf.Pow(distance / 100, 0.05f);
+                    Vector2f n_velocity = velocity_unit * (velocity + NextFloat(R, velocity_variance)) / Mathf.Sqrt(distance / 100);
                     
                     Vector2f n_position = new Vector2f((float)Math.Cos(angle), (float)Math.Sin(angle)) * distance;
                     

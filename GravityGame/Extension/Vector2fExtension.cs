@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using SFML.System;
 
 namespace GravityGame.Extension
@@ -13,6 +14,11 @@ namespace GravityGame.Extension
         public static float Length(this Vector2f v)
         {
             return Mathf.Sqrt(v.LengthSquared());
+        }
+
+        public static Vector2f Unit(this Vector2f v)
+        {
+            return v / v.Length();
         }
 
         public static Vector2f Multiply(this Vector2f v, Vector2f other)

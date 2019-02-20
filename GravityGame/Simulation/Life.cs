@@ -6,7 +6,7 @@ namespace GravityGame
     {
         private static int last_faction;
         public static float growth_rate = 1;
-        public static float tech_chance = 1 / 1600.0f;
+        public static float tech_chance = 1 / 1000.0f;
 
         private readonly int faction;
 
@@ -26,6 +26,14 @@ namespace GravityGame
             Population = 2;
         }
 
+        public Life(float temperature, int faction, int tech_level, float population)
+        {
+            NormalTemp = temperature;
+            this.faction = faction;
+            TechLevel = tech_level;
+            Population = population;
+        }
+
         public float GetCarryingCapacity(float temperature)
         {
             float temp_diff = Math.Abs(temperature - NormalTemp);
@@ -43,7 +51,7 @@ namespace GravityGame
         
         public void Update(float time, float temperature)
         {
-            float growth = time * growth_rate * Population * (1 - Population / CarryingCapacity);
+            float growth = time * growth_rate * Population * (1 - Population / GetCarryingCapacity(temperature));
 
             if (Population < 2)
             {
@@ -52,7 +60,7 @@ namespace GravityGame
             
             Population += growth;
 
-            if (Program.R.NextDouble() > 1 - tech_chance)
+            if (Program.R.NextDouble() < 1 - Math.Pow(1 - tech_chance, time))
             {
                 TechLevel++;
             }

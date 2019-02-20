@@ -33,6 +33,7 @@ namespace GravityGame
 
             Type planet = typeof(Planet);
             Type star = typeof(Star);
+            Type ship = typeof(Ship);
 
             if (a_type == planet && b_type == planet)
             {
@@ -43,8 +44,37 @@ namespace GravityGame
             {
                 ResolveBodyStar(scene);
             }
+
+            if ((a_type == ship && b_type == planet) || (a_type == planet && b_type == ship))
+            {
+                ResolvePlanetShip(scene);
+            }
         }
 
+        private void ResolvePlanetShip(Scene scene)
+        {
+            Planet planet;
+            Ship ship;
+
+            if (A.GetType() == typeof(Ship))
+            {
+                ship = (Ship) A;
+                planet = (Planet) B;
+            }
+            else
+            {
+                ship = (Ship) B;
+                planet = (Planet) A;
+            }
+
+            if (!planet.HasLife)
+            {
+                planet.Life = ship.Life;
+            }
+
+            ship.Exists = false;
+        }
+        
         private void ResolveBodyStar(Scene scene)
         {
             Star star;
@@ -63,7 +93,7 @@ namespace GravityGame
             
             //Move the star towards the planet
             Vector2f displacement = body.Position - star.Position;
-            star.Position += displacement * body.Mass / (star.Mass + body.Mass);
+            star.Translate(displacement * body.Mass / (star.Mass + body.Mass));
             
             if (body.IsSelected)
             {
@@ -79,6 +109,8 @@ namespace GravityGame
             
             //Flag the planet for deletion
             body.Exists = false;
+
+            star.Started = false;
         }
         
         private void ResolvePlanetPlanet(Scene scene)
@@ -98,7 +130,7 @@ namespace GravityGame
 
             //Move the bigger planet towards the smaller planet
             Vector2f displacement = smaller.Position - bigger.Position;
-            bigger.Position += displacement * smaller.Mass / (bigger.Mass + smaller.Mass);
+            bigger.Translate(displacement * smaller.Mass / (bigger.Mass + smaller.Mass));
             
             if (smaller.IsSelected)
             {
@@ -122,6 +154,8 @@ namespace GravityGame
                 
             //Flag smaller for deletion
             smaller.Exists = false;
+
+            bigger.Started = false;
         }
     }
 }
