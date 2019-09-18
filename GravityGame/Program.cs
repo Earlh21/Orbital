@@ -54,7 +54,7 @@ namespace GravityGame
             window.KeyPressed += OnKeyPress;
 
             Clock clock = new Clock();
-            float max_time_step = scene.TimeStep;
+            float max_time_step = 1 / 60f;
             
             while (window.IsOpen)
             {
@@ -144,7 +144,7 @@ namespace GravityGame
             {
                 Random R = new Random(1);
                 
-                float n = 2000;
+                float n = 4000;
                 float radius = 15000;
                 float mass = 100;
                 float mass_variance = 50;

@@ -10,11 +10,8 @@ namespace GravityGame
 {
     public class Body : ISelectable
     {
-        private Vector2f last_position;
-        private Vector2f next_position;
-        private Vector2f position;
 
-        public virtual float Theta => 0.5f;
+        public virtual float Theta => 0.8f;
 
         private float radius;
         private float mass;
@@ -22,9 +19,7 @@ namespace GravityGame
         public readonly float Density;
 
         public Vector2f Velocity => Momentum / Mass;
-        public Vector2f LastPosition => last_position;
-        public Vector2f NextPosition => next_position;
-        public Vector2f Position => position;
+        public Vector2f Position { get; set; }
         public Vector2f Force { get; set; }
         public Vector2f Acceleration => Force / Mass;
 
@@ -73,14 +68,7 @@ namespace GravityGame
             Density = density;
             Mass = mass;
             Momentum = velocity * Mass;
-            last_position = position;
-            next_position = position;
-            this.position = position;
-        }
-
-        public void InterpolatePosition(float t)
-        {
-            position = Mathf.Lerp(last_position, next_position, t);
+            Position = position;
         }
 
         private Vector2f SlopeFunction(Vector2f pos, float t)
@@ -90,13 +78,7 @@ namespace GravityGame
         
         public void Iterate(float time)
         {
-            //Using Runge-Kutta fourth order
-            last_position = next_position;
-            Vector2f k1 = SlopeFunction(last_position, 0);
-            Vector2f k2 = SlopeFunction(last_position + k1 * time / 2, time / 2);
-            Vector2f k3 = SlopeFunction(last_position + k2 * time / 2, time / 2);
-            Vector2f k4 = SlopeFunction(last_position + k3 * time, time);
-            next_position = last_position + (k1 + 2 * k2 + 2 * k3 + k4) / 6 * time;
+            Position += Momentum * time / Mass;
 
             Momentum += Force * time;
             Force = new Vector2f(0, 0);
@@ -144,7 +126,7 @@ namespace GravityGame
 
         public Vector2f GetForceFrom(PointMass other)
         {
-            Vector2f displacement = other.Position - NextPosition;
+            Vector2f displacement = other.Position - Position;
             return displacement.Unit() * Mathf.G * Mass * other.Mass / displacement.LengthSquared();
         }
 
@@ -195,8 +177,7 @@ namespace GravityGame
 
         public void Translate(Vector2f amount)
         {
-            next_position += amount;
-            last_position += amount;
+            Position += amount;
         }
 
         public static List<Pair> GetAllCollisions(QuadTree tree)
