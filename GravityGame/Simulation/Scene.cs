@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -10,11 +11,19 @@ namespace GravityGame
 {
     public class Scene : Drawable
     {
+        private readonly int THREAD_COUNT = Environment.ProcessorCount;
+        
         private List<RenderBody> bodies;
         private List<Star> star_cache;
         private List<RenderBody> body_buffer;
         private Body selected;
-        private QuadTree tree;
+        private QuadTree collision_tree;
+        private QuadTree iteration_tree;
+
+        private List<Thread> forces_threads;
+        private List<AutoResetEvent> forces_handles;
+        private List<AutoResetEvent> main_handles;
+        
         public float TimeStep { get; set; } = 0.15f;
         private float last_step;
 
@@ -24,16 +33,56 @@ namespace GravityGame
 
         public List<RenderBody> Bodies => bodies;
 
-        public QuadTree Tree => tree;
-
         public Scene()
         {
             bodies = new List<RenderBody>();
             star_cache = new List<Star>();
             body_buffer = new List<RenderBody>();
             last_step = TimeStep;
+
+            forces_threads = new List<Thread>();
+            forces_handles = new List<AutoResetEvent>();
+            main_handles = new List<AutoResetEvent>();
+            for (int i = 0; i < THREAD_COUNT; i++)
+            {
+                Thread thread = new Thread(() => PartialForces(i));
+                forces_threads.Add(thread);
+                forces_handles.Add(new AutoResetEvent(false));
+                main_handles.Add(new AutoResetEvent(false));
+            }
+
+            foreach (Thread thread in forces_threads)
+            {
+                thread.Start();
+            }
         }
 
+        private void PartialForces(int thread_id)
+        {
+            while (true)
+            {
+                int length = bodies.Count;
+                
+                int section_length = length / THREAD_COUNT;
+                
+                int low = section_length * thread_id;
+                int high = section_length * (thread_id + 1);
+
+                for (int i = low; i < high; i++)
+                {
+                    Body body = bodies[i];
+                    if (body.Exists && !body.ForcesDone)
+                    {
+                        body.Force += body.GetForceFrom(iteration_tree);
+                        body.ForcesDone = true;
+                    }
+                }
+
+                main_handles[thread_id].Set();
+                forces_handles[thread_id].WaitOne();
+            }
+        }
+        
         public void AddBody(RenderBody body)
         {
             body_buffer.Add(body);
@@ -209,20 +258,30 @@ namespace GravityGame
             return new Rectangle(bottomleftbound, size);
         }
 
-        private QuadTree GetQuadTree()
+        private QuadTree GetQuadTree(bool iteration)
         {
-            QuadTree tree = new QuadTree(WorldSize(), null);
+            QuadTree tree = new QuadTree(WorldSize(), null, iteration);
 
             foreach (Body body in bodies)
             {
-                if (WorldSize().FullyContains(body))
+                if (iteration)
                 {
-                    tree.Insert(body);
+                    if (!WorldSize().FullyContains(body.NextPosition, body.Radius))
+                    {
+                        body.Exists = false;
+                        continue;
+                    }
                 }
                 else
                 {
-                    body.Exists = false;
+                    if (!WorldSize().FullyContains(body))
+                    {
+                        body.Exists = false;
+                        continue;
+                    }
                 }
+
+                tree.Insert(body);
             }
 
             //Cache centers of mass
@@ -285,7 +344,7 @@ namespace GravityGame
             //Find collisions
             List<Pair> collisions = new List<Pair>();
 
-            collisions.AddRange(Body.GetAllCollisions(Tree));
+            collisions.AddRange(Body.GetAllCollisions(collision_tree));
 
             //Resolve collisions
             foreach (Pair collision in collisions)
@@ -331,7 +390,7 @@ namespace GravityGame
                 Body body = bodies[i];
                 if (body.Exists && !body.ForcesDone)
                 {
-                    body.Force += body.GetForceFrom(tree);
+                    body.Force += body.GetForceFrom(iteration_tree);
                     body.ForcesDone = true;
                 }
             }
@@ -343,7 +402,7 @@ namespace GravityGame
             {
                 if (!body.ForcesDone)
                 {
-                    body.Force += body.GetForceFrom(tree);
+                    body.Force += body.GetForceFrom(iteration_tree);
                     body.ForcesDone = true;
                 }
             }
@@ -365,18 +424,28 @@ namespace GravityGame
         {         
             last_step += time;
             
-            tree = GetQuadTree();
+            collision_tree = GetQuadTree(false);
 
             if (last_step < TimeStep)
             {
-                DoForces(time);
+                //DoForces(time);
             }
             
             while(last_step > TimeStep)
             {
+                foreach (AutoResetEvent main_handle in main_handles)
+                {
+                    main_handle.WaitOne();
+                }
+                
                 last_step -= TimeStep;
-                FinishForces();
                 Iterate();
+                iteration_tree = GetQuadTree(true);
+
+                foreach (AutoResetEvent forces_handle in forces_handles)
+                {
+                    forces_handle.Set();
+                }
             }
             
             StartBodies();

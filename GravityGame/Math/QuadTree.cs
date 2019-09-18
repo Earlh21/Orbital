@@ -17,6 +17,7 @@ namespace GravityGame
         
         private PointMass center_of_mass;
         private int body_count;
+        private bool iteration = false;
 
         public PointMass CenterOfMass => center_of_mass;
         public int BodyCount => body_count;
@@ -41,7 +42,15 @@ namespace GravityGame
             {
                 if (HasNode && Node.DoesGravity)
                 {
-                    center_of_mass = new PointMass(Node.Position, Node.Mass);
+                    if (iteration)
+                    {
+                        center_of_mass = new PointMass(Node.NextPosition, Node.Mass);
+                    }
+                    else
+                    {
+                        center_of_mass = new PointMass(Node.Position, Node.Mass);
+                    }
+
                     body_count = 1;
                     return;
                 }
@@ -84,10 +93,10 @@ namespace GravityGame
             {
                 if (IsLeaf)
                 {
-                    BottomLeft = new QuadTree(Position, Size / 2,this);
-                    BottomRight = new QuadTree(Position + new Vector2f(BottomLeft.Size.X, 0), BottomLeft.Size, this);
-                    TopLeft = new QuadTree(Position + new Vector2f(0, BottomLeft.Size.Y), BottomLeft.Size, this);
-                    TopRight = new QuadTree(Position + BottomLeft.Size, BottomLeft.Size, this);
+                    BottomLeft = new QuadTree(Position, Size / 2,this, iteration);
+                    BottomRight = new QuadTree(Position + new Vector2f(BottomLeft.Size.X, 0), BottomLeft.Size, this, iteration);
+                    TopLeft = new QuadTree(Position + new Vector2f(0, BottomLeft.Size.Y), BottomLeft.Size, this, iteration);
+                    TopRight = new QuadTree(Position + BottomLeft.Size, BottomLeft.Size, this, iteration);
                 }
 
                 if (TopLeft.ContainsPoint(node))
@@ -123,7 +132,14 @@ namespace GravityGame
 
         public bool ContainsPoint(Body node)
         {
-            return Domain.ContainsPoint(node.Position);
+            if (iteration)
+            {
+                return Domain.ContainsPoint(node.NextPosition);
+            }
+            else
+            {
+                return Domain.ContainsPoint(node.Position);
+            }
         }
 
         public bool FullyContains(Body node)
@@ -131,16 +147,18 @@ namespace GravityGame
             return Domain.FullyContains(node);
         }
         
-        public QuadTree(Vector2f position, Vector2f size, QuadTree parent)
+        public QuadTree(Vector2f position, Vector2f size, QuadTree parent, bool iteration)
         {
             Domain = new Rectangle(position, size);
             Parent = parent;
+            this.iteration = iteration;
         }
 
-        public QuadTree(Rectangle domain, QuadTree parent)
+        public QuadTree(Rectangle domain, QuadTree parent, bool iteration)
         {
             Domain = domain;
             Parent = parent;
+            this.iteration = iteration;
         }
 
         public void Draw(RenderTarget target, RenderStates states)

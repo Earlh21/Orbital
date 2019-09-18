@@ -144,7 +144,7 @@ namespace GravityGame
             {
                 Random R = new Random(1);
                 
-                float n = 3000;
+                float n = 2000;
                 float radius = 15000;
                 float mass = 100;
                 float mass_variance = 50;

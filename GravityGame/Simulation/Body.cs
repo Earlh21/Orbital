@@ -197,7 +197,6 @@ namespace GravityGame
         {
             next_position += amount;
             last_position += amount;
-            position += amount;
         }
 
         public static List<Pair> GetAllCollisions(QuadTree tree)

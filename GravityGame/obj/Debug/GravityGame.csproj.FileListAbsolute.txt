@@ -12,3 +12,13 @@ C:\Users\Idrialite\RiderProjects\GravityGame\GravityGame\obj\Debug\GravityGame.p
 C:\Users\Idrialite\RiderProjects\GravityGame\GravityGame\bin\Debug\nunit.framework.dll
 C:\Users\Idrialite\RiderProjects\GravityGame\GravityGame\bin\Debug\nunit.framework.pdb
 C:\Users\Idrialite\RiderProjects\GravityGame\GravityGame\bin\Debug\nunit.framework.xml
+C:\Users\Idrialite\Projects\C#\GravityGamed\GravityGame\bin\Debug\GravityGame.exe
+C:\Users\Idrialite\Projects\C#\GravityGamed\GravityGame\bin\Debug\GravityGame.pdb
+C:\Users\Idrialite\Projects\C#\GravityGamed\GravityGame\bin\Debug\nunit.framework.dll
+C:\Users\Idrialite\Projects\C#\GravityGamed\GravityGame\bin\Debug\nunit.framework.pdb
+C:\Users\Idrialite\Projects\C#\GravityGamed\GravityGame\bin\Debug\nunit.framework.xml
+C:\Users\Idrialite\Projects\C#\GravityGamed\GravityGame\obj\Debug\GravityGame.csprojAssemblyReference.cache
+C:\Users\Idrialite\Projects\C#\GravityGamed\GravityGame\obj\Debug\GravityGame.csproj.CoreCompileInputs.cache
+C:\Users\Idrialite\Projects\C#\GravityGamed\GravityGame\obj\Debug\GravityGame.csproj.CopyComplete
+C:\Users\Idrialite\Projects\C#\GravityGamed\GravityGame\obj\Debug\GravityGame.exe
+C:\Users\Idrialite\Projects\C#\GravityGamed\GravityGame\obj\Debug\GravityGame.pdb

@@ -54,6 +54,21 @@ namespace GravityGame
 
             return true;
         }
+
+        public bool FullyContains(Vector2f position, float radius)
+        {
+            if (position.X - radius < X || position.X + radius > X + Width)
+            {
+                return false;
+            }
+
+            if (position.Y - radius < Y || position.Y + radius > Y + Height)
+            {
+                return false;
+            }
+
+            return true;
+        }
         
         public bool PartiallyContains(Body body)
         {
