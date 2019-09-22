@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using NUnit.Framework.Internal.Commands;
 using SFML.Graphics;
 using SFML.System;
 
@@ -36,6 +38,121 @@ namespace GravityGame
 
 		public Body Node { get; set; }
 
+		public QuadTree Search(Body body)
+		{
+			if (IsLeaf)
+			{
+				if (HasNode && Node == body)
+				{
+					return this;
+				}
+
+				return SearchUp(body);
+			}
+			else
+			{
+				if (TopLeft.ContainsBody(body))
+				{
+					return TopLeft.Search(body);
+				}
+				else if (TopRight.ContainsBody(body))
+				{
+					return TopRight.Search(body);
+				}
+				else if(BottomLeft.ContainsBody(body))
+				{
+					return BottomLeft.Search(body);
+				}
+				else
+				{
+					return BottomRight.Search(body);
+				}
+			}
+		}
+
+		private QuadTree SearchDown(Body body)
+		{
+			if (IsLeaf)
+			{
+				if (Node == body)
+				{
+					return this;
+				}
+
+				return null;
+			}
+			else
+			{
+				QuadTree topleft_result = TopLeft.SearchDown(body);
+				if (topleft_result != null)
+				{
+					return topleft_result;
+				}
+
+				QuadTree topright_result = TopRight.SearchDown(body);
+				if (topright_result != null)
+				{
+					return topright_result;
+				}
+
+				QuadTree bottomleft_result = BottomLeft.SearchDown(body);
+				if (bottomleft_result != null)
+				{
+					return bottomleft_result;
+				}
+
+				QuadTree bottomright_result = BottomRight.SearchDown(body);
+				return bottomright_result;
+			}
+		}
+
+		private QuadTree SearchUp(Body body)
+		{
+			QuadTree result = null;
+			
+			if (Parent.TopLeft != this)
+			{
+				result = Parent.TopLeft.SearchDown(body);
+
+				if (result != null)
+				{
+					return result;
+				}
+			}
+
+			if (Parent.TopRight != this)
+			{
+				result = Parent.TopRight.SearchDown(body);
+				
+				if (result != null)
+				{
+					return result;
+				}
+			}
+			
+			if (Parent.BottomLeft != this)
+			{
+				result = Parent.BottomLeft.SearchDown(body);
+				
+				if (result != null)
+				{
+					return result;
+				}
+			}
+			
+			if (Parent.BottomRight != this)
+			{
+				result = Parent.BottomRight.SearchDown(body);
+				
+				if (result != null)
+				{
+					return result;
+				}
+			}
+
+			return Parent.SearchUp(body);
+		}
+		
 		public void CalculateCenterOfMass()
 		{
 			if (IsLeaf)
@@ -77,7 +194,7 @@ namespace GravityGame
 
 		public void Insert(Body node)
 		{
-			if (!ContainsPoint(node))
+			if (!ContainsBody(node))
 			{
 				throw new ArgumentException("Node isn't within quadtree bounds.");
 			}
@@ -94,15 +211,15 @@ namespace GravityGame
 					TopRight = new QuadTree(Position + BottomLeft.Size, BottomLeft.Size, this, iteration);
 				}
 
-				if (TopLeft.ContainsPoint(node))
+				if (TopLeft.ContainsBody(node))
 				{
 					TopLeft.Insert(node);
 				}
-				else if (TopRight.ContainsPoint(node))
+				else if (TopRight.ContainsBody(node))
 				{
 					TopRight.Insert(node);
 				}
-				else if (BottomLeft.ContainsPoint(node))
+				else if (BottomLeft.ContainsBody(node))
 				{
 					BottomLeft.Insert(node);
 				}
@@ -125,9 +242,14 @@ namespace GravityGame
 			}
 		}
 
-		public bool ContainsPoint(Body node)
+		public bool ContainsBody(Body node)
 		{
 			return Domain.ContainsPoint(node.Position);
+		}
+
+		public bool ContainsPoint(Vector2f point)
+		{
+			return Domain.ContainsPoint(point);
 		}
 
 		public bool FullyContains(Body node)
@@ -168,6 +290,144 @@ namespace GravityGame
 				target.Draw(BottomRight);
 				target.Draw(BottomLeft);
 				target.Draw(TopRight);
+			}
+		}
+
+		private void ConsolidateUp()
+		{
+			QuadTree parent = Parent;
+
+			if (parent == null)
+			{
+				return;
+			}
+
+			int nodes = 0;
+			Body node = null;
+
+			if (!parent.TopLeft.IsLeaf)
+			{
+				nodes = 100;
+				goto Skip;
+			}
+			else
+			{
+				if (parent.TopLeft.HasNode)
+				{
+					nodes++;
+					node = parent.TopLeft.Node;
+				}
+			}
+
+			if (!parent.TopRight.IsLeaf)
+			{
+				nodes = 100;
+				goto Skip;
+			}
+			else
+			{
+				if (parent.TopRight.HasNode)
+				{
+					nodes++;
+					node = parent.TopRight.Node;
+				}
+			}
+
+			if (!parent.BottomLeft.IsLeaf)
+			{
+				nodes = 100;
+				goto Skip;
+			}
+			else
+			{
+				if (parent.BottomLeft.HasNode)
+				{
+					nodes++;
+					node = parent.BottomLeft.Node;
+				}
+			}
+
+			if (!parent.BottomRight.IsLeaf)
+			{
+				nodes = 100;
+				goto Skip;
+			}
+			else
+			{
+				if (parent.BottomRight.HasNode)
+				{
+					nodes++;
+					node = parent.BottomRight.Node;
+				}
+			}
+			
+			Skip:
+
+			if (nodes < 2)
+			{
+				parent.TopLeft = null;
+				parent.TopRight = null;
+				parent.BottomLeft = null;
+				parent.BottomRight = null;
+
+				if (nodes == 1)
+				{
+					parent.Node = node;
+				}
+				
+				parent.ConsolidateUp();
+			}
+		}
+
+		public void Remove(Body body)
+		{
+			QuadTree leaf = Search(body);
+			leaf.Node = null;
+
+			leaf.ConsolidateUp();
+		}
+
+		private QuadTree SearchPosition(Vector2f position)
+		{
+			if (IsLeaf)
+			{
+				if (HasNode)
+				{
+					return this;
+				}
+
+				return null;
+			}
+			else
+			{
+				if (TopLeft.ContainsPoint(position))
+				{
+					return TopLeft.SearchPosition(position);
+				}
+				else if (TopRight.ContainsPoint(position))
+				{
+					return TopRight.SearchPosition(position);
+				}
+				else if(BottomLeft.ContainsPoint(position))
+				{
+					return BottomLeft.SearchPosition(position);
+				}
+				else
+				{
+					return BottomRight.SearchPosition(position);
+				}
+			}
+		}
+
+		public void UpdateBody(Body body)
+		{
+			QuadTree containing = Search(body);
+
+			if (!containing.ContainsPoint(body.Position))
+			{
+				containing.Remove(body);
+				//TODO: Start inserting farther down instead of at the root since the body probably hasn't moved much
+				Insert(body);
 			}
 		}
 	}

@@ -2,30 +2,28 @@ using System;
 using System.Net.Sockets;
 using System.Threading;
 using GravityGame.Extension;
+using NUnit.Framework;
 using SFML.System;
 
 namespace GravityGame
 {
     public struct Pair
     {
-        private Body a;
-        private Body b;
-
-        public Body A => a;
-        public Body B => b;
+        public Body A { get; private set; }
+        public Body B { get; private set; }
 
         public Pair(Body a, Body b)
         {
-            this.a = a;
-            this.b = b;
+            A = a;
+            B = b;
         }
 
-        public void Resolve(Scene scene)
+        public Body Resolve(Scene scene)
         {
             if (!A.Exists || !B.Exists)
             {
                 //One of these is already flagged for deletion by another collision
-                return;
+                return null;
             }
             
             Type a_type = A.GetType();
@@ -37,21 +35,23 @@ namespace GravityGame
 
             if (a_type == planet && b_type == planet)
             {
-                ResolvePlanetPlanet(scene);
+                return ResolvePlanetPlanet(scene);
             }
 
             if (a_type == star || b_type == star)
             {
-                ResolveBodyStar(scene);
+                return ResolveBodyStar(scene);
             }
 
             if ((a_type == ship && b_type == planet) || (a_type == planet && b_type == ship))
             {
-                ResolvePlanetShip(scene);
+                return ResolvePlanetShip(scene);
             }
+
+            throw new InvalidOperationException("Collision between two bodies was not covered.");
         }
 
-        private void ResolvePlanetShip(Scene scene)
+        private Body ResolvePlanetShip(Scene scene)
         {
             Planet planet;
             Ship ship;
@@ -73,9 +73,10 @@ namespace GravityGame
             }
 
             ship.Exists = false;
+            return planet;
         }
         
-        private void ResolveBodyStar(Scene scene)
+        private Body ResolveBodyStar(Scene scene)
         {
             Star star;
             Body body;
@@ -111,9 +112,10 @@ namespace GravityGame
             body.Exists = false;
 
             star.Started = false;
+            return star;
         }
         
-        private void ResolvePlanetPlanet(Scene scene)
+        private Body ResolvePlanetPlanet(Scene scene)
         {
             Planet bigger;
             Planet smaller;
@@ -156,6 +158,7 @@ namespace GravityGame
             smaller.Exists = false;
 
             bigger.Started = false;
+            return bigger;
         }
     }
 }

@@ -37,7 +37,6 @@ namespace GravityGame
             R = new Random();
             
             scene = new Scene();
-            //scene.AddBody(new Ship(new Vector2f(0, 0), new Vector2f(0, 0), new Life(300, 1, 1, 1000)));
 
             Gradient g = new Gradient();
             List<GradientKey> keys = new List<GradientKey>();

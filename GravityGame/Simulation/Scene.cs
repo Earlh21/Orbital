@@ -17,8 +17,7 @@ namespace GravityGame
 		private List<Star> star_cache;
 		private List<RenderBody> body_buffer;
 		private Body selected;
-		private QuadTree collision_tree;
-		private QuadTree iteration_tree;
+		private QuadTree quad_tree;
 
 		private List<Thread> forces_threads;
 		private List<AutoResetEvent> forces_handles;
@@ -33,6 +32,7 @@ namespace GravityGame
 
 		public Scene()
 		{
+			quad_tree = new QuadTree(WorldSize(), null, false);
 			bodies = new List<RenderBody>();
 			star_cache = new List<Star>();
 			body_buffer = new List<RenderBody>();
@@ -73,11 +73,11 @@ namespace GravityGame
 					{
 						if (important_area.ContainsPoint(body.Position))
 						{
-							body.Force += body.GetForceFrom(iteration_tree, 0.8f);
+							body.Force += body.GetForceFrom(quad_tree, 0.8f);
 						}
 						else
 						{
-							body.Force += body.GetForceFrom(iteration_tree, 1.2f);
+							body.Force += body.GetForceFrom(quad_tree, 1.2f);
 						}
 
 						body.ForcesDone = true;
@@ -99,6 +99,7 @@ namespace GravityGame
 			foreach (RenderBody body in body_buffer)
 			{
 				bodies.Add(body);
+				quad_tree.Insert(body);
 				if (body is Star)
 				{
 					star_cache.Add((Star) body);
@@ -132,6 +133,7 @@ namespace GravityGame
 			}
 
 			bodies.Remove(body);
+			quad_tree.Remove(body);
 			if (body is Star)
 			{
 				star_cache.Remove((Star) body);
@@ -318,6 +320,8 @@ namespace GravityGame
 					target.Draw(body);
 				}
 			}
+			
+			window.Draw(quad_tree);
 		}
 
 		private void Iterate(float time)
@@ -329,6 +333,8 @@ namespace GravityGame
 					body.Iterate(time);
 					body.Started = true;
 					body.ForcesDone = false;
+					
+					quad_tree.UpdateBody(body);
 				}
 			}
 		}
@@ -338,12 +344,26 @@ namespace GravityGame
 			//Find collisions
 			List<Pair> collisions = new List<Pair>();
 
-			collisions.AddRange(Body.GetAllCollisions(collision_tree));
+			collisions.AddRange(Body.GetAllCollisions(quad_tree));
 
 			//Resolve collisions
 			foreach (Pair collision in collisions)
 			{
-				collision.Resolve(this);
+				Body primary = collision.Resolve(this);
+
+				if (primary != null)
+				{
+					if (primary != collision.A)
+					{
+						quad_tree.Remove(collision.A);
+					}
+					else
+					{
+						quad_tree.Remove(collision.B);
+					}
+					
+					quad_tree.UpdateBody(primary);
+				}
 			}
 		}
 
@@ -390,7 +410,8 @@ namespace GravityGame
 			this.important_area = important_area;
 			
 			AddBodies();
-			iteration_tree = GetQuadTree(true);
+			quad_tree.CalculateCenterOfMass();
+			
 			foreach (AutoResetEvent forces_handle in forces_handles)
 			{
 				forces_handle.Set();
@@ -403,10 +424,9 @@ namespace GravityGame
 
 			Iterate(time);
 
-			collision_tree = GetQuadTree(false);
-
 			ResolveCollisions();
 			RemoveNonexistentBodies();
+			
 			ApplyStarHeat(time);
 			UpdateBodies(time);
 		}
