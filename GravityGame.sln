@@ -12,5 +12,6 @@ Global
 		{95EEFD45-8C3E-43D6-870D-F9DCC8A2D583}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{95EEFD45-8C3E-43D6-870D-F9DCC8A2D583}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{95EEFD45-8C3E-43D6-870D-F9DCC8A2D583}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95EEFD45-8C3E-43D6-870D-F9DCC8A2D583}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
 	EndGlobalSection
 EndGlobal

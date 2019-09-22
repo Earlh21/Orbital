@@ -11,7 +11,6 @@ namespace GravityGame
         private float life_time = 0.0f;
         
         public override bool IsSelectable => false;
-        public override float Theta => 0.3f;
 
         public override bool DoesGravity => false;
         public Life Life { get; set; }

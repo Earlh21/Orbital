@@ -6,7 +6,7 @@ namespace GravityGame
     {
         private static int last_faction;
         public static float growth_rate = 1;
-        public static float tech_chance = 1 / 1000.0f;
+        public static float tech_chance = 1 / 600.0f;
 
         private readonly int faction;
 
@@ -36,7 +36,7 @@ namespace GravityGame
 
         public float GetCarryingCapacity(float temperature)
         {
-            float temp_diff = Math.Abs(temperature - NormalTemp);
+            float temp_diff = Math.Abs(temperature - NormalTemp) * Mathf.Sqrt(Mathf.Max(1, 300 - temperature)) / 20;
             float temp_mod = temp_diff / (float)Math.Pow(TechLevel, 2) / 10;
             float temp_divisor = 1 + temp_mod;
             float value = 1000 * Mathf.Pow(TechLevel, 8) / temp_divisor - temp_mod * 100;

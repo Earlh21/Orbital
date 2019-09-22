@@ -10,9 +10,6 @@ namespace GravityGame
 {
     public class Body : ISelectable
     {
-
-        public virtual float Theta => 0.8f;
-
         private float radius;
         private float mass;
 
@@ -210,7 +207,7 @@ namespace GravityGame
             return collisions;
         }
 
-        public Vector2f GetForceFrom(QuadTree tree)
+        public Vector2f GetForceFrom(QuadTree tree, float theta)
         {
             Vector2f total_force = new Vector2f(0, 0);
 
@@ -224,16 +221,16 @@ namespace GravityGame
             else
             {
                 float sd = tree.Domain.Width / Distance(tree.CenterOfMass);
-                if (sd < Theta)
+                if (sd < theta)
                 {
                     total_force += GetForceFrom(tree.CenterOfMass);
                 }
                 else
                 {
-                    total_force += GetForceFrom(tree.TopLeft);
-                    total_force += GetForceFrom(tree.TopRight);
-                    total_force += GetForceFrom(tree.BottomLeft);
-                    total_force += GetForceFrom(tree.BottomRight);
+                    total_force += GetForceFrom(tree.TopLeft, theta);
+                    total_force += GetForceFrom(tree.TopRight, theta);
+                    total_force += GetForceFrom(tree.BottomLeft, theta);
+                    total_force += GetForceFrom(tree.BottomRight, theta);
                 }
             }
 

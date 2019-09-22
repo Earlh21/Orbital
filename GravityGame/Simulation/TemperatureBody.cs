@@ -54,7 +54,7 @@ namespace GravityGame
                 return;
             }
             
-            Heat -= Circumference * (Temperature - Mathf.AmbientTemp) / Mathf.Insulation * time;
+            Heat -= Circumference * (Temperature * Mathf.Pow(Temperature, 0.4f) - Mathf.AmbientTemp) / Mathf.Insulation * time;
         }
 
         public float GetHeatFlowFrom(Star star)

@@ -66,7 +66,7 @@ namespace GravityGame
                                 
                 window.Clear();
                 
-                scene.Update(time_scale * time, window);
+                scene.Update(time_scale * time, GetImportantArea());
                     
                 if (panning)
                 {
@@ -108,6 +108,14 @@ namespace GravityGame
             }
         }
 
+        private static Rectangle GetImportantArea()
+        {
+            Vector2f size = view.Size * 1.2f;
+            Vector2f topleft = view.Center - view.Size / 2f;
+            
+            return new Rectangle(topleft, size);
+        }
+        
         public static void Draw(List<RenderBody> bodies)
         {
             foreach (RenderBody body in bodies)
@@ -144,23 +152,26 @@ namespace GravityGame
             {
                 Random R = new Random(1);
                 
-                float n = 4000;
-                float radius = 15000;
+                Console.Write("Enter number of planets: ");
+                
+                int n = Convert.ToInt32(Console.ReadLine());
+                float radius = 16000;
+                float inner_radius = 400;
                 float mass = 100;
                 float mass_variance = 50;
-                float velocity = 400;
-                float velocity_variance = 50;
+                float velocity = 500;
+                float velocity_variance = 25;
 
                 scene.AddBody(new Star(new Vector2f(0, 0), 100000, new Vector2f(0, 0), 1));
                 
                 for (int i = 0; i < n; i++)
                 {
                     float angle = NextFloatAbs(R, 2 * Mathf.PI);
-                    float distance = NextFloatAbs(R, radius);
+                    float distance = NextFloatAbs(R, radius) + inner_radius;
                     float n_mass = mass + NextFloat(R, mass_variance);
                     
                     Vector2f velocity_unit = new Vector2f((float)Math.Cos(angle + Mathf.PI / 2), (float)Math.Sin(angle + Mathf.PI / 2));
-                    Vector2f n_velocity = velocity_unit * (velocity + NextFloat(R, velocity_variance)) / Mathf.Sqrt(distance / 100);
+                    Vector2f n_velocity = velocity_unit * (velocity + NextFloat(R, velocity_variance)) / Mathf.Pow(distance / 100, 0.33f);
                     
                     Vector2f n_position = new Vector2f((float)Math.Cos(angle), (float)Math.Sin(angle)) * distance;
                     

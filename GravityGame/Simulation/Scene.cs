@@ -23,6 +23,7 @@ namespace GravityGame
 		private List<Thread> forces_threads;
 		private List<AutoResetEvent> forces_handles;
 		private List<AutoResetEvent> main_handles;
+		private Rectangle important_area;
 
 		public bool DrawOutlines { get; set; }
 		public bool DrawText { get; set; }
@@ -70,7 +71,15 @@ namespace GravityGame
 					Body body = bodies[i];
 					if (body.Exists && !body.ForcesDone)
 					{
-						body.Force += body.GetForceFrom(iteration_tree);
+						if (important_area.ContainsPoint(body.Position))
+						{
+							body.Force += body.GetForceFrom(iteration_tree, 0.8f);
+						}
+						else
+						{
+							body.Force += body.GetForceFrom(iteration_tree, 1.2f);
+						}
+
 						body.ForcesDone = true;
 					}
 				}
@@ -365,8 +374,21 @@ namespace GravityGame
 			}
 		}
 
-		public void Update(float time, RenderWindow window)
+		public void UpdateBodies(float time)
 		{
+			foreach (Body body in bodies)
+			{
+				if (body.Exists)
+				{
+					body.Update(this, time);
+				}
+			}
+		}
+		
+		public void Update(float time, Rectangle important_area)
+		{
+			this.important_area = important_area;
+			
 			AddBodies();
 			iteration_tree = GetQuadTree(true);
 			foreach (AutoResetEvent forces_handle in forces_handles)
@@ -386,6 +408,7 @@ namespace GravityGame
 			ResolveCollisions();
 			RemoveNonexistentBodies();
 			ApplyStarHeat(time);
+			UpdateBodies(time);
 		}
 	}
 }

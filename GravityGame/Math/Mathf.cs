@@ -7,7 +7,7 @@ namespace GravityGame
     {
         public static float PI = (float) Math.PI;
         public static float AmbientTemp = 2.73f;
-        public static float Insulation = 10.0f;
+        public static float Insulation = 150.0f;
         public static float G = 360.0f;
         public static Gradient TemperatureColorGradient;
         //Amount of momentum converted into heat on collision
@@ -46,6 +46,11 @@ namespace GravityGame
         public static Vector2f Lerp(Vector2f a, Vector2f b, float t)
         {
             return a + t * (b - a);
+        }
+
+        public static float Max(float a, float b)
+        {
+            return a > b ? a : b;
         }
     }
 }
