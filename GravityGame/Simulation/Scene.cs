@@ -320,8 +320,6 @@ namespace GravityGame
 					target.Draw(body);
 				}
 			}
-			
-			window.Draw(quad_tree);
 		}
 
 		private void Iterate(float time)
@@ -383,7 +381,7 @@ namespace GravityGame
 		}
 
 		private void RemoveNonexistentBodies()
-		{
+		{	
 			//Remove nonexistent bodies
 			for (int i = bodies.Count - 1; i > -1; i--)
 			{

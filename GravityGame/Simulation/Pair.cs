@@ -48,7 +48,12 @@ namespace GravityGame
                 return ResolvePlanetShip(scene);
             }
 
-            throw new InvalidOperationException("Collision between two bodies was not covered.");
+            if (a_type == ship && b_type == ship)
+            {
+                return null;
+            }
+
+            throw new InvalidOperationException("Collision between two bodies was not covered: " + a_type.ToString() + " " + b_type.ToString());
         }
 
         private Body ResolvePlanetShip(Scene scene)

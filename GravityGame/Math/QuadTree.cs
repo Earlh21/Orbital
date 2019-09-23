@@ -427,7 +427,10 @@ namespace GravityGame
 			{
 				containing.Remove(body);
 				//TODO: Start inserting farther down instead of at the root since the body probably hasn't moved much
-				Insert(body);
+				if (Domain.ContainsPoint(body.Position))
+				{
+					Insert(body);
+				}
 			}
 		}
 	}

@@ -17,7 +17,6 @@ namespace GravityGame
 
         public Vector2f Velocity => Momentum / Mass;
         public Vector2f Position { get; private set; }
-        public Vector2f LastPosition { get; private set; }
         public Vector2f Force { get; set; }
         public Vector2f Acceleration => Force / Mass;
 
@@ -67,7 +66,6 @@ namespace GravityGame
             Mass = mass;
             Momentum = velocity * Mass;
             Position = position;
-            LastPosition = position;
         }
 
         private Vector2f SlopeFunction(Vector2f pos, float t)
@@ -77,7 +75,6 @@ namespace GravityGame
         
         public void Iterate(float time)
         {
-            LastPosition = Position;
             Position += Momentum * time / Mass;
 
             Momentum += Force * time;
@@ -177,7 +174,6 @@ namespace GravityGame
 
         public void Translate(Vector2f amount)
         {
-            LastPosition = Position;
             Position += amount;
         }
 
