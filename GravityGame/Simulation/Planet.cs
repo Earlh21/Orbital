@@ -30,7 +30,7 @@ namespace GravityGame
             Vector2f direction = new Vector2f((float)Math.Cos(angle), (float)Math.Sin(angle));
             Vector2f ship_vel = Velocity + direction * speed;
             Life life = new Life(Temperature, Life.Faction, Life.TechLevel, Life.Population * 0.1f);
-            Life.Population *= 0.9f;
+            Life.Population *= 0.999f;
 
             Ship ship = new Ship(Position + direction * Radius * 1.5f, ship_vel, life);
             scene.AddBody(ship);

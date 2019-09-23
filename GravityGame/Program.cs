@@ -144,7 +144,8 @@ namespace GravityGame
             float velocity = 500;
             float velocity_variance = 25;
 
-            scene.AddBody(new Star(new Vector2f(0, 0), 100000, new Vector2f(0, 0), 1));
+            Star star = new Star(new Vector2f(0, 0), 100000, new Vector2f(0, 0), 1);
+            scene.AddBody(star);
                 
             for (int i = 0; i < n; i++)
             {
@@ -152,12 +153,11 @@ namespace GravityGame
                 float distance = NextFloatAbs(R, radius) + inner_radius;
                 float n_mass = mass + NextFloat(R, mass_variance);
                     
-                Vector2f velocity_unit = new Vector2f((float)Math.Cos(angle + Mathf.PI / 2), (float)Math.Sin(angle + Mathf.PI / 2));
-                Vector2f n_velocity = velocity_unit * (velocity + NextFloat(R, velocity_variance)) / Mathf.Pow(distance / 100, 0.33f);
-                    
                 Vector2f n_position = new Vector2f((float)Math.Cos(angle), (float)Math.Sin(angle)) * distance;
-                    
-                scene.AddBody(new Planet(n_position, n_mass, n_velocity, 1, 300));
+
+                Planet planet = new Planet(n_position, n_mass, new Vector2f(0, 0), 1, 300);
+                planet.AutoOrbit(star);
+                scene.AddBody(planet);
             }
         }
 
@@ -319,6 +319,12 @@ namespace GravityGame
                 Vector2f mouse_pos = GetMouseCoordsWorld();
                 Vector2f position = scene.GetSelectedPosition() + InvY(mouse_fire_offset);
                 Planet p = new Planet(position, Mathf.PI * spawn_radius * spawn_radius, scene.GetSelectedVelocity() + InvY(mouse_pos) - position, 1, 300);
+
+                if (Keyboard.IsKeyPressed(Keyboard.Key.LShift) && scene.Selected != null)
+                {
+                    p.AutoOrbit(scene.Selected);
+                }
+                
                 scene.AddBody(p);
             }
 

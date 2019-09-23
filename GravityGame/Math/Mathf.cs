@@ -48,6 +48,16 @@ namespace GravityGame
             return a + t * (b - a);
         }
 
+        public static float AngleTo(Vector2f a, Vector2f b)
+        {
+            return Mathf.Atan2(b.Y - a.Y, b.X - a.X);
+        }
+
+        public static float Atan2(float y, float x)
+        {
+            return (float) Math.Atan2(y, x);
+        }
+
         public static float Max(float a, float b)
         {
             return a > b ? a : b;

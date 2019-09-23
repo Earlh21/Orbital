@@ -127,6 +127,12 @@ namespace GravityGame
             return displacement.Unit() * Mathf.G * Mass * other.Mass / displacement.LengthSquared();
         }
 
+        public Vector2f GetForceFrom(Body other)
+        {
+            Vector2f displacement = other.Position - Position;
+            return displacement.Unit() * Mathf.G * Mass * other.Mass / displacement.LengthSquared();
+        }
+
         /// <summary>
         /// Finds the smallest quad that fully contains this object.
         /// </summary>
@@ -140,6 +146,18 @@ namespace GravityGame
             }
 
             return GetSmallestContainingTree(leaf.Parent);
+        }
+
+        public void AutoOrbit(Body target)
+        {
+            //TODO: Optimize this
+            Vector2f force = GetForceFrom(target);
+            float acceleration = (force / Mass).Length();
+            float velocity = Mathf.Sqrt(acceleration * Distance(target));
+
+            float angle = Mathf.AngleTo(Position, target.Position);
+            Vector2f velocity_unit = new Vector2f((float)Math.Cos(angle + Mathf.PI / 2), (float)Math.Sin(angle + Mathf.PI / 2));
+            Momentum = Mass * (target.Velocity + velocity_unit * velocity);
         }
 
         public List<Pair> GetCollisions(QuadTree tree)

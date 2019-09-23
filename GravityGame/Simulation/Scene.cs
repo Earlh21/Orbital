@@ -337,6 +337,8 @@ namespace GravityGame
 			}
 		}
 
+		//TODO: Game crashes when objects go outside the simulation because they're not contained in the quad tree
+		//Fix GetSmallestContainingTree or something, delete the objects before GetAllCollisions is called
 		private void ResolveCollisions()
 		{
 			//Find collisions
