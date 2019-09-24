@@ -1,5 +1,7 @@
+using GravityGame.Extension;
 using SFML.Graphics;
 using SFML.System;
+using SFML.Window;
 
 namespace GravityGame
 {
@@ -9,7 +11,7 @@ namespace GravityGame
             velocity, density)
         {
         }
-        
+
         protected override Color GetColor()
         {
             if (IsSelected)

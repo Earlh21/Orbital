@@ -9,6 +9,7 @@ namespace GravityGame
     public class RenderBody : Body, Drawable
     {
         private CircleShape shape;
+        protected virtual Shader Shader => null;
 
         public bool DrawOutline { get; set; } = false;
 
@@ -40,7 +41,14 @@ namespace GravityGame
             
             shape.SetPointCount((uint)Mathf.Clamp(10, 80, 18 + shape.Radius * (window.Size.X / view.Size.X) / 3.5f));
 
-            target.Draw(shape);
+            if (Shader == null)
+            {
+                target.Draw(shape);
+            }
+            else
+            {
+                target.Draw(shape, new RenderStates(Shader));
+            }
 
             if (DrawOutline)
             {
@@ -51,7 +59,6 @@ namespace GravityGame
                 shape.FillColor = Color.Transparent;
                 shape.SetPointCount(20);
                 shape.OutlineThickness = view.Size.X / 500.0f;
-                target.Draw(shape);
             }
         }
 

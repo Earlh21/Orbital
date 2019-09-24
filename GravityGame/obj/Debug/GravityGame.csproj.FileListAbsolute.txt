@@ -18,3 +18,5 @@ C:\Users\Idrialite\Projects\C#\GravityGamed\GravityGame\obj\Debug\GravityGame.cs
 C:\Users\Idrialite\Projects\C#\GravityGamed\GravityGame\obj\Debug\GravityGame.csproj.CopyComplete
 C:\Users\Idrialite\Projects\C#\GravityGamed\GravityGame\obj\Debug\GravityGame.exe
 C:\Users\Idrialite\Projects\C#\GravityGamed\GravityGame\obj\Debug\GravityGame.pdb
+C:\Users\Idrialite\Projects\C#\GravityGamed\GravityGame\bin\Debug\Resources\Fonts\monsterrat.ttf
+C:\Users\Idrialite\Projects\C#\GravityGamed\GravityGame\bin\Debug\Resources\Shaders\halo.frag

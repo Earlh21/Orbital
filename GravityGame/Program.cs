@@ -37,7 +37,7 @@ namespace GravityGame
             window = new RenderWindow(new VideoMode(800, 600), "The Game of Life");
             view = new View();
 
-            Font = new Font(GetDirectory() + "monsterrat.ttf");
+            Font = new Font(GetResourcesDirectory() + "\\Fonts\\monsterrat.ttf");
 
             R = new Random();
             
@@ -236,6 +236,11 @@ namespace GravityGame
         public static string GetDirectory()
         {
             return AppDomain.CurrentDomain.BaseDirectory;
+        }
+
+        public static string GetResourcesDirectory()
+        {
+            return GetDirectory() + "\\Resources";
         }
         
         private static float NextFloat(Random R, float amplitude)

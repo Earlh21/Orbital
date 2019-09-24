@@ -387,12 +387,17 @@ namespace GravityGame
 		public void Remove(Body body)
 		{
 			QuadTree leaf = Search(body);
-			leaf.Node = null;
 
+			if (leaf == null)
+			{
+				return;
+			}
+			
+			leaf.Node = null;
 			leaf.ConsolidateUp();
 		}
 
-		private QuadTree SearchPosition(Vector2f position)
+		public QuadTree SearchPosition(Vector2f position)
 		{
 			if (IsLeaf)
 			{

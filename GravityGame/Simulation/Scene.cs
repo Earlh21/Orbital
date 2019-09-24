@@ -120,7 +120,11 @@ namespace GravityGame
 			foreach (RenderBody body in body_buffer)
 			{
 				bodies.Add(body);
-				QuadTree.Insert(body);
+				if (body.DoesGravity)
+				{
+					QuadTree.Insert(body);
+				}
+
 				if (body is Star star)
 				{
 					star_cache.Add(star);
@@ -149,7 +153,11 @@ namespace GravityGame
 			}
 
 			bodies.Remove(body);
-			QuadTree.Remove(body);
+			if (body.DoesGravity)
+			{
+				QuadTree.Remove(body);
+			}
+
 			if (body is Star)
 			{
 				star_cache.Remove((Star) body);
@@ -347,20 +355,35 @@ namespace GravityGame
 					body.Iterate(time);
 					body.Started = true;
 					body.ForcesDone = false;
-					
-					QuadTree.UpdateBody(body);
+
+					if (body.DoesGravity)
+					{
+						QuadTree.UpdateBody(body);
+					}
 				}
 			}
 		}
 
-		//TODO: Game crashes when objects go outside the simulation because they're not contained in the quad tree
-		//Fix GetSmallestContainingTree or something, delete the objects before GetAllCollisions is called
 		private void ResolveCollisions()
 		{
 			//Find collisions
 			List<Pair> collisions = new List<Pair>();
 
-			collisions.AddRange(Body.GetAllCollisions(QuadTree));
+			foreach (Body body in bodies)
+			{
+				QuadTree leaf;
+
+				if (body.DoesGravity)
+				{
+					leaf = QuadTree.Search(body);
+				}
+				else
+				{
+					leaf = QuadTree.SearchPosition(body.Position);
+				}
+
+				collisions.AddRange(body.GetCollisions(body.GetSmallestContainingTree(leaf)));
+			}
 
 			//Resolve collisions
 			foreach (Pair collision in collisions)

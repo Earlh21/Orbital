@@ -35,7 +35,7 @@ namespace GravityGame
             Vector2f force = new Vector2f(0, 0);
             if (star != null)
             {
-                force = target.GetForceFrom(star);
+                //force = target.GetForceFrom(star);
             }
             Vector2f acceleration = force / target.Mass;
             
@@ -103,7 +103,7 @@ namespace GravityGame
                 }
                 
                 //TODO: Make this chance a variable instead of a magic number
-                if (Program.R.NextDouble() < 1 - Math.Pow(1 - 1 / 2.0f, time))
+                if (Program.R.NextDouble() < 1 - Math.Pow(1 - 1 / 8.0f, time))
                 {
                     Body[] buffer = new Body[5];
                     int height = 3;
