@@ -140,11 +140,16 @@ namespace GravityGame
         /// <returns>The smallest quad</returns>
         public QuadTree GetSmallestContainingTree(QuadTree leaf)
         {
+            if (leaf == null)
+            {
+                return null;
+            }
+            
             if (leaf.FullyContains(this))
             {
                 return leaf;
             }
-
+            
             return GetSmallestContainingTree(leaf.Parent);
         }
 

@@ -109,6 +109,11 @@ namespace GravityGame
 		private QuadTree SearchUp(Body body)
 		{
 			QuadTree result = null;
+
+			if (Parent == null)
+			{
+				return null;
+			}
 			
 			if (Parent.TopLeft != this)
 			{
@@ -149,7 +154,7 @@ namespace GravityGame
 					return result;
 				}
 			}
-
+			
 			return Parent.SearchUp(body);
 		}
 		
@@ -432,6 +437,93 @@ namespace GravityGame
 					Insert(body);
 				}
 			}
+		}
+
+		//TODO: Add a max height
+		//TODO: Make the user give an array to fill instead of returning a list
+		public int FindNearbyBodies(Vector2f position, int tree_height, BodyFilter filter, Body[] buffer)
+		{
+			QuadTree leaf = SearchPosition(position);
+			
+			QuadTree previous = leaf;
+			QuadTree current = leaf.Parent;
+
+			int count = 0;
+			int height = 0;
+			
+			while (count < buffer.Length && current != null && height < tree_height)
+			{
+				if (current.TopLeft != previous)
+				{
+					count = current.TopLeft.FindBodies(filter, count, buffer);
+				}
+				
+				if (current.TopRight != previous)
+				{
+					count = current.TopRight.FindBodies(filter, count, buffer);
+				}
+
+				if (current.BottomLeft != previous)
+				{
+					count = current.BottomLeft.FindBodies(filter, count, buffer);
+				}
+
+				if (current.BottomRight != previous)
+				{
+					count = current.BottomRight.FindBodies(filter, count, buffer);
+				}
+
+				previous = current;
+				current = current.Parent;
+				height++;
+			}
+
+			return count;
+		}
+
+		private int FindBodies(BodyFilter filter, int current_count, Body[] buffer)
+		{
+			List<Body> bodies = new List<Body>();
+
+			if (current_count >= buffer.Length)
+			{
+				return current_count;
+			}
+			
+			if (IsLeaf)
+			{
+				if (HasNode)
+				{
+					if (filter.Contains(Node))
+					{
+						buffer[current_count] = Node;
+						current_count++;
+					}
+
+					return current_count;
+				}
+
+				return current_count;
+			}
+
+			current_count = TopLeft.FindBodies(filter, current_count, buffer);
+			current_count = TopRight.FindBodies(filter, current_count, buffer);
+			current_count = BottomLeft.FindBodies(filter, current_count, buffer);
+			current_count = BottomRight.FindBodies(filter, current_count, buffer);
+
+			return current_count;
+		}
+
+		public QuadTree FindSmallestContainingTree(Body body)
+		{
+			QuadTree leaf = Search(body);
+
+			while (!leaf.FullyContains(body))
+			{
+				leaf = leaf.Parent;
+			}
+
+			return leaf;
 		}
 	}
 }

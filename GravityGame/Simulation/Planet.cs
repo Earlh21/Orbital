@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Runtime.Remoting.Messaging;
 using GravityGame.Extension;
 using SFML.Graphics;
@@ -23,16 +24,31 @@ namespace GravityGame
             text.Scale = 0.5f * new Vector2f(scale, scale);
         }
 
-        private void FireShip(Scene scene, float angle)
+        
+        //TODO: Improve targeting heuristic and measure effectiveness of various methods
+        private void FireShip(Scene scene, Body target)
         {
-            float speed = Mathf.Sqrt(2 * Mathf.G * Mass / Radius) * 1.1f;
-
-            Vector2f direction = new Vector2f((float)Math.Cos(angle), (float)Math.Sin(angle));
-            Vector2f ship_vel = Velocity + direction * speed;
             Life life = new Life(Temperature, Life.Faction, Life.TechLevel, Life.Population * 0.1f);
             Life.Population *= 0.999f;
 
-            Ship ship = new Ship(Position + direction * Radius * 1.5f, ship_vel, life);
+            Star star = scene.GetMainStar();
+
+            Vector2f force = new Vector2f(0, 0);
+            if (star != null)
+            {
+                force = target.GetForceFrom(star);
+            }
+            Vector2f acceleration = force / target.Mass;
+            
+            float speed = Mathf.Sqrt(2 * Mathf.G * Mass / Radius) * 1.1f;
+            float distance = Distance(target) * 0.75f;
+            float time = distance / speed;
+            Vector2f other_position = target.Position + target.Velocity * time + acceleration.Multiply(acceleration) * time / 2;
+            float angle = Mathf.AngleTo(Position, other_position);
+
+            Vector2f velocity = speed * new Vector2f(Mathf.Cos(angle), Mathf.Sin(angle));
+            Ship ship = new Ship(Position + velocity.Unit() * Radius * 1.5f, velocity, life);
+            
             scene.AddBody(ship);
         }
         
@@ -45,7 +61,7 @@ namespace GravityGame
                 RenderWindow window = (RenderWindow) target;
                 View view = window.GetView();
 
-                Text temperature_text = new Text((int) Temperature + " K", Program.font);
+                Text temperature_text = new Text((int) Temperature + " K", Program.Font);
                 temperature_text.Color = Mathf.TemperatureColorGradient.GetColor(Temperature);
                 FormatText(temperature_text, 0, window);
 
@@ -53,11 +69,11 @@ namespace GravityGame
 
                 if (HasLife)
                 {
-                    Text population_text = new Text(Format.PopulationText(Life.Population), Program.font);
+                    Text population_text = new Text(Format.PopulationText(Life.Population), Program.Font);
                     population_text.Color = Color.White;
-                    Text tech_level_text = new Text(Life.TechLevel.ToString(), Program.font);
+                    Text tech_level_text = new Text(Life.TechLevel.ToString(), Program.Font);
                     tech_level_text.Color = Color.White;
-                    Text faction_text = new Text(Life.Faction.ToString(), Program.font);
+                    Text faction_text = new Text(Life.Faction.ToString(), Program.Font);
                     faction_text.Color = Color.White;
 
                     FormatText(population_text, 1, window);
@@ -87,9 +103,24 @@ namespace GravityGame
                     return;
                 }
                 
-                if (Program.R.NextDouble() < 1 - Math.Pow(1 - (1 / 15.0f), time))
+                //TODO: Make this chance a variable instead of a magic number
+                if (Program.R.NextDouble() < 1 - Math.Pow(1 - 1 / 15.0f, time))
                 {
-                    FireShip(scene, (float)Program.R.NextDouble() * Mathf.PI * 2);
+                    Body[] buffer = new Body[5];
+                    int height = 3;
+                    BodyFilter filter = new BodyFilter(typeof(Planet), BodyFilter.LifeFilter.False);
+
+                    int count = scene.QuadTree.FindNearbyBodies(Position, height, filter, buffer);
+
+                    if (count < 1)
+                    {
+                        return;
+                    }
+                    
+                    int index = Program.R.Next(count);
+                    Body target = buffer[index];
+                    
+                    FireShip(scene, target);
                 }
                 
                 Life.Update(time, Temperature);

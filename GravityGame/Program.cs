@@ -12,27 +12,31 @@ namespace GravityGame
     //TODO: Try to find some way to simplify dealing with the selected object or at least make variables more descriptive
     internal class Program
     {
-        public static RenderWindow window;
-        public static View view;
-        public static Vector2f view_offset = new Vector2f(0, 0);
-        public static float view_scale = 2.5f;
-        public static Scene scene;
-        public static float time_scale = 1;
-        public static Font font;
+        private static RenderWindow window;
+        private static View view;
+        private static Vector2f view_offset = new Vector2f(0, 0);
+        private static float view_scale = 2.5f;
+        private static Scene scene;
+        private static float time_scale = 1;
         
-        public static bool panning = false;
-        public static bool firing = false;
-        public static float spawn_radius = 5;
-        public static Vector2f mouse_original_pos;
-        public static Vector2f mouse_fire_offset;
-        public static Random R;
+        private static bool panning = false;
+        private static bool firing = false;
+        private static float spawn_radius = 5;
+        private static Vector2f mouse_original_pos;
+        private static Vector2f mouse_fire_offset;
+        private const float add_mass_period = 0.2f;
+        private static float add_mass_time = 0.0f;
+        
+        public static Random R { get; private set; }
+        public static Font Font { get; private set; }
 
+        //TODO: Add a leaderboard for number of planets colonized
         public static void Main(string[] args)
         {
             window = new RenderWindow(new VideoMode(800, 600), "The Game of Life");
             view = new View();
 
-            font = new Font(GetDirectory() + "monsterrat.ttf");
+            Font = new Font(GetDirectory() + "monsterrat.ttf");
 
             R = new Random();
             
@@ -61,9 +65,13 @@ namespace GravityGame
 
                 float time = Math.Min(max_time_step, clock.ElapsedTime.AsSeconds());
                 clock.Restart();
-
-                                
-                window.Clear();
+                
+                add_mass_time += time;
+                while (add_mass_time > add_mass_period)
+                {
+                    add_mass_time -= add_mass_period;
+                    AddMatter(true);
+                }
                 
                 scene.Update(time_scale * time, GetImportantArea());
                     
@@ -76,7 +84,8 @@ namespace GravityGame
                 
                 //Start drawing
                 UpdateView();
-
+                
+                window.Clear();
                 window.Draw(scene);
 
                 if (firing)
@@ -137,27 +146,13 @@ namespace GravityGame
 
         private static void GenerateDisk(int n)
         {
-            float radius = 16000;
-            float inner_radius = 400;
-            float mass = 100;
-            float mass_variance = 50;
-            float velocity = 500;
-            float velocity_variance = 25;
-
             Star star = new Star(new Vector2f(0, 0), 100000, new Vector2f(0, 0), 1);
             scene.AddBody(star);
+            scene.ForceBodyBufferInsert();
                 
             for (int i = 0; i < n; i++)
             {
-                float angle = NextFloatAbs(R, 2 * Mathf.PI);
-                float distance = NextFloatAbs(R, radius) + inner_radius;
-                float n_mass = mass + NextFloat(R, mass_variance);
-                    
-                Vector2f n_position = new Vector2f((float)Math.Cos(angle), (float)Math.Sin(angle)) * distance;
-
-                Planet planet = new Planet(n_position, n_mass, new Vector2f(0, 0), 1, 300);
-                planet.AutoOrbit(star);
-                scene.AddBody(planet);
+                AddMatter(false);
             }
         }
 
@@ -197,8 +192,46 @@ namespace GravityGame
             {
                 scene.DrawText = !scene.DrawText;
             }
+            else if(args.Code == Keyboard.Key.R)
+            {
+                Vector2f mouse_pos = GetMouseCoordsWorld();
+                
+                scene.EvolveLifeAtPosition(InvY(mouse_pos));
+            }
         }
 
+        private static void AddMatter(bool leech_mass)
+        {
+            Star star = scene.GetMainStar();
+
+            if (star == null)
+            {
+                return;
+            }
+            
+            float radius = 16000;
+            float inner_radius = 400;
+            float mass = 100;
+            float mass_variance = 50;
+            float velocity_variance = 0.1f;
+            
+            float angle = NextFloatAbs(R, 2 * Mathf.PI);
+            float vel_var = 1 + NextFloat(R, velocity_variance);
+            float distance = NextFloatAbs(R, radius) + inner_radius;
+            float n_mass = mass + NextFloat(R, mass_variance);
+                    
+            Vector2f n_position = new Vector2f((float)Math.Cos(angle), (float)Math.Sin(angle)) * distance;
+
+            Planet planet = new Planet(n_position, n_mass, new Vector2f(0, 0), 1, 300);
+            planet.AutoOrbit(star);
+            scene.AddBody(planet);
+
+            if (leech_mass)
+            {
+                scene.LeechStarMass(n_mass * 0.6f);
+            }
+        }
+        
         public static string GetDirectory()
         {
             return AppDomain.CurrentDomain.BaseDirectory;

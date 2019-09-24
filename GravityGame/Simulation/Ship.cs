@@ -5,6 +5,8 @@ using SFML.System;
 
 namespace GravityGame
 {
+    
+    //TODO: Make ships not a part of the quad tree
     public class Ship : TemperatureBody, IDrawsText
     {
         private float kill_time = 60.0f;
@@ -21,6 +23,7 @@ namespace GravityGame
             Life = life;
         }
 
+        //TODO: Ships dying screws up the incremental quad tree, pretty sure
         public override void Update(Scene scene, float time)
         {
             base.Update(scene, time);
@@ -32,6 +35,7 @@ namespace GravityGame
                 if (life_time > kill_time)
                 {
                     Exists = false;
+                    return;
                 }
 
                 UpdateLife(scene, time);
@@ -76,17 +80,17 @@ namespace GravityGame
                 RenderWindow window = (RenderWindow) target;
                 View view = window.GetView();
 
-                Text temperature_text = new Text((int) Temperature + " K (S)", Program.font);
+                Text temperature_text = new Text((int) Temperature + " K (S)", Program.Font);
                 temperature_text.Color = Mathf.TemperatureColorGradient.GetColor(Temperature);
                 FormatText(temperature_text, 0, window);
 
                 target.Draw(temperature_text);
 
-                Text population_text = new Text(Format.PopulationText(Life.Population), Program.font);
+                Text population_text = new Text(Format.PopulationText(Life.Population), Program.Font);
                 population_text.Color = Color.White;
-                Text tech_level_text = new Text(Life.TechLevel.ToString(), Program.font);
+                Text tech_level_text = new Text(Life.TechLevel.ToString(), Program.Font);
                 tech_level_text.Color = Color.White;
-                Text faction_text = new Text(Life.Faction.ToString(), Program.font);
+                Text faction_text = new Text(Life.Faction.ToString(), Program.Font);
                 faction_text.Color = Color.White;
 
                 FormatText(population_text, 1, window);

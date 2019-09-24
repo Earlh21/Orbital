@@ -43,6 +43,21 @@ namespace GravityGame
             return a + t * (b - a);
         }
 
+        public static float Cos(float value)
+        {
+            return (float) Math.Cos(value);
+        }
+
+        public static float Sin(float value)
+        {
+            return (float) Math.Sin(value);
+        }
+
+        public static float Acos(float value)
+        {
+            return (float) Math.Acos(value);
+        }
+        
         public static Vector2f Lerp(Vector2f a, Vector2f b, float t)
         {
             return a + t * (b - a);
