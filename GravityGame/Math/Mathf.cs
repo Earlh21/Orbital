@@ -18,6 +18,16 @@ namespace GravityGame
             return (float) Math.Pow(val, exponent);
         }
 
+        public static float Sign(float a)
+        {
+            if (a == 0)
+            {
+                return 0;
+            }
+
+            return a > 0 ? 1 : -1;
+        }
+        
         public static float Sqrt(float val)
         {
             return (float) Math.Sqrt(val);

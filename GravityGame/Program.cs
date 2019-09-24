@@ -9,6 +9,7 @@ using SFML.Window;
 
 namespace GravityGame
 {
+    //TODO: Cursor gets stuck when you right click on the top strip of the window
     //TODO: Try to find some way to simplify dealing with the selected object or at least make variables more descriptive
     internal class Program
     {

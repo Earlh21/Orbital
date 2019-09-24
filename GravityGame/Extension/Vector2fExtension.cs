@@ -40,5 +40,10 @@ namespace GravityGame.Extension
         {
             return new Vector2f(v.X, -v.Y);
         }
+
+        public static float Dot(this Vector2f a, Vector2f b)
+        {
+            return a.X * b.X + a.Y * b.Y;
+        }
     }
 }

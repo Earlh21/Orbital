@@ -10,7 +10,6 @@ namespace GravityGame
     public class Planet : TemperatureBody, IDrawsText
     {
         public static float growth_rate = 1;
-        //This number is stupidly sensitive
         public static float life_chance = 1 / 1000.0f;
         public Life Life { get; set; }
         public bool HasLife => Life != null;
@@ -47,7 +46,7 @@ namespace GravityGame
             float angle = Mathf.AngleTo(Position, other_position);
 
             Vector2f velocity = speed * new Vector2f(Mathf.Cos(angle), Mathf.Sin(angle));
-            Ship ship = new Ship(Position + velocity.Unit() * Radius * 1.5f, velocity, life);
+            Ship ship = new ThrusterShip(Position + velocity.Unit() * Radius * 1.5f, velocity, life, target);
             
             scene.AddBody(ship);
         }
@@ -104,7 +103,7 @@ namespace GravityGame
                 }
                 
                 //TODO: Make this chance a variable instead of a magic number
-                if (Program.R.NextDouble() < 1 - Math.Pow(1 - 1 / 15.0f, time))
+                if (Program.R.NextDouble() < 1 - Math.Pow(1 - 1 / 2.0f, time))
                 {
                     Body[] buffer = new Body[5];
                     int height = 3;

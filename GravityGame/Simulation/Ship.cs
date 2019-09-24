@@ -10,7 +10,8 @@ namespace GravityGame
     public class Ship : TemperatureBody, IDrawsText
     {
         private float kill_time = 60.0f;
-        private float life_time = 0.0f;
+        
+        protected float LifeTime { get; private set; }
         
         public override bool IsSelectable => false;
 
@@ -31,8 +32,8 @@ namespace GravityGame
             {
 
                 Heat -= Circumference * (Temperature - Life.NormalTemp) / Mathf.Insulation * time;
-                life_time += time;
-                if (life_time > kill_time)
+                LifeTime += time;
+                if (LifeTime > kill_time)
                 {
                     Exists = false;
                     return;
