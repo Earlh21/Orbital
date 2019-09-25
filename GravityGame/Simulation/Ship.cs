@@ -91,8 +91,8 @@ namespace GravityGame
                 population_text.Color = Color.White;
                 Text tech_level_text = new Text(Life.TechLevel.ToString(), Program.Font);
                 tech_level_text.Color = Color.White;
-                Text faction_text = new Text(Life.Faction.ToString(), Program.Font);
-                faction_text.Color = Color.White;
+                Text faction_text = new Text(Civilizations.GetName(Life.Faction), Program.Font);
+                faction_text.Color = Civilizations.GetColor(Life.Faction);
 
                 FormatText(population_text, 1, window);
                 FormatText(tech_level_text, 2, window);
