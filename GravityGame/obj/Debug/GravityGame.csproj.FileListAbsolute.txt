@@ -20,3 +20,4 @@ C:\Users\Idrialite\Projects\C#\GravityGamed\GravityGame\obj\Debug\GravityGame.ex
 C:\Users\Idrialite\Projects\C#\GravityGamed\GravityGame\obj\Debug\GravityGame.pdb
 C:\Users\Idrialite\Projects\C#\GravityGamed\GravityGame\bin\Debug\Resources\Fonts\monsterrat.ttf
 C:\Users\Idrialite\Projects\C#\GravityGamed\GravityGame\bin\Debug\Resources\Shaders\halo.frag
+C:\Users\Idrialite\Projects\C#\GravityGamed\GravityGame\bin\Debug\Resources\Text\alien_names.txt

@@ -34,9 +34,14 @@ namespace GravityGame
 		//TODO: Avoid colors that don't contrast the temperature colors
 		private static Color RandomColor()
 		{
-			int red = Program.R.Next(256);
-			int green = Program.R.Next(256);
-			int blue = Program.R.Next(256);
+			int red = Program.R.Next(200) + 30;
+			int green = Program.R.Next(200) + 30;
+			int blue = Program.R.Next(200) + 30;
+
+			if (green - red - blue > 100)
+			{
+				return RandomColor();
+			}
 			
 			return new Color((byte)red, (byte)green, (byte)blue, 255);
 		}
