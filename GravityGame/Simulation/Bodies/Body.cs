@@ -26,7 +26,7 @@ namespace GravityGame
 
         public virtual bool DoesGravity => true;
 
-        public virtual float Mass
+        public float Mass
         {
             get => mass;
             set

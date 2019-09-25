@@ -50,6 +50,10 @@ namespace GravityGame
             Ship ship = new ThrusterShip(Position + velocity.Unit() * Radius * 1.5f, velocity, life, target);
             
             scene.AddBody(ship);
+            
+            LaserEffect effect = new LaserEffect(Position, target.Position, Color.Red, 1.5f);
+            
+            scene.AddEffect(effect);
         }
 
         private void FireMatter(Scene scene, Body target)

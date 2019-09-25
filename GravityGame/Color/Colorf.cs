@@ -15,6 +15,11 @@ namespace GravityGame
             return new Color((byte)(R * 255), (byte)(G * 255),(byte)(B * 255),(byte)(A * 255));
         }
 
+        public static Colorf FromColor(Color color)
+        {
+            return new Colorf((float)color.R / 255,(float)color.G / 255,(float)color.B / 255,(float)color.A / 255);
+        }
+
         public Colorf()
         {
             R = 0;
@@ -29,6 +34,11 @@ namespace GravityGame
             G = g;
             B = b;
             A = a;
+        }
+
+        public static Colorf Interpolate(Colorf a, Colorf b, float value)
+        {
+            return a * (1 - value) + b * value;
         }
 
         public static Colorf operator +(Colorf a, Colorf b)

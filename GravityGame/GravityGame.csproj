@@ -78,6 +78,8 @@
     <Compile Include="Simulation\Bodies\ThrusterShip.cs" />
     <Compile Include="Simulation\BodyFilter.cs" />
     <Compile Include="Simulation\Civilizations.cs" />
+    <Compile Include="Simulation\Effects\Effect.cs" />
+    <Compile Include="Simulation\Effects\LaserEffect.cs" />
     <Compile Include="Simulation\IDrawsText.cs" />
     <Compile Include="Simulation\Life.cs" />
     <Compile Include="Simulation\Pair.cs" />

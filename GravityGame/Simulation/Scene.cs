@@ -13,9 +13,9 @@ namespace GravityGame
 	{
 		private readonly int THREAD_COUNT = Environment.ProcessorCount - 1;
 
-		private List<RenderBody> bodies;
 		private List<Star> star_cache;
 		private List<RenderBody> body_buffer;
+		private List<Effect> effect_buffer;
 		private Body selected;
 
 		private List<Thread> forces_threads;
@@ -28,14 +28,21 @@ namespace GravityGame
 		public bool DrawText { get; set; }
 		public Body Selected => selected;
 
-		public List<RenderBody> Bodies => bodies;
+		public List<RenderBody> Bodies { get; set; }
+
+		public List<Effect> Effects { get; set; }
+
 
 		public Scene()
 		{
 			QuadTree = new QuadTree(WorldSize(), null, false);
-			bodies = new List<RenderBody>();
+			
+			Bodies = new List<RenderBody>();
+			Effects = new List<Effect>();
+			
 			star_cache = new List<Star>();
 			body_buffer = new List<RenderBody>();
+			effect_buffer = new List<Effect>();
 
 			forces_threads = new List<Thread>();
 			forces_handles = new List<AutoResetEvent>();
@@ -59,7 +66,7 @@ namespace GravityGame
 		{
 			while (true)
 			{
-				int length = bodies.Count;
+				int length = Bodies.Count;
 
 				int section_length = length / THREAD_COUNT + 1;
 
@@ -68,7 +75,7 @@ namespace GravityGame
 
 				for (int i = low; i < high && i < length; i++)
 				{
-					Body body = bodies[i];
+					Body body = Bodies[i];
 					if (body.Exists && !body.ForcesDone)
 					{
 						if (important_area.ContainsPoint(body.Position))
@@ -93,10 +100,15 @@ namespace GravityGame
 		{
 			body_buffer.Add(body);
 		}
+		
+		public void AddEffect(Effect effect)
+		{
+			effect_buffer.Add(effect);
+		}
 
 		public void EvolveLifeAtPosition(Vector2f position)
 		{
-			foreach (RenderBody body in bodies)
+			foreach (RenderBody body in Bodies)
 			{
 				if (body.Contains(position))
 				{
@@ -121,7 +133,7 @@ namespace GravityGame
 		{
 			foreach (RenderBody body in body_buffer)
 			{
-				bodies.Add(body);
+				Bodies.Add(body);
 				if (body.DoesGravity)
 				{
 					QuadTree.Insert(body);
@@ -135,11 +147,17 @@ namespace GravityGame
 
 			body_buffer.Clear();
 		}
+		
+		private void AddEffects()
+		{
+			Effects.AddRange(effect_buffer);
+			effect_buffer.Clear();
+		}
 
 		public Vector2f GetTotalMomentum()
 		{
 			Vector2f total = new Vector2f(0, 0);
-			foreach (Body body in bodies)
+			foreach (Body body in Bodies)
 			{
 				total += body.Momentum;
 			}
@@ -154,7 +172,7 @@ namespace GravityGame
 				selected = null;
 			}
 
-			bodies.Remove(body);
+			Bodies.Remove(body);
 			if (body.DoesGravity)
 			{
 				QuadTree.Remove(body);
@@ -179,7 +197,7 @@ namespace GravityGame
 		{
 			bool found = false;
 
-			foreach (RenderBody body in bodies)
+			foreach (RenderBody body in Bodies)
 			{
 				if (body.Contains(position))
 				{
@@ -232,7 +250,7 @@ namespace GravityGame
 			RenderBody b = null;
 			bool found = false;
 
-			foreach (RenderBody body in bodies)
+			foreach (RenderBody body in Bodies)
 			{
 				if (body.Contains(position) && !(body is Star))
 				{
@@ -263,7 +281,7 @@ namespace GravityGame
 		{
 			float highest = 0;
 
-			foreach (Body body in bodies)
+			foreach (Body body in Bodies)
 			{
 				if (body.Position.X + body.Radius > highest)
 				{
@@ -296,7 +314,7 @@ namespace GravityGame
 		{
 			QuadTree tree = new QuadTree(WorldSize(), null, iteration);
 
-			foreach (Body body in bodies)
+			foreach (Body body in Bodies)
 			{
 				if (iteration)
 				{
@@ -333,7 +351,12 @@ namespace GravityGame
 			Vector2f bottom_left = real_center - view.Size / 2;
 			Rectangle domain = new Rectangle(bottom_left, view.Size);
 
-			foreach (RenderBody body in bodies)
+			foreach (Effect effect in Effects)
+			{
+				target.Draw(effect);
+			}
+			
+			foreach (RenderBody body in Bodies)
 			{
 				if (domain.PartiallyContains(body) && body.Exists)
 				{
@@ -350,7 +373,7 @@ namespace GravityGame
 
 		private void Iterate(float time)
 		{
-			foreach (Body body in bodies)
+			foreach (Body body in Bodies)
 			{
 				if (body.Exists)
 				{
@@ -371,7 +394,7 @@ namespace GravityGame
 			//Find collisions
 			List<Pair> collisions = new List<Pair>();
 
-			foreach (Body body in bodies)
+			foreach (Body body in Bodies)
 			{
 				QuadTree leaf;
 
@@ -410,7 +433,7 @@ namespace GravityGame
 
 		private void ApplyStarHeat(float time)
 		{
-			foreach (Body body in bodies)
+			foreach (Body body in Bodies)
 			{
 				if (body is TemperatureBody)
 				{
@@ -427,27 +450,46 @@ namespace GravityGame
 		{
 			Rectangle domain = WorldSize();
 			
-			for (int i = bodies.Count - 1; i > -1; i--)
+			for (int i = Bodies.Count - 1; i > -1; i--)
 			{
-				if(!domain.FullyContains(bodies[i]))
+				if(!domain.FullyContains(Bodies[i]))
 				{
-					RemoveBody(bodies[i]);
+					RemoveBody(Bodies[i]);
 				}
-				else if (!bodies[i].Exists)
+				else if (!Bodies[i].Exists)
 				{
-					bodies.RemoveAt(i);
+					Bodies.RemoveAt(i);
+				}
+			}
+		}
+
+		private void RemoveEffects()
+		{
+			for (int i = Effects.Count - 1; i > -1; i--)
+			{
+				if (Effects[i].Remove)
+				{
+					Effects.RemoveAt(i);
 				}
 			}
 		}
 
 		public void UpdateBodies(float time)
 		{
-			foreach (Body body in bodies)
+			foreach (Body body in Bodies)
 			{
 				if (body.Exists)
 				{
 					body.Update(this, time);
 				}
+			}
+		}
+
+		public void UpdateEffects(float time)
+		{
+			foreach (Effect effects in Effects)
+			{
+				effects.Update(time);
 			}
 		}
 
@@ -491,6 +533,10 @@ namespace GravityGame
 			
 			ApplyStarHeat(time);
 			UpdateBodies(time);
+			
+			AddEffects();
+			UpdateEffects(time);
+			RemoveEffects();
 
 			foreach (AutoResetEvent main_handle in main_handles)
 			{
