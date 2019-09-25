@@ -7,9 +7,24 @@ namespace GravityGame
 {
     public class TemperatureBody : RenderBody
     {
-
+        private float heat;
+        
         public float Temperature => Heat / Area;
-        public float Heat { get; set; }
+
+        public float Heat
+        {
+            get => heat;
+            set
+            {
+                if (value < 0.1f)
+                {
+                    heat = 0.1f;
+                    return;
+                }
+
+                heat = value;
+            }
+        }
         public bool DrawText { get; set; }
 
         public TemperatureBody() : base()

@@ -40,16 +40,16 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="sfml-audio, Version=2.4.2.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>D:\Downloads2\SFML.Net-2.4-64-bit\SFML.Net-2.4\lib\sfml-audio.dll</HintPath>
+      <HintPath>..\..\..\..\Downloads\SFML.Net-2.4-64-bit\SFML.Net-2.4\lib\sfml-audio.dll</HintPath>
     </Reference>
     <Reference Include="sfml-graphics, Version=2.4.2.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>D:\Downloads2\SFML.Net-2.4-64-bit\SFML.Net-2.4\lib\sfml-graphics.dll</HintPath>
+      <HintPath>..\..\..\..\Downloads\SFML.Net-2.4-64-bit\SFML.Net-2.4\lib\sfml-graphics.dll</HintPath>
     </Reference>
     <Reference Include="sfml-system, Version=2.4.2.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>D:\Downloads2\SFML.Net-2.4-64-bit\SFML.Net-2.4\lib\sfml-system.dll</HintPath>
+      <HintPath>..\..\..\..\Downloads\SFML.Net-2.4-64-bit\SFML.Net-2.4\lib\sfml-system.dll</HintPath>
     </Reference>
     <Reference Include="sfml-window, Version=2.4.2.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>D:\Downloads2\SFML.Net-2.4-64-bit\SFML.Net-2.4\lib\sfml-window.dll</HintPath>
+      <HintPath>..\..\..\..\Downloads\SFML.Net-2.4-64-bit\SFML.Net-2.4\lib\sfml-window.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -80,6 +80,7 @@
     <Compile Include="Simulation\Civilizations.cs" />
     <Compile Include="Simulation\Effects\Effect.cs" />
     <Compile Include="Simulation\Effects\LaserEffect.cs" />
+    <Compile Include="Simulation\Effects\HeatLaserEffect.cs" />
     <Compile Include="Simulation\IDrawsText.cs" />
     <Compile Include="Simulation\Life.cs" />
     <Compile Include="Simulation\Pair.cs" />

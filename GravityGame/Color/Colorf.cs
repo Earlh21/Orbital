@@ -38,6 +38,16 @@ namespace GravityGame
 
         public static Colorf Interpolate(Colorf a, Colorf b, float value)
         {
+            if (value > 1)
+            {
+                return b;
+            }
+
+            if (value < 0)
+            {
+                return a;
+            }
+            
             return a * (1 - value) + b * value;
         }
 

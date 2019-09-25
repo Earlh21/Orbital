@@ -535,13 +535,14 @@ namespace GravityGame
 			UpdateBodies(time);
 			
 			AddEffects();
-			UpdateEffects(time);
 			RemoveEffects();
 
 			foreach (AutoResetEvent main_handle in main_handles)
 			{
 				main_handle.WaitOne();
 			}
+			
+			UpdateEffects(time);
 			
 			Iterate(time);
 

@@ -50,16 +50,12 @@ namespace GravityGame
             Ship ship = new ThrusterShip(Position + velocity.Unit() * Radius * 1.5f, velocity, life, target);
             
             scene.AddBody(ship);
-            
-            LaserEffect effect = new LaserEffect(Position, target.Position, Color.Red, 1.5f);
-            
-            scene.AddEffect(effect);
         }
 
         private void FireMatter(Scene scene, Body target)
         {
-            float speed = Mathf.Sqrt(2 * Mathf.G * Mass / Radius) * (10.0f + Life.TechLevel * 2);
-            float mass = 12 + Life.TechLevel;
+            float speed = Mathf.Sqrt(2 * Mathf.G * Mass / Radius) * (10.0f + Life.TechLevel * 4);
+            float mass = 12 + Life.TechLevel * 3;
             
             float distance = Distance(target);
             float time = distance / speed;
@@ -70,6 +66,27 @@ namespace GravityGame
             Planet bullet = new Planet(Position + velocity.Unit() * Radius * 2.5f, mass, velocity, 1, 100000);
             
             scene.AddBody(bullet);
+        }
+
+        private void FireLaser(Scene scene, Planet target)
+        {
+            float heat_change_sign = Mathf.Sign(target.Temperature - target.Life.NormalTemp);
+            Color color;
+            float heat_change;
+
+            if (heat_change_sign > 0)
+            {
+                color = Color.Red;
+                heat_change = 10000 + Life.TechLevel * 2500;
+            }
+            else
+            {
+                color = Color.Blue;
+                heat_change = -1000 - Life.TechLevel * 100;
+            }
+            
+            HeatLaserEffect laser = new HeatLaserEffect(this, target, color, heat_change, 3.0f);
+            scene.AddEffect(laser);
         }
         
         public override void Draw(RenderTarget target, RenderStates states)
@@ -143,6 +160,25 @@ namespace GravityGame
                     FireShip(scene, target);
                 }
 
+                if (Program.R.NextDouble() < 1 - Math.Pow(1 - 1 / 8.0f, time))
+                {
+                    Body[] buffer = new Body[5];
+                    int height = 2;
+                    BodyFilter filter = new BodyFilter(typeof(Planet), BodyFilter.LifeFilter.True, Life.Faction, false);
+                    
+                    int count = scene.QuadTree.FindNearbyBodies(Position, height, filter, buffer);
+
+                    if (count < 1)
+                    {
+                        return;
+                    }
+                    
+                    int index = Program.R.Next(count);
+                    Body target = buffer[index];
+                    
+                    FireLaser(scene, (Planet)target);
+                }
+                
                 if (Program.R.NextDouble() < 1 - Math.Pow(1 - 1 / 60.0f, time))
                 {
                     Body[] buffer = new Body[5];
