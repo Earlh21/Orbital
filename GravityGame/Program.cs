@@ -210,7 +210,7 @@ namespace GravityGame
                 return;
             }
             
-            float radius = 16000;
+            float radius = 30000;
             float inner_radius = 400;
             float mass = 100;
             float mass_variance = 50;
