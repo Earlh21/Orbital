@@ -24,6 +24,7 @@ namespace GravityGame
             faction = last_faction;
             TechLevel = 1;
             Population = 2;
+            Population = 2;
         }
 
         public Life(float temperature, int faction, int tech_level, float population)

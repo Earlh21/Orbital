@@ -13,6 +13,8 @@ namespace GravityGame
         public static float life_chance = 1 / 1000.0f;
         public Life Life { get; set; }
         public bool HasLife => Life != null;
+        public override Color? OutlineColor => HasLife ? (Color?)Civilizations.GetColor(Life.Faction) : null;
+
         private void FormatText(Text text, float level, RenderWindow window)
         {
             View view = window.GetView();
@@ -25,10 +27,9 @@ namespace GravityGame
 
         
         //TODO: Improve targeting heuristic and measure effectiveness of various methods
-        private void FireShip(Scene scene, Body target)
+        public void FireShip(Scene scene, Body target)
         {
-            Life life = new Life(Temperature, Life.Faction, Life.TechLevel, Life.Population * 0.1f);
-            Life.Population *= 0.999f;
+            Life life = new Life(Temperature, Life.Faction, Life.TechLevel, 100);
 
             Star star = scene.GetMainStar();
 
@@ -49,6 +50,22 @@ namespace GravityGame
             Ship ship = new ThrusterShip(Position + velocity.Unit() * Radius * 1.5f, velocity, life, target);
             
             scene.AddBody(ship);
+        }
+
+        private void FireMatter(Scene scene, Body target)
+        {
+            float speed = Mathf.Sqrt(2 * Mathf.G * Mass / Radius) * (10.0f + Life.TechLevel * 2);
+            float mass = 12 + Life.TechLevel;
+            
+            float distance = Distance(target);
+            float time = distance / speed;
+            Vector2f other_position = target.Position + target.Velocity * time;
+            float angle = Mathf.AngleTo(Position, other_position);
+            
+            Vector2f velocity = speed * new Vector2f(Mathf.Cos(angle), Mathf.Sin(angle));
+            Planet bullet = new Planet(Position + velocity.Unit() * Radius * 2.5f, mass, velocity, 1, 100000);
+            
+            scene.AddBody(bullet);
         }
         
         public override void Draw(RenderTarget target, RenderStates states)
@@ -103,10 +120,10 @@ namespace GravityGame
                 }
                 
                 //TODO: Make this chance a variable instead of a magic number
-                if (Program.R.NextDouble() < 1 - Math.Pow(1 - 1 / 8.0f, time))
+                if (Program.R.NextDouble() < 1 - Math.Pow(1 - 1 / 7.5f, time))
                 {
                     Body[] buffer = new Body[5];
-                    int height = 3;
+                    int height = 2;
                     BodyFilter filter = new BodyFilter(typeof(Planet), BodyFilter.LifeFilter.False);
 
                     int count = scene.QuadTree.FindNearbyBodies(Position, height, filter, buffer);
@@ -120,6 +137,25 @@ namespace GravityGame
                     Body target = buffer[index];
                     
                     FireShip(scene, target);
+                }
+
+                if (Program.R.NextDouble() < 1 - Math.Pow(1 - 1 / 60.0f, time))
+                {
+                    Body[] buffer = new Body[5];
+                    int height = 2;
+                    BodyFilter filter = new BodyFilter(typeof(Planet), BodyFilter.LifeFilter.True, Life.Faction, false);
+                    
+                    int count = scene.QuadTree.FindNearbyBodies(Position, height, filter, buffer);
+
+                    if (count < 1)
+                    {
+                        return;
+                    }
+                    
+                    int index = Program.R.Next(count);
+                    Body target = buffer[index];
+                    
+                    FireMatter(scene, target);
                 }
                 
                 Life.Update(time, Temperature);

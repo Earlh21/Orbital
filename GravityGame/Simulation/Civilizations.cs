@@ -38,7 +38,17 @@ namespace GravityGame
 			int green = Program.R.Next(200) + 30;
 			int blue = Program.R.Next(200) + 30;
 
-			if (green - red - blue > 100)
+			if (green - red - blue > 80)
+			{
+				return RandomColor();
+			}
+
+			if (red - green - blue > 80)
+			{
+				return RandomColor();
+			}
+
+			if (blue - green - red > 80)
 			{
 				return RandomColor();
 			}
@@ -60,12 +70,12 @@ namespace GravityGame
 
 		public static string GetName(int id)
 		{
-			return names[id];
+			return names[id % names.Count];
 		}
 
 		public static Color GetColor(int id)
 		{
-			return colors[id];
+			return colors[id % colors.Count];
 		}
 	}
 }

@@ -6,7 +6,8 @@ using SFML.System;
 namespace GravityGame
 {
     
-    //TODO: Make ships not a part of the quad tree
+    //TODO: Make ships last for less time
+    //TODO: Make ships more accurate
     public class Ship : TemperatureBody, IDrawsText
     {
         private float kill_time = 60.0f;
@@ -18,13 +19,13 @@ namespace GravityGame
         public override bool DoesGravity => false;
         public Life Life { get; set; }
         public bool HasLife => Life != null;
+        public override Color? OutlineColor => new Color(0, 200, 0, 100);
 
         public Ship(Vector2f position, Vector2f velocity, Life life) : base(position, 10, velocity, 1, life.NormalTemp)
         {
             Life = life;
         }
 
-        //TODO: Ships dying screws up the incremental quad tree, pretty sure
         public override void Update(Scene scene, float time)
         {
             base.Update(scene, time);

@@ -50,7 +50,7 @@ namespace GravityGame
 			line[0].Color = color;
 			line[1].Color = color;
 			
-			target.Draw(line, PrimitiveType.Lines);
+			//target.Draw(line, PrimitiveType.Lines);
 			
 			base.Draw(target, states);
 			
@@ -62,7 +62,7 @@ namespace GravityGame
 			shape.OutlineColor = Color.Yellow;
 			shape.OutlineThickness = 5.0f;
 			
-			target.Draw(shape);
+			//target.Draw(shape);
 		}
 	}
 }

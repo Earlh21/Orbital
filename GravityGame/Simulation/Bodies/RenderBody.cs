@@ -12,6 +12,7 @@ namespace GravityGame
         protected virtual Shader Shader => null;
 
         public bool DrawOutline { get; set; } = false;
+        public virtual Color? OutlineColor => null;
 
         public RenderBody() : base()
         {
@@ -38,7 +39,6 @@ namespace GravityGame
             View view = window.GetView();
             
             UpdateGraphic();
-            
             shape.SetPointCount((uint)Mathf.Clamp(10, 80, 18 + shape.Radius * (window.Size.X / view.Size.X) / 3.5f));
 
             if (Shader == null)
@@ -49,16 +49,17 @@ namespace GravityGame
             {
                 target.Draw(shape, new RenderStates(Shader));
             }
-
+                        
             if (DrawOutline)
             {
-
-                shape.Radius = view.Size.X / 50.0f;
+                shape.Radius = 12.0f / Program.ViewScale;
                 shape.Position = new Vector2f(Position.X - shape.Radius, -Position.Y - shape.Radius);
-                shape.OutlineColor = shape.FillColor;
+                shape.OutlineColor = OutlineColor == null ? Color.Green : (Color) OutlineColor;
                 shape.FillColor = Color.Transparent;
-                shape.SetPointCount(20);
-                shape.OutlineThickness = view.Size.X / 500.0f;
+                shape.SetPointCount(12);
+                shape.OutlineThickness = 3.5f / Program.ViewScale;
+                
+                target.Draw(shape);
             }
         }
 

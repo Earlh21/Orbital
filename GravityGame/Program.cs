@@ -16,7 +16,6 @@ namespace GravityGame
         private static RenderWindow window;
         private static View view;
         private static Vector2f view_offset = new Vector2f(0, 0);
-        private static float view_scale = 2.5f;
         private static Scene scene;
         private static float time_scale = 1;
         
@@ -27,7 +26,8 @@ namespace GravityGame
         private static Vector2f mouse_fire_offset;
         private const float add_mass_period = 0.2f;
         private static float add_mass_time = 0.0f;
-        
+
+        public static float ViewScale { get; private set; } = 2.5f;
         public static Random R { get; private set; }
         public static Font Font { get; private set; }
 
@@ -79,7 +79,7 @@ namespace GravityGame
                 if (panning)
                 {
                     Vector2f diff = (Vector2f) Mouse.GetPosition() - mouse_original_pos;
-                    view_offset -= 0.5f * diff / view_scale;
+                    view_offset -= 0.5f * diff / ViewScale;
                     Mouse.SetPosition((Vector2i)mouse_original_pos);
                 }
                 
@@ -135,7 +135,7 @@ namespace GravityGame
 
         public static void UpdateView()
         {
-            view.Size = (Vector2f) window.Size / view_scale;
+            view.Size = (Vector2f) window.Size / ViewScale;
             view.Center = scene.Selected == null ? view_offset : InvY(scene.GetSelectedPosition()) + view_offset;
             window.SetView(view);
         }
@@ -262,11 +262,11 @@ namespace GravityGame
             {
                 if (args.Delta > 0)
                 {
-                    view_scale *= 1.1f;
+                    ViewScale *= 1.1f;
                 }
                 else
                 {
-                    view_scale /= 1.1f;
+                    ViewScale /= 1.1f;
                 }
             }
             else if (Keyboard.IsKeyPressed(Keyboard.Key.LShift))

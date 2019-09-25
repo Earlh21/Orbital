@@ -21,3 +21,10 @@ C:\Users\Idrialite\Projects\C#\GravityGamed\GravityGame\obj\Debug\GravityGame.pd
 C:\Users\Idrialite\Projects\C#\GravityGamed\GravityGame\bin\Debug\Resources\Fonts\monsterrat.ttf
 C:\Users\Idrialite\Projects\C#\GravityGamed\GravityGame\bin\Debug\Resources\Shaders\halo.frag
 C:\Users\Idrialite\Projects\C#\GravityGamed\GravityGame\bin\Debug\Resources\Text\alien_names.txt
+C:\Users\Idrialite\RiderProjects\GravityGame\GravityGame\bin\Debug\Resources\Fonts\monsterrat.ttf
+C:\Users\Idrialite\RiderProjects\GravityGame\GravityGame\bin\Debug\Resources\Shaders\halo.frag
+C:\Users\Idrialite\RiderProjects\GravityGame\GravityGame\bin\Debug\Resources\Text\alien_names.txt
+C:\Users\Idrialite\RiderProjects\GravityGame\GravityGame\bin\Debug\sfml-audio.dll
+C:\Users\Idrialite\RiderProjects\GravityGame\GravityGame\bin\Debug\sfml-graphics.dll
+C:\Users\Idrialite\RiderProjects\GravityGame\GravityGame\bin\Debug\sfml-system.dll
+C:\Users\Idrialite\RiderProjects\GravityGame\GravityGame\bin\Debug\sfml-window.dll

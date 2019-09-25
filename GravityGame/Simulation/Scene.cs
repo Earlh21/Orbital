@@ -115,6 +115,8 @@ namespace GravityGame
 			AddBodies();
 		}
 		
+		
+		
 		private void AddBodies()
 		{
 			foreach (RenderBody body in body_buffer)

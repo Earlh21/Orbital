@@ -449,6 +449,11 @@ namespace GravityGame
 		public int FindNearbyBodies(Vector2f position, int tree_height, BodyFilter filter, Body[] buffer)
 		{
 			QuadTree leaf = SearchPosition(position);
+
+			if (leaf == null)
+			{
+				return 0;
+			}
 			
 			QuadTree previous = leaf;
 			QuadTree current = leaf.Parent;
