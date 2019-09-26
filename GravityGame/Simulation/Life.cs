@@ -35,20 +35,27 @@ namespace GravityGame
             Population = population;
         }
 
-        //TODO: Overhaul this calculation, it's just not working at high tech levels
         public float GetCarryingCapacity(float temperature)
         {
-            float temp_diff = Math.Abs(temperature - NormalTemp) * Mathf.Pow(Mathf.Max(1, 300 - temperature), 0.75f) / 15;
-            float temp_mod = temp_diff / TechLevel / 10;
-            float temp_divisor = 1 + temp_mod;
-            float value = 1000 * Mathf.Pow(TechLevel, 8) / temp_divisor - temp_mod * 100;
-                
-            if (value < 1)
+            float min_temp = NormalTemp - 75 * TechLevel;
+            float max_temp = NormalTemp + 100 * TechLevel * TechLevel;
+
+            float max_population = 2000 + 1000000 * (TechLevel - 1) * (TechLevel - 1);
+
+            float t = Mathf.InvLerp(min_temp, max_temp, temperature);
+            if (t > 0.5)
             {
-                return 1;
+                t = 1 - t;
             }
 
-            return value;
+            float capacity = max_population * t * 2;
+
+            if (capacity < 0)
+            {
+                capacity = 1;
+            }
+
+            return capacity;
         }
         
         public void Update(float time, float temperature)
@@ -64,7 +71,7 @@ namespace GravityGame
             
             Population += growth;
 
-            if (Program.R.NextDouble() < 1 - Math.Pow(1 - tech_chance, time))
+            if (TechLevel <= 9 && Program.R.NextDouble() < 1 - Math.Pow(1 - tech_chance, time))
             {
                 TechLevel++;
                 tech_chance = 1.0f / (150.0f + (TechLevel - 1.0f) * 50.0f);

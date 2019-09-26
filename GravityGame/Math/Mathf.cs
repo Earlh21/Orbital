@@ -53,6 +53,11 @@ namespace GravityGame
             return a + t * (b - a);
         }
 
+        public static float InvLerp(float a, float b, float c)
+        {
+            return (c - a) / (b - a);
+        }
+
         public static float Cos(float value)
         {
             return (float) Math.Cos(value);
