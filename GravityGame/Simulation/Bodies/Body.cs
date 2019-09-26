@@ -155,7 +155,6 @@ namespace GravityGame
 
         public void AutoOrbit(Body target)
         {
-            //TODO: Optimize this
             Vector2f force = GetForceFrom(target);
             float acceleration = (force / Mass).Length();
             float velocity = Mathf.Sqrt(acceleration * Distance(target));

@@ -33,6 +33,11 @@ namespace GravityGame
             Type star = typeof(Star);
             Type ship = typeof(Ship);
 
+            if (!A.DoesGravity && !B.DoesGravity)
+            {
+                return null;
+            }
+            
             if (a_type == planet && b_type == planet)
             {
                 return ResolvePlanetPlanet(scene);
@@ -41,6 +46,11 @@ namespace GravityGame
             if (a_type == star || b_type == star)
             {
                 return ResolveBodyStar(scene);
+            }
+
+            if (A is Satellite || B is Satellite)
+            {
+                return ResolveSatelliteBody();
             }
 
             if ((A is Ship && b_type == planet) || (a_type == planet && B is Ship))
@@ -56,6 +66,26 @@ namespace GravityGame
             throw new InvalidOperationException("Collision between two bodies was not covered: " + a_type.ToString() + " : " + b_type.ToString());
         }
 
+        private Body ResolveSatelliteBody()
+        {
+            Satellite satellite;
+            Body body;
+
+            if (A is Satellite)
+            {
+                satellite = (Satellite) A;
+                body = B;
+            }
+            else
+            {
+                satellite = (Satellite) B;
+                body = A;
+            }
+
+            satellite.Exists = false;
+            return body;
+        }
+        
         private Body ResolvePlanetShip(Scene scene)
         {
             Planet planet;

@@ -10,7 +10,12 @@ namespace GravityGame
     public class Planet : TemperatureBody, IDrawsText
     {
         public static float growth_rate = 1;
-        public static float life_chance = 1 / 1000.0f;
+        private static float life_chance = 1 / 1000.0f;
+        private static float laser_chance = 1 / 8.0f;
+        private static float ship_chance = 1 / 7.5f;
+        private static float matter_chance = 1 / 50.0f;
+        private static float satellite_chance = 1 / 50.0f;
+        
         public Life Life { get; set; }
         public bool HasLife => Life != null;
         public override Color? OutlineColor => HasLife ? (Color?)Civilizations.GetColor(Life.Faction) : null;
@@ -27,7 +32,7 @@ namespace GravityGame
 
         
         //TODO: Improve targeting heuristic and measure effectiveness of various methods
-        public void FireShip(Scene scene, Body target)
+        private void FireShip(Scene scene, Body target)
         {
             Life life = new Life(Temperature, Life.Faction, Life.TechLevel, 100);
 
@@ -47,15 +52,25 @@ namespace GravityGame
             float angle = Mathf.AngleTo(Position, other_position);
 
             Vector2f velocity = speed * new Vector2f(Mathf.Cos(angle), Mathf.Sin(angle));
-            Ship ship = new ThrusterShip(Position + velocity.Unit() * Radius * 1.5f, velocity, life, target);
+
+            Ship ship;
             
+            if (Life.TechLevel <= 1)
+            {
+                ship = new Ship(Position + velocity.Unit() * Radius * 1.5f, velocity, life);
+            }
+            else
+            {
+                ship = new ThrusterShip(Position + velocity.Unit() * Radius * 1.5f, velocity, life, target);
+            }
+
             scene.AddBody(ship);
         }
 
         private void FireMatter(Scene scene, Body target)
         {
-            float speed = Mathf.Sqrt(2 * Mathf.G * Mass / Radius) * (10.0f + Life.TechLevel * 4);
-            float mass = 12 + Life.TechLevel * 3;
+            float speed = Mathf.Sqrt(2 * Mathf.G * Mass / Radius) * (10.0f + Life.TechLevel / 2.0f);
+            float mass = 12 + Life.TechLevel * 6;
             
             float distance = Distance(target);
             float time = distance / speed;
@@ -74,10 +89,10 @@ namespace GravityGame
             Color color;
             float heat_change;
 
-            if (heat_change_sign > 0)
+            if (heat_change_sign > 0 || target.Life.TechLevel > 2)
             {
                 color = Color.Red;
-                heat_change = 10000 + Life.TechLevel * 2500;
+                heat_change = 10000 + Mathf.Pow(Life.TechLevel, 1.5f) * 2500;
             }
             else
             {
@@ -87,6 +102,17 @@ namespace GravityGame
             
             HeatLaserEffect laser = new HeatLaserEffect(this, target, color, heat_change, 3.0f);
             scene.AddEffect(laser);
+        }
+
+        private void FireLaserSatellite(Scene scene)
+        {
+            float angle = Program.R.Next();
+            float speed = Mathf.Sqrt(2 * Mathf.G * Mass / Radius) * 0.8f;
+            Vector2f velocity = Velocity + new Vector2f(Mathf.Cos(angle), Mathf.Sin(angle)) * speed;
+            Vector2f position = Position + velocity.Unit() * Radius * 1.5f;
+
+            Satellite satellite = new LaserSatellite(position, velocity, this, Life.Faction);
+            scene.AddBody(satellite);
         }
         
         public override void Draw(RenderTarget target, RenderStates states)
@@ -140,8 +166,7 @@ namespace GravityGame
                     return;
                 }
                 
-                //TODO: Make this chance a variable instead of a magic number
-                if (Program.R.NextDouble() < 1 - Math.Pow(1 - 1 / 7.5f, time))
+                if (Life.TechLevel >= 1 && Program.R.NextDouble() < 1 - Math.Pow(1 - ship_chance, time))
                 {
                     Body[] buffer = new Body[5];
                     int height = 2;
@@ -160,7 +185,7 @@ namespace GravityGame
                     FireShip(scene, target);
                 }
 
-                if (Program.R.NextDouble() < 1 - Math.Pow(1 - 1 / 8.0f, time))
+                if (Life.TechLevel >= 2 && Program.R.NextDouble() < 1 - Math.Pow(1 - laser_chance, time))
                 {
                     Body[] buffer = new Body[5];
                     int height = 2;
@@ -179,7 +204,7 @@ namespace GravityGame
                     FireLaser(scene, (Planet)target);
                 }
                 
-                if (Program.R.NextDouble() < 1 - Math.Pow(1 - 1 / 60.0f, time))
+                if (Life.TechLevel >= 3 && Program.R.NextDouble() < 1 - Math.Pow(1 - matter_chance, time))
                 {
                     Body[] buffer = new Body[5];
                     int height = 2;
@@ -196,6 +221,11 @@ namespace GravityGame
                     Body target = buffer[index];
                     
                     FireMatter(scene, target);
+                }
+
+                if (Life.TechLevel >= 2 && Program.R.NextDouble() < 1 - Math.Pow(1 - satellite_chance, time))
+                {
+                    FireLaserSatellite(scene);
                 }
                 
                 Life.Update(time, Temperature);
