@@ -71,6 +71,7 @@
     <Compile Include="Math\VectorFieldL.cs" />
     <Compile Include="Simulation\Bodies\Body.cs" />
     <Compile Include="Simulation\Bodies\LaserSatellite.cs" />
+    <Compile Include="Simulation\Bodies\OrbitShip.cs" />
     <Compile Include="Simulation\Bodies\Planet.cs" />
     <Compile Include="Simulation\Bodies\RenderBody.cs" />
     <Compile Include="Simulation\Bodies\Satellite.cs" />

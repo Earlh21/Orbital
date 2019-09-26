@@ -31,8 +31,7 @@ namespace GravityGame
             base.Update(scene, time);
             if (HasLife)
             {
-
-                Heat -= Circumference * (Temperature - Life.NormalTemp) / Mathf.Insulation * time;
+                Heat += 1000 * Mathf.Sign(Life.NormalTemp - Temperature) * time;
                 LifeTime += time;
                 if (LifeTime > kill_time)
                 {

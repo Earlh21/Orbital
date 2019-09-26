@@ -59,9 +59,22 @@ namespace GravityGame
             {
                 ship = new Ship(Position + velocity.Unit() * Radius * 1.5f, velocity, life);
             }
-            else
+            else if (Life.TechLevel <= 3)
             {
                 ship = new ThrusterShip(Position + velocity.Unit() * Radius * 1.5f, velocity, life, target);
+            }
+            else
+            {
+                double random = Program.R.NextDouble();
+
+                if (random > 0.5)
+                {
+                    ship = new OrbitShip(Position + velocity.Unit() * Radius * 1.5f, velocity, life, target);
+                }
+                else
+                {
+                    ship = new ThrusterShip(Position + velocity.Unit() * Radius * 1.5f, velocity, life, target);
+                }
             }
 
             scene.AddBody(ship);
