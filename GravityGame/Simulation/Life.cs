@@ -42,7 +42,7 @@ namespace GravityGame
 
             float max_population = 2000 + 1000000 * (TechLevel - 1) * (TechLevel - 1);
 
-            float t = Mathf.InvLerp(min_temp, max_temp, temperature);
+            float t = Mathf.InvLerp2(min_temp, NormalTemp, max_temp, temperature);
             if (t > 0.5)
             {
                 t = 1 - t;
