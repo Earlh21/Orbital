@@ -164,9 +164,9 @@ namespace GravityGame
             Momentum = Mass * (target.Velocity + velocity_unit * velocity);
         }
 
-        public List<Pair> GetCollisions(QuadTree tree)
+        public List<CollisionPair> GetCollisions(QuadTree tree)
         {
-            List<Pair> collisions = new List<Pair>();
+            List<CollisionPair> collisions = new List<CollisionPair>();
 
             if (tree == null)
             {
@@ -179,7 +179,7 @@ namespace GravityGame
                 {
                     if (this != tree.Node && CheckCollide(tree.Node))
                     {
-                        collisions.Add(new Pair(this, tree.Node));
+                        collisions.Add(new CollisionPair(this, tree.Node));
                     }
                 }
             }
@@ -199,9 +199,9 @@ namespace GravityGame
             Position += amount;
         }
 
-        public static List<Pair> GetAllCollisions(QuadTree tree)
+        public static List<CollisionPair> GetAllCollisions(QuadTree tree)
         {
-            List<Pair> collisions = new List<Pair>();
+            List<CollisionPair> collisions = new List<CollisionPair>();
 
             if (tree == null)
             {

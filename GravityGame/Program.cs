@@ -31,6 +31,7 @@ namespace GravityGame
         public static Random R { get; private set; }
         public static Font Font { get; private set; }
 
+        //TODO: Multithread drawing and updating?
         //TODO: Add a leaderboard for number of planets colonized
         public static void Main(string[] args)
         {

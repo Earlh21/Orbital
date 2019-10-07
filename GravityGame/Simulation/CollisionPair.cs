@@ -7,12 +7,12 @@ using SFML.System;
 
 namespace GravityGame
 {
-    public struct Pair
+    public struct CollisionPair
     {
         public Body A { get; private set; }
         public Body B { get; private set; }
 
-        public Pair(Body a, Body b)
+        public CollisionPair(Body a, Body b)
         {
             A = a;
             B = b;
@@ -105,6 +105,13 @@ namespace GravityGame
             if (!planet.HasLife)
             {
                 planet.Life = ship.Life;
+            }
+            else if(planet.Life.Faction == ship.Life.Faction)
+            {
+                if (planet.Life.TechLevel < ship.Life.TechLevel)
+                {
+                    planet.Life.TechLevel = ship.Life.TechLevel;
+                }
             }
 
             ship.Exists = false;

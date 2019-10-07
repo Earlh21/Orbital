@@ -392,7 +392,7 @@ namespace GravityGame
 		private void ResolveCollisions()
 		{
 			//Find collisions
-			List<Pair> collisions = new List<Pair>();
+			List<CollisionPair> collisions = new List<CollisionPair>();
 
 			foreach (Body body in Bodies)
 			{
@@ -411,7 +411,7 @@ namespace GravityGame
 			}
 
 			//Resolve collisions
-			foreach (Pair collision in collisions)
+			foreach (CollisionPair collision in collisions)
 			{
 				Body primary = collision.Resolve(this);
 

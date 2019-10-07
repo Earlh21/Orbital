@@ -9,6 +9,8 @@ namespace GravityGame
 	{
 		private static List<String> names;
 		private static List<Color> colors;
+		private static Dictionary<int, int> faction_count;
+		private static Dictionary<int, Demeanor> demeanors;
 		
 		static Civilizations()
 		{
@@ -29,8 +31,31 @@ namespace GravityGame
 			}
 			
 			Shuffle(names);
+			
+			faction_count = new Dictionary<int, int>();
+			demeanors = new Dictionary<int, Demeanor>();
 		}
 
+		public static int GetFactionCount(int faction)
+		{
+			return faction_count[faction];
+		}
+
+		public static void DecrementFactionCount(int faction)
+		{
+			faction_count[faction] -= 1;
+		}
+
+		public static void IncrementFactionCount(int faction)
+		{
+			if (!faction_count.ContainsKey(faction))
+			{
+				faction_count.Add(faction, 0);
+			}
+			
+			faction_count[faction] += 1;
+		}
+		
 		//TODO: Avoid colors that don't contrast the temperature colors
 		private static Color RandomColor()
 		{
@@ -55,6 +80,43 @@ namespace GravityGame
 			
 			return new Color((byte)red, (byte)green, (byte)blue, 255);
 		}
+
+		private static Demeanor GetRandomDemeanor()
+		{
+			double random = Program.R.NextDouble();
+
+			if (random < 0.25)
+			{
+				return Demeanor.Normal;
+			}
+			else if (random < 0.5)
+			{
+				return Demeanor.Colonial;
+			}
+			else if(random < 0.75)
+			{
+				return Demeanor.Scientist;
+			}
+			else
+			{
+				return Demeanor.Individual;
+			}
+		}
+		
+		public static Demeanor GetDemeanor(int faction)
+		{
+			if (!demeanors.ContainsKey(faction))
+			{
+				demeanors.Add(faction, GetRandomDemeanor());
+			}
+
+			return demeanors[faction];
+		}
+		
+		public static DemeanorData GetDemeanorData(int faction)
+		{
+			return new DemeanorData(GetDemeanor(faction));
+		}
 		
 		private static void Shuffle<T> (List<T> array)
 		{
@@ -76,6 +138,72 @@ namespace GravityGame
 		public static Color GetColor(int id)
 		{
 			return colors[id % colors.Count];
+		}
+
+		public enum Demeanor
+		{
+			Colonial,
+			Individual,
+			Scientist,
+			Normal
+		}
+
+		public struct DemeanorData
+		{
+			public float ShipChance { get; private set; }
+			public float LaserChance { get; private set; }
+			public float MatterChance { get; private set; }
+			public float SatelliteChance { get; private set; }
+			
+			public float TemperatureMultiplier { get; private set; }
+			public float ScienceMultiplier { get; private set; }
+			
+			public DemeanorData(Demeanor demeanor)
+			{
+				switch (demeanor)
+				{
+					case Demeanor.Normal:
+						ShipChance = 1 / 8.0f;
+						LaserChance = 1 / 7.5f;
+						MatterChance = 1 / 60.0f;
+						SatelliteChance = 1 / 50.0f;
+						TemperatureMultiplier = 1.0f;
+						ScienceMultiplier = 1.0f;
+						break;
+					case Demeanor.Scientist:
+						ShipChance = 1 / 9.0f;
+						LaserChance = 1 / 9.0f;
+						MatterChance = 1 / 65.0f;
+						SatelliteChance = 1 / 40.0f;
+						TemperatureMultiplier = 1.2f;
+						ScienceMultiplier = 1.5f;
+						break;
+					case Demeanor.Individual:
+						ShipChance = 1 / 15.0f;
+						LaserChance = 1 / 6.0f;
+						MatterChance = 1 / 50.0f;
+						SatelliteChance = 1 / 20.0f;
+						TemperatureMultiplier = 1.5f;
+						ScienceMultiplier = 1.2f;
+						break;
+					case Demeanor.Colonial:
+						ShipChance = 1 / 4.0f;
+						LaserChance = 1 / 9.0f;
+						MatterChance = 1 / 70.0f;
+						SatelliteChance = 1 / 60.0f;
+						TemperatureMultiplier = 1.0f;
+						ScienceMultiplier = 0.8f;
+						break;
+					default:
+						ShipChance = -1;
+						LaserChance = -1;
+						MatterChance = -1;
+						SatelliteChance = -1;
+						TemperatureMultiplier = -1;
+						ScienceMultiplier = -1;
+						break;
+				}
+			}
 		}
 	}
 }

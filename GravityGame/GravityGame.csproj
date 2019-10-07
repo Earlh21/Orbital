@@ -77,6 +77,7 @@
     <Compile Include="Simulation\Bodies\Satellite.cs" />
     <Compile Include="Simulation\Bodies\Ship.cs" />
     <Compile Include="Simulation\Bodies\Star.cs" />
+    <Compile Include="Simulation\Bodies\TeleportShip.cs" />
     <Compile Include="Simulation\Bodies\TemperatureBody.cs" />
     <Compile Include="Simulation\Bodies\ThrusterShip.cs" />
     <Compile Include="Simulation\BodyFilter.cs" />
@@ -86,7 +87,7 @@
     <Compile Include="Simulation\Effects\HeatLaserEffect.cs" />
     <Compile Include="Simulation\IDrawsText.cs" />
     <Compile Include="Simulation\Life.cs" />
-    <Compile Include="Simulation\Pair.cs" />
+    <Compile Include="Simulation\CollisionPair.cs" />
     <Compile Include="Simulation\ISelectable.cs" />
     <Compile Include="Simulation\Scene.cs" />
     <Compile Include="Simulation\PointMass.cs" />
