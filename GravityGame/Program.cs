@@ -6,6 +6,7 @@ using NUnit.Framework.Constraints;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
+using TGUI;
 
 namespace GravityGame
 {
@@ -14,6 +15,7 @@ namespace GravityGame
     internal class Program
     {
         private static RenderWindow window;
+        private static Gui gui;
         private static View view;
         private static Vector2f view_offset = new Vector2f(0, 0);
         private static Scene scene;
@@ -36,6 +38,7 @@ namespace GravityGame
         public static void Main(string[] args)
         {
             window = new RenderWindow(new VideoMode(800, 600), "The Game of Life");
+            gui = new Gui(window);
             view = new View();
 
             Font = new Font(GetResourcesDirectory() + "\\Fonts\\monsterrat.ttf");
@@ -114,6 +117,7 @@ namespace GravityGame
                     window.Draw(ghost);
                 }
 
+                gui.Draw();
                 window.Display();
             }
         }

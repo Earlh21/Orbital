@@ -9,6 +9,66 @@ namespace GravityGame
 {
     public class Planet : TemperatureBody, IDrawsText
     {
+        public enum PlanetType
+        {
+            Rocky,
+            Gas,
+            Ocean
+        }
+        
+        /**
+         * Gas percentage of the planet's makeup.
+         */
+        public float GasMakeup { get; set; }
+        
+        /**
+         * Rock percentage of the planet's makeup.
+         */
+        public float RockMakeup
+        {
+            get => 1 - GasMakeup;
+            set => GasMakeup = 1 - value;
+        }
+        
+        /**
+         * Amount of water-area in the planet's atmosphere and surface.
+         */
+        public float WaterArea { get; set; }
+
+        /**
+         * Amount of water-area on the planet's surface.
+         */
+        public float SurfaceWaterArea
+        {
+            get
+            {
+                
+            }
+        }
+        
+        /**
+         * Percentage of the surface covered by water.
+         */
+        public float WaterPercentage => Area / WaterArea;
+
+        public PlanetType Type
+        {
+            get
+            {
+                if (GasMakeup > 0.6f)
+                {
+                    return PlanetType.Gas;
+                }
+
+                if (WaterPercentage > 0.95f)
+                {
+                    return PlanetType.Ocean;
+                }
+
+                return PlanetType.Rocky;
+            }
+        }
+
         private static float life_chance = 1 / 300.0f;
         private Civilizations.DemeanorData demeanor_data;
 
