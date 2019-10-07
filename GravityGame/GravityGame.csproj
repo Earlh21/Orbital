@@ -39,22 +39,25 @@
       <HintPath>..\packages\NUnit.3.11.0\lib\net45\nunit.framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="sfml-audio, Version=2.4.2.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\..\..\Downloads\SFML.Net-2.4-64-bit\SFML.Net-2.4\lib\sfml-audio.dll</HintPath>
+    <Reference Include="sfml-audio, Version=2.5.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>D:\Downloads5\TGUI.Net-0.8-dev-64bit\TGUI.Net 0.8-dev\lib\sfml-audio.dll</HintPath>
     </Reference>
-    <Reference Include="sfml-graphics, Version=2.4.2.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\..\..\Downloads\SFML.Net-2.4-64-bit\SFML.Net-2.4\lib\sfml-graphics.dll</HintPath>
+    <Reference Include="sfml-graphics, Version=2.5.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>D:\Downloads5\TGUI.Net-0.8-dev-64bit\TGUI.Net 0.8-dev\lib\sfml-graphics.dll</HintPath>
     </Reference>
-    <Reference Include="sfml-system, Version=2.4.2.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\..\..\Downloads\SFML.Net-2.4-64-bit\SFML.Net-2.4\lib\sfml-system.dll</HintPath>
+    <Reference Include="sfml-system, Version=2.5.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>D:\Downloads5\TGUI.Net-0.8-dev-64bit\TGUI.Net 0.8-dev\lib\sfml-system.dll</HintPath>
     </Reference>
-    <Reference Include="sfml-window, Version=2.4.2.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\..\..\Downloads\SFML.Net-2.4-64-bit\SFML.Net-2.4\lib\sfml-window.dll</HintPath>
+    <Reference Include="sfml-window, Version=2.5.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>D:\Downloads5\TGUI.Net-0.8-dev-64bit\TGUI.Net 0.8-dev\lib\sfml-window.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="tgui.net, Version=0.8.3.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>D:\Downloads5\TGUI.Net-0.8-dev-64bit\TGUI.Net 0.8-dev\lib\tgui.net.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Color\Colorf.cs" />
@@ -99,6 +102,24 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\csfml-audio-2.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\csfml-graphics-2.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\csfml-network-2.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\csfml-system-2.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\csfml-window-2.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\ctgui-0.8.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\Fonts\monsterrat.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

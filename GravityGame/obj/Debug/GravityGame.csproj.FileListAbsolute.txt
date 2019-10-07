@@ -28,3 +28,14 @@ C:\Users\Idrialite\Projects\C#\GravityGamed\GravityGame\bin\Debug\sfml-audio.dll
 C:\Users\Idrialite\Projects\C#\GravityGamed\GravityGame\bin\Debug\sfml-graphics.dll
 C:\Users\Idrialite\Projects\C#\GravityGamed\GravityGame\bin\Debug\sfml-system.dll
 C:\Users\Idrialite\Projects\C#\GravityGamed\GravityGame\bin\Debug\sfml-window.dll
+C:\Users\Idrialite\RiderProjects\GravityGame\GravityGame\bin\Debug\Resources\csfml-audio-2.dll
+C:\Users\Idrialite\RiderProjects\GravityGame\GravityGame\bin\Debug\Resources\csfml-graphics-2.dll
+C:\Users\Idrialite\RiderProjects\GravityGame\GravityGame\bin\Debug\Resources\csfml-network-2.dll
+C:\Users\Idrialite\RiderProjects\GravityGame\GravityGame\bin\Debug\Resources\csfml-system-2.dll
+C:\Users\Idrialite\RiderProjects\GravityGame\GravityGame\bin\Debug\Resources\csfml-window-2.dll
+C:\Users\Idrialite\RiderProjects\GravityGame\GravityGame\bin\Debug\Resources\ctgui-0.8.dll
+C:\Users\Idrialite\RiderProjects\GravityGame\GravityGame\bin\Debug\sfml-audio.dll
+C:\Users\Idrialite\RiderProjects\GravityGame\GravityGame\bin\Debug\sfml-graphics.dll
+C:\Users\Idrialite\RiderProjects\GravityGame\GravityGame\bin\Debug\sfml-system.dll
+C:\Users\Idrialite\RiderProjects\GravityGame\GravityGame\bin\Debug\sfml-window.dll
+C:\Users\Idrialite\RiderProjects\GravityGame\GravityGame\bin\Debug\tgui.net.dll
