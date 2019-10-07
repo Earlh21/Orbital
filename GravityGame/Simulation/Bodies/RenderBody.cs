@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using System.Text;
 using GravityGame.Extension;
 using SFML.Graphics;
@@ -8,12 +9,18 @@ namespace GravityGame
 {
     public class RenderBody : Body, Drawable
     {
-        private CircleShape shape;
+        private Sprite graphic;
+        private static Texture empty_texture;
         protected virtual Shader Shader => null;
 
         public bool DrawOutline { get; set; } = false;
         public virtual Color? OutlineColor => null;
 
+        static RenderBody()
+        {
+            empty_texture = new Texture(1, 1);
+        }
+        
         public RenderBody() : base()
         {
         }
@@ -39,43 +46,33 @@ namespace GravityGame
             View view = window.GetView();
             
             UpdateGraphic();
-            shape.SetPointCount((uint)Mathf.Clamp(10, 80, 18 + shape.Radius * (window.Size.X / view.Size.X) / 3.5f));
-
-            if (Shader == null)
-            {
-                target.Draw(shape);
-            }
-            else
-            {
-                target.Draw(shape, new RenderStates(Shader));
-            }
+            graphic.Draw(window, states);
                         
             if (DrawOutline)
             {
-                shape.Radius = 12.0f / Program.ViewScale;
-                shape.Position = new Vector2f(Position.X - shape.Radius, -Position.Y - shape.Radius);
-                shape.OutlineColor = OutlineColor == null ? Color.Green : (Color) OutlineColor;
-                shape.FillColor = Color.Transparent;
-                shape.SetPointCount(12);
-                shape.OutlineThickness = 3.5f / Program.ViewScale;
+                CircleShape outline = new CircleShape();
                 
-                target.Draw(shape);
+                outline.Radius = 12.0f / Program.ViewScale;
+                outline.Position = new Vector2f(Position.X - outline.Radius, -Position.Y - outline.Radius);
+                outline.OutlineColor = OutlineColor == null ? Color.Green : (Color) OutlineColor;
+                outline.FillColor = Color.Transparent;
+                outline.SetPointCount(12);
+                outline.OutlineThickness = 3.5f / Program.ViewScale;
+                
+                target.Draw(graphic);
             }
         }
 
         private void UpdateGraphic()
-        {
-            if (shape == null)
+        {   
+            if (graphic == null)
             {
-                shape = new CircleShape();
+                graphic = new Sprite();
             }
             
-            shape.Radius = Radius;
-            shape.Position = new Vector2f(Position.X - Radius, -Position.Y - Radius);
-            Color color = GetColor();
-            shape.FillColor = color;
-            shape.OutlineColor = color;
-            shape.OutlineThickness = 0.0f;
+            graphic.Scale = new Vector2f(Radius, Radius);
+            graphic.Position = new Vector2f(Position.X - Radius, -Position.Y - Radius);
+            graphic.Texture = empty_texture;
         }
 
         protected virtual Color GetColor()
