@@ -58,6 +58,18 @@ namespace GravityGame
             return (c - a) / (b - a);
         }
 
+        public static float InvLerp2(float start, float middle, float end, float value)
+        {
+            if (value < middle)
+            {
+                return InvLerp(start, middle, value) * 0.5f;
+            }
+            else
+            {
+                return InvLerp(middle, end, value) * 0.5f + 0.5f;
+            }
+        }
+
         public static float Cos(float value)
         {
             return (float) Math.Cos(value);
