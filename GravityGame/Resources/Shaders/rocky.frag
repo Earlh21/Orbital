@@ -6,6 +6,7 @@ uniform float seed;
 uniform float temp;
 uniform float water_percentage;
 uniform float ice_percentage;
+uniform float time;
 
 float rand2D(in vec2 co){
     return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
@@ -56,7 +57,7 @@ float Noise3D(in vec3 coord, in float wavelength)
 }
 
 float invlerp(float a, float b, float value)
-{ 
+{
     return (value - a) / (b - a);
 }
 
@@ -131,11 +132,11 @@ void main()
         {
             //Pixel is land
             
-            float molten_noise = Noise3D(vec3(uv.x, uv.y, seed + 0.05), 0.1) * 0.2;
-            float molten_value = invlerp(1200, 8000, temp);
-            
-            //molten_value -= noise_diff;
-            molten_value += molten_noise;
+            float molten_noise = Noise3D(vec3(uv.x, uv.y, seed + time / 40), 0.1) * 0.2;
+            float molten_value = clamp(invlerp(600, 8000, temp), 0, 1);
+
+            molten_value *= 1 + (sin(time / 4) + 1) * 0.05;
+            molten_value += molten_noise - 0.2;
             molten_value = clamp(molten_value, 0, 1);
             
             vec4 tex_color = texture2D(land_texture, landuv);

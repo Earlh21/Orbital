@@ -30,6 +30,7 @@ namespace GravityGame
         public static Vector2f ViewOffset { get; private set; } = new Vector2f(0, 0);
         public static Random R { get; private set; }
         public static Font Font { get; private set; }
+        public static float Time { get; private set; }
 
         //TODO: Multithread drawing and updating?
         //TODO: Add a leaderboard for number of planets colonized
@@ -68,17 +69,19 @@ namespace GravityGame
             {
                 window.DispatchEvents();
 
-                float time = Math.Min(max_time_step, clock.ElapsedTime.AsSeconds());
+                float timestep = Math.Min(max_time_step, clock.ElapsedTime.AsSeconds());
                 clock.Restart();
+
+                Time += timestep;
                 
-                add_mass_time += time;
+                add_mass_time += timestep;
                 while (add_mass_time > add_mass_period)
                 {
                     add_mass_time -= add_mass_period;
                     AddMatter(true);
                 }
                 
-                scene.Update(time_scale * time, GetImportantArea());
+                scene.Update(time_scale * timestep, GetImportantArea());
                     
                 if (panning)
                 {

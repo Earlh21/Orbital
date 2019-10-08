@@ -45,6 +45,7 @@ namespace GravityGame.Graphics
 		public static void Load(Texture texture)
 		{
 			Shader.SetUniform("texture", texture);
+			Shader.SetUniform("time", Program.Time);
 		}
 	}
 }

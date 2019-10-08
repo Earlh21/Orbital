@@ -13,6 +13,7 @@ namespace GravityGame
         protected Texture texture;
         public bool DrawOutline { get; set; } = false;
         public virtual Color? OutlineColor => null;
+        public virtual uint TexturePadding => 15;
 
         public RenderBody() : base()
         {
