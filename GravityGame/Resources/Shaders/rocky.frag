@@ -55,6 +55,35 @@ float Noise3D(in vec3 coord, in float wavelength)
     return interpolatedNoise3D(coord.x/wavelength, coord.y/wavelength, coord.z/wavelength);
 }
 
+float invlerp(float a, float b, float value)
+{ 
+    return (value - a) / (b - a);
+}
+
+vec4 moltenColor(float value)
+{
+    vec4 black = vec4(0, 0, 0, 1);
+    vec4 red = vec4(1, 0, 0, 1);
+    vec4 yellow = vec4(1, 1, 0, 1);
+    vec4 white = vec4(1, 1, 1, 1);
+
+    if(value < 0.5)
+    {
+        value = value * 2;
+        return red * value;
+    }
+    else if(value < 0.75)
+    {
+        value = (value - 0.5) * 4;
+        return red * (1 - value) + yellow * value;
+    }
+    else
+    {
+        value = (value - 0.75) * 4;
+        return yellow * (1 - value) + white * value;
+    }
+}
+
 void main()
 {
     vec2 uv = gl_TexCoord[0].xy;
@@ -77,6 +106,7 @@ void main()
         //Pixel is part of the planet
         
         float noise = Noise3D(vec3(uv.x, uv.y, seed), 0.15);
+        float noise_diff = Noise3D(vec3(uv.x - 0.01, uv.y + 0.01, seed), 0.15);
         
         if(noise < water_percentage)
         {
@@ -101,9 +131,20 @@ void main()
         {
             //Pixel is land
             
+            float molten_noise = Noise3D(vec3(uv.x, uv.y, seed + 0.05), 0.1) * 0.2;
+            float molten_value = invlerp(1200, 8000, temp);
             
+            //molten_value -= noise_diff;
+            molten_value += molten_noise;
+            molten_value = clamp(molten_value, 0, 1);
             
-            gl_FragColor = texture2D(land_texture, landuv) + vec4((noise - 0.8) * 0.4, (noise - 0.8) * 0.4, (noise - 0.8) * 0.4, 1);
+            vec4 tex_color = texture2D(land_texture, landuv);
+            vec4 molten_color = moltenColor(molten_value);
+            vec4 depth_color = vec4((noise - 0.8) * 0.4, (noise - 0.8) * 0.4, (noise - 0.8) * 0.4, 1);
+            vec4 base_color = tex_color + depth_color;
+            
+            float base_amount = clamp(1 - molten_value, 0, 1);
+            gl_FragColor = (base_color) * (base_amount) + molten_color * molten_value;
         }
     }
 }
