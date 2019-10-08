@@ -65,6 +65,7 @@
     <Compile Include="Format\Format.cs" />
     <Compile Include="Graphics\Arrow.cs" />
     <Compile Include="Graphics\CircleShader.cs" />
+    <Compile Include="Graphics\RockyShader.cs" />
     <Compile Include="Math\Mathf.cs" />
     <Compile Include="Math\QuadTree.cs" />
     <Compile Include="Math\Rectangle.cs" />
@@ -125,6 +126,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Shaders\halo.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Shaders\rocky.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Text\alien_names.txt">

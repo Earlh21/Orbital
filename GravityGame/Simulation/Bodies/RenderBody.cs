@@ -10,7 +10,7 @@ namespace GravityGame
 {
     public class RenderBody : Body, Drawable
     {
-        private Texture texture;
+        protected Texture texture;
         public bool DrawOutline { get; set; } = false;
         public virtual Color? OutlineColor => null;
 
@@ -36,13 +36,10 @@ namespace GravityGame
 
         public virtual void Draw(RenderTarget target, RenderStates states)
         {            
-            CircleShader.Load(texture, Colorf.FromColor(GetColor()));
-            Shader shader = CircleShader.Shader;
-            
             Sprite sprite = new Sprite(texture);
             sprite.Position = Position.InvY() - new Vector2f(Radius, Radius);
             
-            target.Draw(sprite, new RenderStates(shader));
+            target.Draw(sprite, new RenderStates(GetShader()));
             
             //TODO: Put outline drawing back
         }
@@ -54,6 +51,12 @@ namespace GravityGame
                 return new Color(200, 0, 200, 255);
             }
             return Color.Green;
+        }
+
+        protected virtual Shader GetShader()
+        {
+            CircleShader.Load(texture, Colorf.FromColor(GetColor()));
+            return CircleShader.Shader;
         }
 
         protected override void OnRadiusChange()

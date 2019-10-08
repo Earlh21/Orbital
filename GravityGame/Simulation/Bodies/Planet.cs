@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Remoting.Messaging;
 using GravityGame.Extension;
+using GravityGame.Graphics;
 using SFML.Graphics;
 using SFML.System;
 
@@ -15,6 +16,11 @@ namespace GravityGame
             Gas,
             Ocean
         }
+
+        /**
+         * The seed used by the shader to generate a height map.
+         */
+        private float shader_seed;
         
         /**
          * Gas percentage of the planet's makeup.
@@ -40,13 +46,13 @@ namespace GravityGame
          */
         public float SurfaceWaterArea
         {
-            get { return 0; }
+            get { return WaterArea; }
         }
         
         /**
          * Percentage of the surface covered by water.
          */
-        public float WaterPercentage => Area / WaterArea;
+        public float WaterPercentage => WaterArea / Area;
 
         public PlanetType Type
         {
@@ -96,6 +102,14 @@ namespace GravityGame
         public bool HasLife => Life != null;
         public override Color? OutlineColor => HasLife ? (Color?)Civilizations.GetColor(Life.Faction) : null;
 
+        public Planet(Vector2f position, float mass, Vector2f velocity, float density, float temperature) : base(position,
+            mass, velocity, density, temperature)
+        {
+            Life = null;
+            shader_seed = (float)Program.R.NextDouble() * 200.0f;
+            WaterArea = Area / 2.0f;
+        }
+        
         private void FormatText(Text text, float level, RenderWindow window)
         {
             View view = window.GetView();
@@ -344,11 +358,11 @@ namespace GravityGame
         {
             Life = new Life(Temperature);
         }
-        
-        public Planet(Vector2f position, float mass, Vector2f velocity, float density, float temperature) : base(position,
-            mass, velocity, density, temperature)
+
+        protected override Shader GetShader()
         {
-            Life = null;
+            RockyShader.Load(texture, Colorf.FromColor(GetColor()), Temperature, WaterPercentage, shader_seed);
+            return RockyShader.Shader;
         }
     }
 }
