@@ -8,7 +8,7 @@ using SFML.System;
 
 namespace GravityGame
 {
-    public class Body : ISelectable
+    public abstract class Body : ISelectable
     {
         private float radius;
         private float mass;
@@ -32,7 +32,7 @@ namespace GravityGame
             set
             {
                 mass = value;
-                radius = Mathf.Sqrt(Mass / Mathf.PI * Density);
+                Radius = Mathf.Sqrt(Mass / Mathf.PI * Density); 
             }
         }
 
@@ -42,7 +42,16 @@ namespace GravityGame
         //TODO: Remove this
         public bool Exists { get; set; } = true;
 
-        public virtual float Radius => radius;
+        public float Radius
+        {
+            get => radius;
+            set
+            {
+                radius = value;
+                OnRadiusChange();
+            }
+        }
+
         public float Area => Mathf.PI * Radius * Radius;
         public float Circumference => Mathf.PI * Radius * 2;
 
@@ -257,6 +266,11 @@ namespace GravityGame
             }
 
             return total_force;
+        }
+
+        protected virtual void OnRadiusChange()
+        {
+            
         }
     }
 }

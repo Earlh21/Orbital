@@ -40,10 +40,7 @@ namespace GravityGame
          */
         public float SurfaceWaterArea
         {
-            get
-            {
-                
-            }
+            get { return 0; }
         }
         
         /**

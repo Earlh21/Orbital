@@ -6,7 +6,6 @@ using NUnit.Framework.Constraints;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
-using TGUI;
 
 namespace GravityGame
 {
@@ -15,9 +14,7 @@ namespace GravityGame
     internal class Program
     {
         private static RenderWindow window;
-        private static Gui gui;
         private static View view;
-        private static Vector2f view_offset = new Vector2f(0, 0);
         private static Scene scene;
         private static float time_scale = 1;
         
@@ -30,6 +27,7 @@ namespace GravityGame
         private static float add_mass_time = 0.0f;
 
         public static float ViewScale { get; private set; } = 2.5f;
+        public static Vector2f ViewOffset { get; private set; } = new Vector2f(0, 0);
         public static Random R { get; private set; }
         public static Font Font { get; private set; }
 
@@ -38,7 +36,6 @@ namespace GravityGame
         public static void Main(string[] args)
         {
             window = new RenderWindow(new VideoMode(800, 600), "The Game of Life");
-            gui = new Gui(window);
             view = new View();
 
             Font = new Font(GetResourcesDirectory() + "\\Fonts\\monsterrat.ttf");
@@ -83,7 +80,7 @@ namespace GravityGame
                 if (panning)
                 {
                     Vector2f diff = (Vector2f) Mouse.GetPosition() - mouse_original_pos;
-                    view_offset -= 0.5f * diff / ViewScale;
+                    ViewOffset -= 0.5f * diff / ViewScale;
                     Mouse.SetPosition((Vector2i)mouse_original_pos);
                 }
                 
@@ -117,7 +114,6 @@ namespace GravityGame
                     window.Draw(ghost);
                 }
 
-                gui.Draw();
                 window.Display();
             }
         }
@@ -129,19 +125,11 @@ namespace GravityGame
             
             return new Rectangle(topleft, size);
         }
-        
-        public static void Draw(List<RenderBody> bodies)
-        {
-            foreach (RenderBody body in bodies)
-            {
-                window.Draw(body);
-            }
-        }
 
         public static void UpdateView()
         {
             view.Size = (Vector2f) window.Size / ViewScale;
-            view.Center = scene.Selected == null ? view_offset : InvY(scene.GetSelectedPosition()) + view_offset;
+            view.Center = scene.Selected == null ? ViewOffset : InvY(scene.GetSelectedPosition()) + ViewOffset;
             window.SetView(view);
         }
 
@@ -191,7 +179,7 @@ namespace GravityGame
                 }
                 else
                 {
-                    view_offset = new Vector2f(0, 0);
+                    ViewOffset = new Vector2f(0, 0);
                 }
             }
             else if(args.Code == Keyboard.Key.BackSpace)
@@ -245,7 +233,7 @@ namespace GravityGame
 
         public static string GetResourcesDirectory()
         {
-            return GetDirectory() + "\\Resources";
+            return GetDirectory() + "Resources";
         }
         
         private static float NextFloat(Random R, float amplitude)
@@ -317,7 +305,7 @@ namespace GravityGame
                     }
                     else
                     {
-                        view_offset = new Vector2f(0, 0);
+                        ViewOffset = new Vector2f(0, 0);
                     }
                 }
                 else if (args.Button == Mouse.Button.Right)

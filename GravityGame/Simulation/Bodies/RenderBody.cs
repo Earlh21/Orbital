@@ -2,6 +2,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Text;
 using GravityGame.Extension;
+using GravityGame.Graphics;
 using SFML.Graphics;
 using SFML.System;
 
@@ -9,18 +10,10 @@ namespace GravityGame
 {
     public class RenderBody : Body, Drawable
     {
-        private Sprite graphic;
-        private static Texture empty_texture;
-        protected virtual Shader Shader => null;
-
+        private Texture texture;
         public bool DrawOutline { get; set; } = false;
         public virtual Color? OutlineColor => null;
 
-        static RenderBody()
-        {
-            empty_texture = new Texture(1, 1);
-        }
-        
         public RenderBody() : base()
         {
         }
@@ -38,41 +31,20 @@ namespace GravityGame
         public RenderBody(Vector2f position, float mass, Vector2f velocity, float density) : base(position, mass,
             velocity, density)
         {
+            
         }
 
         public virtual void Draw(RenderTarget target, RenderStates states)
-        {
-            RenderWindow window = (RenderWindow) target;
-            View view = window.GetView();
+        {            
+            CircleShader.Load(texture, Colorf.FromColor(GetColor()));
+            Shader shader = CircleShader.Shader;
             
-            UpdateGraphic();
-            graphic.Draw(window, states);
-                        
-            if (DrawOutline)
-            {
-                CircleShape outline = new CircleShape();
-                
-                outline.Radius = 12.0f / Program.ViewScale;
-                outline.Position = new Vector2f(Position.X - outline.Radius, -Position.Y - outline.Radius);
-                outline.OutlineColor = OutlineColor == null ? Color.Green : (Color) OutlineColor;
-                outline.FillColor = Color.Transparent;
-                outline.SetPointCount(12);
-                outline.OutlineThickness = 3.5f / Program.ViewScale;
-                
-                target.Draw(graphic);
-            }
-        }
-
-        private void UpdateGraphic()
-        {   
-            if (graphic == null)
-            {
-                graphic = new Sprite();
-            }
+            Sprite sprite = new Sprite(texture);
+            sprite.Position = Position.InvY() - new Vector2f(Radius, Radius);
             
-            graphic.Scale = new Vector2f(Radius, Radius);
-            graphic.Position = new Vector2f(Position.X - Radius, -Position.Y - Radius);
-            graphic.Texture = empty_texture;
+            target.Draw(sprite, new RenderStates(shader));
+            
+            //TODO: Put outline drawing back
         }
 
         protected virtual Color GetColor()
@@ -82,6 +54,13 @@ namespace GravityGame
                 return new Color(200, 0, 200, 255);
             }
             return Color.Green;
+        }
+
+        protected override void OnRadiusChange()
+        {
+            base.OnRadiusChange();
+            uint size = (uint) (Radius * 2);
+            texture = new Texture(size, size);
         }
     }
 }
