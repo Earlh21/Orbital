@@ -35,7 +35,10 @@ namespace GravityGame
         //TODO: Add a leaderboard for number of planets colonized
         public static void Main(string[] args)
         {
-            window = new RenderWindow(new VideoMode(800, 600), "The Game of Life");
+            ContextSettings settings = new ContextSettings();
+            settings.AntialiasingLevel = 8;
+            
+            window = new RenderWindow(new VideoMode(800, 600), "The Game of Life", Styles.Default, settings);
             view = new View();
 
             Font = new Font(GetResourcesDirectory() + "\\Fonts\\monsterrat.ttf");

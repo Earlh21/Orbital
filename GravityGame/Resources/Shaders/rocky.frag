@@ -1,8 +1,11 @@
 uniform sampler2D texture;
+uniform sampler2D land_texture;
+uniform sampler2D ice_texture;
+
 uniform float seed;
 uniform float temp;
 uniform float water_percentage;
-uniform vec4 color;
+uniform float ice_percentage;
 
 float rand2D(in vec2 co){
     return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
@@ -55,24 +58,52 @@ float Noise3D(in vec3 coord, in float wavelength)
 void main()
 {
     vec2 uv = gl_TexCoord[0].xy;
+    vec2 xy = uv * float(textureSize(texture, 0).x) * 10;
+    
+    vec2 landuv = mod(xy / textureSize(land_texture, 0), 1);
+    vec2 iceuv = mod(xy / textureSize(ice_texture, 0), 1);
+    
     vec2 dist = abs(uv - 0.5) * 2;
     float r = dist.x * dist.x + dist.y * dist.y;
 
     if(r > 1)
     {
+        //Pixel is empty space
+        
         gl_FragColor = vec4(0, 0, 0, 0);
     }
     else
     {
-        float noise = Noise3D(vec3(uv.x, uv.y, seed), 0.2);
+        //Pixel is part of the planet
+        
+        float noise = Noise3D(vec3(uv.x, uv.y, seed), 0.15);
         
         if(noise < water_percentage)
         {
-            gl_FragColor = vec4(0, 0, 0.8, 1);
+            //Pixel is water
+            
+            if(noise < water_percentage - water_percentage * ice_percentage)
+            {
+                //Pixel is deep ocean
+
+                gl_FragColor = vec4(0, 0, 0.8, 1);
+            }
+            else
+            {
+                //Pixel is ice
+
+                gl_FragColor = texture2D(ice_texture, iceuv);
+            }
+            
+            
         }
         else
         {
-            gl_FragColor = color;
+            //Pixel is land
+            
+            
+            
+            gl_FragColor = texture2D(land_texture, landuv) + vec4((noise - 0.8) * 0.4, (noise - 0.8) * 0.4, (noise - 0.8) * 0.4, 1);
         }
     }
 }

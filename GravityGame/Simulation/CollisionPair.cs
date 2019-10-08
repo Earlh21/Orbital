@@ -198,6 +198,9 @@ namespace GravityGame
                 
             //Flag smaller for deletion
             smaller.Exists = false;
+            
+            //Combine water-area
+            bigger.WaterArea += smaller.WaterArea;
 
             bigger.Started = false;
             return bigger;

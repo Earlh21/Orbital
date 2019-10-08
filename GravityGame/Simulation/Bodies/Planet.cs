@@ -40,19 +40,28 @@ namespace GravityGame
          * Amount of water-area in the planet's atmosphere and surface.
          */
         public float WaterArea { get; set; }
+        
+        /**
+         * Percentage of water-area that's frozen
+         */
+        public float IcePercentage => 1 - Mathf.InvLerp(100.0f, 273.0f, Temperature);
 
         /**
          * Amount of water-area on the planet's surface.
          */
         public float SurfaceWaterArea
         {
-            get { return WaterArea; }
+            get
+            {
+                float boil = Mathf.InvLerp(373.0f, 1000.0f, Temperature);
+                return WaterArea - WaterArea * Mathf.Clamp(0, 1, boil);
+            }
         }
         
         /**
          * Percentage of the surface covered by water.
          */
-        public float WaterPercentage => WaterArea / Area;
+        public float WaterPercentage => SurfaceWaterArea / Area;
 
         public PlanetType Type
         {
@@ -107,7 +116,7 @@ namespace GravityGame
         {
             Life = null;
             shader_seed = (float)Program.R.NextDouble() * 200.0f;
-            WaterArea = Area / 2.0f;
+            WaterArea = Area * (float)Program.R.NextDouble();
         }
         
         private void FormatText(Text text, float level, RenderWindow window)
@@ -361,7 +370,14 @@ namespace GravityGame
 
         protected override Shader GetShader()
         {
-            RockyShader.Load(texture, Colorf.FromColor(GetColor()), Temperature, WaterPercentage, shader_seed);
+            RockyShader.Temperature = Temperature;
+            RockyShader.IcePercentage = IcePercentage;
+            RockyShader.WaterPercentage = WaterPercentage;
+            RockyShader.Seed = shader_seed;
+            RockyShader.IceTexture = Textures.Ice;
+            RockyShader.LandTexture = Textures.RedRocky;
+
+            RockyShader.Load(texture);
             return RockyShader.Shader;
         }
     }
