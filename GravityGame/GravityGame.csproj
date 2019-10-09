@@ -12,6 +12,7 @@
     <AssemblyName>GravityGame</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>x64</PlatformTarget>
@@ -85,6 +86,15 @@
     <Compile Include="Simulation\Bodies\ThrusterShip.cs" />
     <Compile Include="Simulation\BodyFilter.cs" />
     <Compile Include="Simulation\Civilizations.cs" />
+    <Compile Include="Simulation\Compositions\Carbon.cs" />
+    <Compile Include="Simulation\Compositions\Composition.cs" />
+    <Compile Include="Simulation\Compositions\Compound.cs" />
+    <Compile Include="Simulation\Compositions\Helium.cs" />
+    <Compile Include="Simulation\Compositions\Hydrogen.cs" />
+    <Compile Include="Simulation\Compositions\Iron.cs" />
+    <Compile Include="Simulation\Compositions\Methane.cs" />
+    <Compile Include="Simulation\Compositions\Nickel.cs" />
+    <Compile Include="Simulation\Compositions\Silicon.cs" />
     <Compile Include="Simulation\Effects\Effect.cs" />
     <Compile Include="Simulation\Effects\LaserEffect.cs" />
     <Compile Include="Simulation\Effects\HeatLaserEffect.cs" />
@@ -92,7 +102,6 @@
     <Compile Include="Simulation\Life.cs" />
     <Compile Include="Simulation\CollisionPair.cs" />
     <Compile Include="Simulation\ISelectable.cs" />
-    <Compile Include="Simulation\Makeup.cs" />
     <Compile Include="Simulation\Scene.cs" />
     <Compile Include="Simulation\PointMass.cs" />
     <Compile Include="Program.cs" />
