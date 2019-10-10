@@ -11,68 +11,46 @@ namespace GravityGame
     public abstract class Body : ISelectable
     {
         private float radius;
-        private float mass;
+        private Composition composition;
 
-        public readonly float Density;
+        /**
+         * The mass composition of this body.
+         */
+        private Composition Composition
+        {
+            get => composition;
+            set
+            {
+                composition = value;
+                OnRadiusChange();
+            }
+        }
 
+        public float Mass => Composition.Mass;
+        public float Density => Composition.Density;
+        public float Area => Composition.Area;
+        public float Radius => Mathf.Sqrt(Area / Mathf.PI);
+        public float Circumference => Mathf.PI * Radius * 2;
+
+        public float GasPercent => composition.GetGasPercent();
+        public float RockPercent => composition.GetRockPercent();
+        
+        public Vector2f Momentum { get; set; }
         public Vector2f Velocity => Momentum / Mass;
         public Vector2f Position { get; private set; }
         public Vector2f Force { get; set; }
         public Vector2f Acceleration => Force / Mass;
 
         public bool Started { get; set; } = false;
-
         public bool ForcesDone { get; set; } = false;
-
         public virtual bool DoesGravity => true;
-
-        public float Mass
-        {
-            get => mass;
-            set
-            {
-                mass = value;
-                Radius = Mathf.Sqrt(Mass / Mathf.PI * Density); 
-            }
-        }
-
         public bool IsSelected { get; set; }
         public virtual bool IsSelectable => true;
-
-        //TODO: Remove this
         public bool Exists { get; set; } = true;
 
-        public float Radius
+        public Body(Vector2f position, Vector2f velocity, Composition composition)
         {
-            get => radius;
-            set
-            {
-                radius = value;
-                OnRadiusChange();
-            }
-        }
-
-        public float Area => Mathf.PI * Radius * Radius;
-        public float Circumference => Mathf.PI * Radius * 2;
-
-        public Vector2f Momentum { get; set; }
-
-        public Body() : this(new Vector2f(0, 0), 0, new Vector2f(0, 0), 1)
-        {
-        }
-
-        public Body(Vector2f position, float mass) : this(position, mass, new Vector2f(0, 0), 1)
-        {
-        }
-
-        public Body(Vector2f position, float mass, Vector2f velocity) : this(position, mass, velocity, 1)
-        {
-        }
-
-        public Body(Vector2f position, float mass, Vector2f velocity, float density)
-        {
-            Density = density;
-            Mass = mass;
+            Composition = composition;
             Momentum = velocity * Mass;
             Position = position;
         }
@@ -268,6 +246,23 @@ namespace GravityGame
             return total_force;
         }
 
+        public void AddComposition(Composition other)
+        {
+            Composition.AddComposition(other);
+            OnRadiusChange();
+        }
+
+        public void AddComposition(Body other)
+        {
+            AddComposition(other.Composition);
+        }
+
+        public void SubtractBasicMass(float amount)
+        {
+            Composition.RemoveBasic(amount);
+            OnRadiusChange();
+        }
+        
         protected virtual void OnRadiusChange()
         {
             

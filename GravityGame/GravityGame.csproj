@@ -86,15 +86,8 @@
     <Compile Include="Simulation\Bodies\ThrusterShip.cs" />
     <Compile Include="Simulation\BodyFilter.cs" />
     <Compile Include="Simulation\Civilizations.cs" />
-    <Compile Include="Simulation\Compositions\Carbon.cs" />
     <Compile Include="Simulation\Compositions\Composition.cs" />
     <Compile Include="Simulation\Compositions\Compound.cs" />
-    <Compile Include="Simulation\Compositions\Helium.cs" />
-    <Compile Include="Simulation\Compositions\Hydrogen.cs" />
-    <Compile Include="Simulation\Compositions\Iron.cs" />
-    <Compile Include="Simulation\Compositions\Methane.cs" />
-    <Compile Include="Simulation\Compositions\Nickel.cs" />
-    <Compile Include="Simulation\Compositions\Silicon.cs" />
     <Compile Include="Simulation\Effects\Effect.cs" />
     <Compile Include="Simulation\Effects\LaserEffect.cs" />
     <Compile Include="Simulation\Effects\HeatLaserEffect.cs" />

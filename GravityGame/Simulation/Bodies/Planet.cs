@@ -23,20 +23,6 @@ namespace GravityGame
         private float shader_seed;
         
         /**
-         * Gas percentage of the planet's makeup.
-         */
-        public float GasMakeup { get; set; }
-        
-        /**
-         * Rock percentage of the planet's makeup.
-         */
-        public float RockMakeup
-        {
-            get => 1 - GasMakeup;
-            set => GasMakeup = 1 - value;
-        }
-        
-        /**
          * Amount of water-area in the planet's atmosphere and surface.
          */
         public float WaterArea { get; set; }
@@ -67,7 +53,7 @@ namespace GravityGame
         {
             get
             {
-                if (GasMakeup > 0.6f)
+                if (GasPercent > 0.6f)
                 {
                     return PlanetType.Gas;
                 }
@@ -111,8 +97,7 @@ namespace GravityGame
         public bool HasLife => Life != null;
         public override Color? OutlineColor => HasLife ? (Color?)Civilizations.GetColor(Life.Faction) : null;
 
-        public Planet(Vector2f position, float mass, Vector2f velocity, float density, float temperature) : base(position,
-            mass, velocity, density, temperature)
+        public Planet(Vector2f position, Vector2f velocity, Composition composition, float temperature) : base(position, velocity, composition, temperature)
         {
             Life = null;
             shader_seed = (float)Program.R.NextDouble() * 200.0f;
@@ -201,7 +186,8 @@ namespace GravityGame
             float angle = Mathf.AngleTo(Position, other_position);
             
             Vector2f velocity = speed * new Vector2f(Mathf.Cos(angle), Mathf.Sin(angle));
-            Planet bullet = new Planet(Position + velocity.Unit() * Radius * 2.5f, mass, velocity, 1, 100000);
+            Composition composition = Composition.Single(Compound.CompoundType.Nickel, mass);
+            Planet bullet = new Planet(Position + velocity.Unit() * Radius * 2.5f, velocity, composition, 100000);
             
             scene.AddBody(bullet);
         }
@@ -376,6 +362,7 @@ namespace GravityGame
             RockyShader.Seed = shader_seed;
             RockyShader.IceTexture = Textures.Ice;
             RockyShader.LandTexture = Textures.RedRocky;
+            RockyShader.Radius = Radius;
 
             RockyShader.Load(texture);
             return RockyShader.Shader;

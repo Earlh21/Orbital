@@ -7,6 +7,7 @@ uniform float temp;
 uniform float water_percentage;
 uniform float ice_percentage;
 uniform float time;
+uniform float radius;
 
 float rand2D(in vec2 co){
     return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
@@ -87,16 +88,19 @@ vec4 moltenColor(float value)
 
 void main()
 {
-    vec2 uv = gl_TexCoord[0].xy;
-    vec2 xy = uv * float(textureSize(texture, 0).x) * 10;
+    float size = float(textureSize(texture, 0).x);
+    float radius_percent = (radius) / (size / 2);
     
-    vec2 landuv = mod(xy / textureSize(land_texture, 0), 1);
-    vec2 iceuv = mod(xy / textureSize(ice_texture, 0), 1);
+    vec2 uv = gl_TexCoord[0].xy;
+    vec2 xy = uv * float(textureSize(texture, 0).x);
+    
+    vec2 landuv = mod(xy * 10 / textureSize(land_texture, 0), 1);
+    vec2 iceuv = mod(xy * 10 / textureSize(ice_texture, 0), 1);
     
     vec2 dist = abs(uv - 0.5) * 2;
-    float r = dist.x * dist.x + dist.y * dist.y;
+    float r = sqrt(dist.x * dist.x + dist.y * dist.y);
 
-    if(r > 1)
+    if(r > radius_percent)
     {
         //Pixel is empty space
         

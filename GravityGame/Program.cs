@@ -146,7 +146,7 @@ namespace GravityGame
 
         private static void GenerateDisk(int n)
         {
-            Star star = new Star(new Vector2f(0, 0), 100000, new Vector2f(0, 0), 1);
+            Star star = new Star(new Vector2f(0, 0), new Vector2f(0, 0), 100000);
             scene.AddBody(star);
             scene.ForceBodyBufferInsert();
                 
@@ -222,7 +222,7 @@ namespace GravityGame
                     
             Vector2f n_position = new Vector2f((float)Math.Cos(angle), (float)Math.Sin(angle)) * distance;
 
-            Planet planet = new Planet(n_position, n_mass, new Vector2f(0, 0), 1, 300);
+            Planet planet = new Planet(n_position, new Vector2f(0, 0), Composition.Basic(n_mass), 300);
             planet.AutoOrbit(star);
             scene.AddBody(planet);
 
@@ -356,7 +356,7 @@ namespace GravityGame
 
                 Vector2f mouse_pos = GetMouseCoordsWorld();
                 Vector2f position = scene.GetSelectedPosition() + InvY(mouse_fire_offset);
-                Planet p = new Planet(position, Mathf.PI * spawn_radius * spawn_radius, scene.GetSelectedVelocity() + InvY(mouse_pos) - position, 1, 300);
+                Planet p = new Planet(position, scene.GetSelectedVelocity() + InvY(mouse_pos) - position, Composition.Basic(Mathf.PI * spawn_radius * spawn_radius), 300);
 
                 if (Keyboard.IsKeyPressed(Keyboard.Key.LShift) && scene.Selected != null)
                 {

@@ -145,7 +145,7 @@ namespace GravityGame
             }
             
             //Add mass of planet to star
-            star.Mass += body.Mass;
+            star.AddComposition(Composition.Basic(body.Mass));
             
             //Add momentum of planet to star
             star.Momentum += body.Momentum;
@@ -183,7 +183,7 @@ namespace GravityGame
             }
                 
             //Add mass of smaller to bigger
-            bigger.Mass += smaller.Mass;
+            bigger.AddComposition(smaller);
                 
             //Add momentum of smaller to bigger, but convert some of the total momentum into heat
             bigger.Heat += smaller.Momentum.Length() * Mathf.HeatRatio;

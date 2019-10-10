@@ -13,24 +13,10 @@ namespace GravityGame
         protected Texture texture;
         public bool DrawOutline { get; set; } = false;
         public virtual Color? OutlineColor => null;
-        public virtual uint TexturePadding => 15;
-
-        public RenderBody() : base()
-        {
-        }
+        public virtual uint TexturePadding => 45;
         
-        public RenderBody(Vector2f position, float mass) : this(position, mass, new Vector2f(0, 0), 1)
-        {
-            
-        }
-        
-        public RenderBody(Vector2f position, float mass, Vector2f velocity) : this(position, mass, velocity, 1)
-        {
-            
-        }
-        
-        public RenderBody(Vector2f position, float mass, Vector2f velocity, float density) : base(position, mass,
-            velocity, density)
+        public RenderBody(Vector2f position, Vector2f velocity, Composition composition) : base(position,
+            velocity, composition)
         {
             
         }
@@ -63,7 +49,7 @@ namespace GravityGame
         protected override void OnRadiusChange()
         {
             base.OnRadiusChange();
-            uint size = (uint) (Radius * 2);
+            uint size = (uint) (Radius * 2) + TexturePadding * 2;
             texture = new Texture(size, size);
         }
     }

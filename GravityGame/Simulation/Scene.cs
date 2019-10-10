@@ -255,7 +255,7 @@ namespace GravityGame
 				if (body.Contains(position) && !(body is Star))
 				{
 					body.Exists = false;
-					Star star = new Star(body.Position, body.Mass, body.Velocity, body.Density);
+					Star star = new Star(body.Position, body.Velocity, body.Mass);
 					AddBody(star);
 					b = body;
 
@@ -500,7 +500,7 @@ namespace GravityGame
 			{
 				int index = Program.R.Next(star_cache.Count);
 
-				star_cache[index].Mass -= amount;
+				star_cache[index].SubtractBasicMass(amount);
 			}
 		}
 
