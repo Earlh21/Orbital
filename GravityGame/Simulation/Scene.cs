@@ -255,7 +255,7 @@ namespace GravityGame
 				if (body.Contains(position) && !(body is Star))
 				{
 					body.Exists = false;
-					Star star = new Star(body.Position, body.Mass, body.Velocity, body.Density);
+					Star star = new Star(body.Position, body.Velocity, body.Mass);
 					AddBody(star);
 					b = body;
 
@@ -358,6 +358,11 @@ namespace GravityGame
 			
 			foreach (RenderBody body in Bodies)
 			{
+				if (body is Star)
+				{
+					continue;
+				}
+				
 				if (domain.PartiallyContains(body) && body.Exists)
 				{
 					body.DrawOutline = DrawOutlines;
@@ -368,6 +373,11 @@ namespace GravityGame
 
 					target.Draw(body);
 				}
+			}
+
+			foreach (Star star in star_cache)
+			{
+				target.Draw(star);
 			}
 		}
 
@@ -500,7 +510,7 @@ namespace GravityGame
 			{
 				int index = Program.R.Next(star_cache.Count);
 
-				star_cache[index].Mass -= amount;
+				star_cache[index].SubtractBasicMass(amount);
 			}
 		}
 

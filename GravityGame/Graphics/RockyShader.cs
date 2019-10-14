@@ -36,6 +36,21 @@ namespace GravityGame.Graphics
 		{
 			set => Shader.SetUniform("ice_percentage", value);
 		}
+
+		public static float Radius
+		{
+			set => Shader.SetUniform("radius", value);
+		}
+
+		public static Colorf AtmosphereColor
+		{
+			set => Shader.SetUniform("atmo_color", value.ToVec4());
+		}
+
+		public static float AtmosphereStrength
+		{
+			set => Shader.SetUniform("atmo_strength", value);
+		}
 		
 		static RockyShader()
 		{

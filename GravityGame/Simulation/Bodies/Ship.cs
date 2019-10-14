@@ -20,8 +20,9 @@ namespace GravityGame
         public Life Life { get; set; }
         public bool HasLife => Life != null;
         public override Color? OutlineColor => new Color(0, 200, 0, 100);
+        public override uint TexturePadding => 0;
 
-        public Ship(Vector2f position, Vector2f velocity, Life life) : base(position, 10, velocity, 1, life.NormalTemp)
+        public Ship(Vector2f position, Vector2f velocity, Life life) : base(position, velocity, Composition.Basic(10), life.NormalTemp)
         {
             Life = life;
         }

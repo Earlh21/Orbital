@@ -26,31 +26,9 @@ namespace GravityGame
             }
         }
         public bool DrawText { get; set; }
-
-        public TemperatureBody() : base()
-        {
-            Heat = Mathf.AmbientTemp;
-        }
         
-        public TemperatureBody(Vector2f position, float mass) : this(position, mass, new Vector2f(0, 0), 1, 0)
-        {
-            
-        }
-
-        public TemperatureBody(Vector2f position, float mass, Vector2f velocity) : this(position, mass, velocity, 1, 0)
-        {
-            
-        }
-
-        public TemperatureBody(Vector2f position, float mass, Vector2f velocity, float density) : this(position, mass,
-            velocity, density, Mathf.AmbientTemp)
-
-        {
-            
-        }
-        
-        public TemperatureBody(Vector2f position, float mass, Vector2f velocity, float density, float temperature) : base(
-            position, mass, velocity, density)
+        public TemperatureBody(Vector2f position, Vector2f velocity, Composition composition, float temperature) : base(
+            position, velocity, composition)
         {
             Heat = temperature * Area;
         }

@@ -171,10 +171,10 @@ namespace GravityGame
 						ScienceMultiplier = 1.0f;
 						break;
 					case Demeanor.Scientist:
-						ShipChance = 1 / 9.0f;
+						ShipChance = 1 / 12.0f;
 						LaserChance = 1 / 9.0f;
-						MatterChance = 1 / 65.0f;
-						SatelliteChance = 1 / 40.0f;
+						MatterChance = 1 / 75.0f;
+						SatelliteChance = 1 / 60.0f;
 						TemperatureMultiplier = 1.2f;
 						ScienceMultiplier = 1.5f;
 						break;

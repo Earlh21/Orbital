@@ -58,16 +58,25 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Color\Colorf.cs" />
-    <Compile Include="Color\Gradient.cs" />
-    <Compile Include="Color\GradientKey.cs" />
     <Compile Include="Extension\Vector2fExtension.cs" />
     <Compile Include="Extension\Vector2iExtension.cs" />
     <Compile Include="Format\Format.cs" />
     <Compile Include="Graphics\Arrow.cs" />
     <Compile Include="Graphics\CircleShader.cs" />
+    <Compile Include="Graphics\Color\Colorf.cs" />
+    <Compile Include="Graphics\Color\Gradient.cs" />
+    <Compile Include="Graphics\Color\GradientKey.cs" />
+    <Compile Include="Graphics\GasShader.cs" />
     <Compile Include="Graphics\RockyShader.cs" />
+    <Compile Include="Graphics\StarShader.cs" />
     <Compile Include="Graphics\Textures.cs" />
+    <Compile Include="Guis\BasicContainer.cs" />
+    <Compile Include="Guis\ColumnContainer.cs" />
+    <Compile Include="Guis\Container.cs" />
+    <Compile Include="Guis\Gui.cs" />
+    <Compile Include="Guis\GuiEntry.cs" />
+    <Compile Include="Guis\Margin.cs" />
+    <Compile Include="Guis\GuiText.cs" />
     <Compile Include="Math\Mathf.cs" />
     <Compile Include="Math\QuadTree.cs" />
     <Compile Include="Math\Rectangle.cs" />
@@ -86,15 +95,8 @@
     <Compile Include="Simulation\Bodies\ThrusterShip.cs" />
     <Compile Include="Simulation\BodyFilter.cs" />
     <Compile Include="Simulation\Civilizations.cs" />
-    <Compile Include="Simulation\Compositions\Carbon.cs" />
     <Compile Include="Simulation\Compositions\Composition.cs" />
     <Compile Include="Simulation\Compositions\Compound.cs" />
-    <Compile Include="Simulation\Compositions\Helium.cs" />
-    <Compile Include="Simulation\Compositions\Hydrogen.cs" />
-    <Compile Include="Simulation\Compositions\Iron.cs" />
-    <Compile Include="Simulation\Compositions\Methane.cs" />
-    <Compile Include="Simulation\Compositions\Nickel.cs" />
-    <Compile Include="Simulation\Compositions\Silicon.cs" />
     <Compile Include="Simulation\Effects\Effect.cs" />
     <Compile Include="Simulation\Effects\LaserEffect.cs" />
     <Compile Include="Simulation\Effects\HeatLaserEffect.cs" />
@@ -136,10 +138,14 @@
     <Content Include="Resources\Shaders\circle.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\Shaders\gas.frag" />
     <Content Include="Resources\Shaders\halo.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Shaders\rocky.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Shaders\star.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Textures\ice.jpg">

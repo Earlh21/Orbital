@@ -6,6 +6,7 @@ using NUnit.Framework.Constraints;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
+using GravityGame.Guis;
 
 namespace GravityGame
 {
@@ -13,7 +14,7 @@ namespace GravityGame
     //TODO: Try to find some way to simplify dealing with the selected object or at least make variables more descriptive
     internal class Program
     {
-        private static RenderWindow window;
+        public static RenderWindow window;
         private static View view;
         private static Scene scene;
         private static float time_scale = 1;
@@ -64,6 +65,17 @@ namespace GravityGame
 
             Clock clock = new Clock();
             float max_time_step = 1 / 60f;
+            
+            Gui gui = new Gui();
+            GuiText text = new GuiText();
+            
+            text.Font = Font;
+            text.Color = Color.White;
+            text.FontSize = 1;
+            text.Contents = "Test";
+            text.Margin = new Margin(10, 0, 0, 10);
+            
+            gui.Contents.AddEntry(text);
             
             while (window.IsOpen)
             {
@@ -120,10 +132,28 @@ namespace GravityGame
                     window.Draw(ghost);
                 }
 
+                window.Draw(gui);
+                
                 window.Display();
             }
         }
 
+        public static Vector2f ScreenPositionToWorld(Vector2i pos)
+        {
+            return window.MapPixelToCoords(pos);
+        }
+
+        public static Vector2f ScreenSizeToWorld(Vector2i size)
+        {
+            return window.MapPixelToCoords(size);
+        }
+
+        public static Vector2i WorldSizeToScreen(Vector2f size)
+        {
+            Vector2f uv = size.Divide(view.Size);
+            return new Vector2i((int)(uv.X * window.Size.X), (int)(uv.Y * window.Size.Y));
+        }
+        
         private static Rectangle GetImportantArea()
         {
             Vector2f size = view.Size * 1.2f;
@@ -146,7 +176,7 @@ namespace GravityGame
 
         private static void GenerateDisk(int n)
         {
-            Star star = new Star(new Vector2f(0, 0), 100000, new Vector2f(0, 0), 1);
+            Star star = new Star(new Vector2f(0, 0), new Vector2f(0, 0), 100000);
             scene.AddBody(star);
             scene.ForceBodyBufferInsert();
                 
@@ -202,6 +232,10 @@ namespace GravityGame
 
         private static void AddMatter(bool leech_mass)
         {
+            float rand = (float)R.NextDouble();
+
+            bool gas = rand > 0.9f;
+            
             Star star = scene.GetMainStar();
 
             if (star == null)
@@ -222,7 +256,9 @@ namespace GravityGame
                     
             Vector2f n_position = new Vector2f((float)Math.Cos(angle), (float)Math.Sin(angle)) * distance;
 
-            Planet planet = new Planet(n_position, n_mass, new Vector2f(0, 0), 1, 300);
+            Composition composition = gas ? Composition.Gas(n_mass) : Composition.Rocky(n_mass);
+            
+            Planet planet = new Planet(n_position, new Vector2f(0, 0), composition, 300);
             planet.AutoOrbit(star);
             scene.AddBody(planet);
 
@@ -356,7 +392,8 @@ namespace GravityGame
 
                 Vector2f mouse_pos = GetMouseCoordsWorld();
                 Vector2f position = scene.GetSelectedPosition() + InvY(mouse_fire_offset);
-                Planet p = new Planet(position, Mathf.PI * spawn_radius * spawn_radius, scene.GetSelectedVelocity() + InvY(mouse_pos) - position, 1, 300);
+                float mass = Mathf.PI * spawn_radius * spawn_radius;
+                Planet p = new Planet(position, scene.GetSelectedVelocity() + InvY(mouse_pos) - position, Composition.Rocky(mass), 300);
 
                 if (Keyboard.IsKeyPressed(Keyboard.Key.LShift) && scene.Selected != null)
                 {

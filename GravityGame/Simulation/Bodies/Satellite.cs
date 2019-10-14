@@ -13,12 +13,14 @@ namespace GravityGame
 		public override bool DoesGravity => false;
 		public bool DrawText { get; set; }
 		public override Color? OutlineColor => new Color(0, 200, 0, 100);
+		public override uint TexturePadding => 0;
 
-		public Satellite(Vector2f position, Vector2f velocity, Planet home, int faction) : base(position, 2, velocity, 1)
+		public Satellite(Vector2f position, Vector2f velocity, Planet home, int faction) : base(position, velocity,
+			Composition.Basic(10))
 		{
 			Faction = faction;
 			Home = home;
-			ThrusterAcceleration = (float)Program.R.NextDouble() * 50 + 10.0f;
+			ThrusterAcceleration = (float) Program.R.NextDouble() * 50 + 10.0f;
 		}
 
 		private void FormatText(Text text, float level, RenderWindow window)
@@ -30,17 +32,18 @@ namespace GravityGame
 			float scale = view.Size.X / window.Size.X;
 			text.Scale = 0.5f * new Vector2f(scale, scale);
 		}
-		
+
 		public override void Update(Scene scene, float time)
 		{
 			base.Update(scene, time);
-			
+
 			Vector2f force = GetForceFrom(Home);
 			float acceleration = (force / Mass).Length();
 			float velocity = Mathf.Sqrt(acceleration * Distance(Home));
 
 			float angle = Mathf.AngleTo(Position, Home.Position);
-			Vector2f velocity_unit = new Vector2f(Mathf.Cos(angle + Mathf.PI / 2), (float)Mathf.Sin(angle + Mathf.PI / 2));
+			Vector2f velocity_unit =
+				new Vector2f(Mathf.Cos(angle + Mathf.PI / 2), (float) Mathf.Sin(angle + Mathf.PI / 2));
 			Vector2f target_vel = Home.Velocity + velocity_unit * velocity;
 
 			Vector2f accel_dir = target_vel - Velocity;

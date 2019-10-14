@@ -2,11 +2,14 @@ uniform sampler2D texture;
 uniform sampler2D land_texture;
 uniform sampler2D ice_texture;
 
+uniform vec4 atmo_color;
+uniform float atmo_strength;
 uniform float seed;
 uniform float temp;
 uniform float water_percentage;
 uniform float ice_percentage;
 uniform float time;
+uniform float radius;
 
 float rand2D(in vec2 co){
     return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
@@ -56,6 +59,19 @@ float Noise3D(in vec3 coord, in float wavelength)
     return interpolatedNoise3D(coord.x/wavelength, coord.y/wavelength, coord.z/wavelength);
 }
 
+float OctaveNoise3D(vec3 coord, float wavelength, int octaves, float wavelength_change)
+{
+    float val = 0;
+    
+    for(int i = 0; i < octaves; i++)
+    {
+        val += Noise3D(coord, wavelength);
+        wavelength *= wavelength_change;
+    }
+    
+    return val / octaves;
+}
+
 float invlerp(float a, float b, float value)
 {
     return (value - a) / (b - a);
@@ -87,27 +103,31 @@ vec4 moltenColor(float value)
 
 void main()
 {
-    vec2 uv = gl_TexCoord[0].xy;
-    vec2 xy = uv * float(textureSize(texture, 0).x) * 10;
+    float size = float(textureSize(texture, 0).x);
+    float radius_percent = (radius) / (size / 2);
     
-    vec2 landuv = mod(xy / textureSize(land_texture, 0), 1);
-    vec2 iceuv = mod(xy / textureSize(ice_texture, 0), 1);
+    vec2 uv = gl_TexCoord[0].xy;
+    vec2 xy = uv * float(textureSize(texture, 0).x);
+    
+    vec2 landuv = mod(xy * 10 / textureSize(land_texture, 0), 1);
+    vec2 iceuv = mod(xy * 10 / textureSize(ice_texture, 0), 1);
     
     vec2 dist = abs(uv - 0.5) * 2;
-    float r = dist.x * dist.x + dist.y * dist.y;
-
-    if(r > 1)
+    float r = sqrt(dist.x * dist.x + dist.y * dist.y);
+    
+    vec4 planet_color;
+    
+    if(r > radius_percent)
     {
         //Pixel is empty space
         
-        gl_FragColor = vec4(0, 0, 0, 0);
+        planet_color = vec4(0, 0, 0, 0);
     }
     else
     {
         //Pixel is part of the planet
         
-        float noise = Noise3D(vec3(uv.x, uv.y, seed), 0.15);
-        float noise_diff = Noise3D(vec3(uv.x - 0.01, uv.y + 0.01, seed), 0.15);
+        float noise = OctaveNoise3D(vec3(uv.x, uv.y, seed), 0.15, 6, 0.5);
         
         if(noise < water_percentage)
         {
@@ -117,16 +137,14 @@ void main()
             {
                 //Pixel is deep ocean
 
-                gl_FragColor = vec4(0, 0, 0.8, 1);
+                planet_color = vec4(0, 0, 0.8, 1);
             }
             else
             {
                 //Pixel is ice
 
-                gl_FragColor = texture2D(ice_texture, iceuv);
+                planet_color = texture2D(ice_texture, iceuv);
             }
-            
-            
         }
         else
         {
@@ -145,7 +163,49 @@ void main()
             vec4 base_color = tex_color + depth_color;
             
             float base_amount = clamp(1 - molten_value, 0, 1);
-            gl_FragColor = (base_color) * (base_amount) + molten_color * molten_value;
+            planet_color = (base_color) * (base_amount) + molten_color * molten_value;
         }
     }
+
+    float molten_value = clamp(invlerp(600, 8000, temp) - 0.1, 0, 1);
+    
+    //Final atmosphere color to use
+    vec4 atmo_pixel_color;
+    
+    if(r > radius_percent)
+    {
+        float atmo_alpha = clamp(0.5 - pow((r - radius_percent), 2) * 600, 0, 1);
+        
+        atmo_alpha = clamp(atmo_alpha - pow(molten_value, 2) * 4, 0, 1);
+        atmo_strength = clamp(atmo_strength - pow(molten_value, 2) * 4, 0, 1);
+        
+        atmo_pixel_color = atmo_color * clamp(atmo_strength + 0.1, 0, 1);
+        atmo_pixel_color.w = atmo_alpha;
+        
+        atmo_strength *= atmo_alpha;
+    }
+    else
+    {
+        //Atmosphere is thicker near the edges of the planet
+        float thickness = pow((r / radius_percent), 4) * 0.45f + 1;
+        atmo_strength *= thickness;
+        atmo_strength = clamp(atmo_strength - pow(molten_value, 2) * 4, 0, 1);
+        atmo_pixel_color = atmo_color * atmo_strength;
+    }
+
+    vec4 glow_color;
+    
+    if(r > radius_percent)
+    {
+        
+        float glow_alpha = clamp(molten_value - (r - radius_percent) * 6, 0, 1);
+        glow_color = moltenColor(molten_value);
+        glow_color.w = glow_alpha;
+    }
+    else
+    {
+        glow_color = vec4(0, 0, 0, 0);
+    }
+    
+    gl_FragColor = planet_color * (1 - atmo_strength) + atmo_pixel_color + glow_color * (1 - atmo_strength);
 }

@@ -1,5 +1,7 @@
 using System.Data.Common;
+using System.Security.Principal;
 using SFML.Graphics;
+using SFML.Graphics.Glsl;
 
 namespace GravityGame
 {
@@ -18,6 +20,11 @@ namespace GravityGame
         public static Colorf FromColor(Color color)
         {
             return new Colorf((float)color.R / 255,(float)color.G / 255,(float)color.B / 255,(float)color.A / 255);
+        }
+
+        public Vec4 ToVec4()
+        {
+            return new Vec4(R, G, B, A);
         }
 
         public Colorf()
@@ -59,6 +66,11 @@ namespace GravityGame
         public static Colorf operator *(Colorf a, float b)
         {
             return new Colorf(a.R * b, a.G * b, a.B * b, a.A * b);
+        }
+
+        public static Colorf operator /(Colorf a, float b)
+        {
+            return new Colorf(a.R / b, a.G / b, a.B / b, a.A / b);
         }
     }
 }
