@@ -16,6 +16,7 @@ namespace GravityGame
 			Methane,
 			Nitrogen,
 			Oxygen,
+			Argon,
 			Carbon,
 			Iron,
 			Nickel,
@@ -28,14 +29,11 @@ namespace GravityGame
 			switch (type)
 			{
 				case CompoundType.Helium:
-					return true;
 				case CompoundType.Hydrogen:
-					return true;
 				case CompoundType.Methane:
-					return true;
 				case CompoundType.Nitrogen:
-					return true;
 				case CompoundType.Oxygen:
+				case CompoundType.Argon:
 					return true;
 				default:
 					return false;
@@ -65,6 +63,8 @@ namespace GravityGame
 						return 1.3f;
 					case CompoundType.Methane:
 						return 0.7f;
+					case CompoundType.Argon:
+						return 1.8f;
 					case CompoundType.Carbon:
 						return 2.5f;
 					case CompoundType.Iron:
@@ -101,6 +101,9 @@ namespace GravityGame
 						break;
 					case CompoundType.Oxygen:
 						color = new Color(50, 80, 90, 255);
+						break;
+					case CompoundType.Argon:
+						color = new Color(200, 0, 200, 255);
 						break;
 					default:
 						color = new Color(0, 0, 0, 0);

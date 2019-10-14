@@ -132,7 +132,7 @@ namespace GravityGame
                     window.Draw(ghost);
                 }
 
-                window.Draw(gui);
+                //window.Draw(gui);
                 
                 window.Display();
             }

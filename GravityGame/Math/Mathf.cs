@@ -48,6 +48,11 @@ namespace GravityGame
             return t;
         }
 
+        public static float Log(float val, float log_base = 10.0f)
+        {
+            return (float) Math.Log(val, log_base);
+        }
+        
         public static float Lerp(float a, float b, float t)
         {
             return a + t * (b - a);

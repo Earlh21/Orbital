@@ -46,8 +46,15 @@ namespace GravityGame
             {
                 return;
             }
+
+            float too_high = 1;
+
+            if (Temperature > 10001)
+            {
+                too_high = Mathf.Max(1, Mathf.Log(Temperature - 10000));
+            }
             
-            Heat -= Circumference * (Temperature * Mathf.Pow(Temperature, 0.4f) - Mathf.AmbientTemp) / Mathf.Insulation * time;
+            Heat -= too_high * Circumference * (Temperature * Mathf.Pow(Temperature, 0.4f) - Mathf.AmbientTemp) / Mathf.Insulation * time;
         }
 
         public float GetHeatFlowFrom(Star star)
