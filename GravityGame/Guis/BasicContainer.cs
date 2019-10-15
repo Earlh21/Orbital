@@ -11,12 +11,7 @@ namespace GravityGame.Guis
 		
 		public override void Draw(RenderTarget target, RenderStates states)
 		{
-			
-			//TODO: Draw background in screen space
-			/**RectangleShape background = new RectangleShape(Size);
-			background.FillColor = BackgroundColor;
-			background.OutlineColor = BorderColor;
-			background.OutlineThickness = BorderThickness;**/
+			base.Draw(target, states);
 			
 			foreach (GuiEntry entry in Entries)
 			{
@@ -24,14 +19,9 @@ namespace GravityGame.Guis
 			}
 		}
 
-		public override Vector2i GetAbsolutePosition(GuiEntry child)
+		public override Vector2i GetChildAbsolutePosition(GuiEntry child)
 		{
-			if (Parent == null)
-			{
-				return new Vector2i(child.Margin.Left, child.Margin.Top);
-			}
-			
-			return Parent.GetAbsolutePosition(child) + new Vector2i(child.Margin.Left, child.Margin.Top);
+			return GetAbsolutePosition() + new Vector2i(child.Margin.Left, child.Margin.Top);
 		}
 	}
 }

@@ -68,14 +68,21 @@ namespace GravityGame
             
             Gui gui = new Gui();
             GuiText text = new GuiText();
+            GuiText text2 = new GuiText();
+            GuiText text3 = new GuiText();
+            ColumnContainer column = new ColumnContainer();
             
-            text.Font = Font;
-            text.Color = Color.White;
-            text.FontSize = 1;
-            text.Contents = "Test";
-            text.Margin = new Margin(10, 0, 0, 10);
+            column.BackgroundColor = Color.Blue;
             
-            gui.Contents.AddEntry(text);
+            TextTest(text);
+            TextTest(text2);
+            TextTest(text3);
+            
+            column.AddEntry(text);
+            column.AddEntry(text2);
+            column.AddEntry(text3);
+            
+            gui.Contents.AddEntry(column);
             
             while (window.IsOpen)
             {
@@ -138,6 +145,14 @@ namespace GravityGame
             }
         }
 
+        private static void TextTest(GuiText text)
+        {
+            text.Font = Font;
+            text.Color = Color.White;
+            text.FontSize = 1;
+            text.Contents = "Test";
+        }
+
         public static Vector2f ScreenPositionToWorld(Vector2i pos)
         {
             return window.MapPixelToCoords(pos);
@@ -145,7 +160,10 @@ namespace GravityGame
 
         public static Vector2f ScreenSizeToWorld(Vector2i size)
         {
-            return window.MapPixelToCoords(size);
+            float uvx = (float) size.X / window.Size.X;
+            float uvy = (float) size.Y / window.Size.Y;
+            
+            return new Vector2f(uvx, uvy).Multiply(view.Size);
         }
 
         public static Vector2i WorldSizeToScreen(Vector2f size)

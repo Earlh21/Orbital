@@ -25,10 +25,12 @@ namespace GravityGame.Guis
 
 		public override void Draw(RenderTarget target, RenderStates states)
 		{
+			base.Draw(target, states);
+			
 			Text text = new Text(Contents, Font);
 
-			text.Position = Program.ScreenPositionToWorld(GetAbsolutePosition(this));
-			text.CharacterSize = 50;
+			text.Position = Program.ScreenPositionToWorld(GetAbsolutePosition());
+			text.CharacterSize = 80;
 			text.Scale = new Vector2f(GetRealScale(Program.window), GetRealScale(Program.window));
 			text.FillColor = Color;
 			
@@ -38,7 +40,7 @@ namespace GravityGame.Guis
 		private float GetRealScale(RenderWindow window)
 		{
 			View view = window.GetView();
-			return FontSize * view.Size.X / window.Size.X;
+			return FontSize / 3.0f * view.Size.X / window.Size.X;
 		}
 	}
 }

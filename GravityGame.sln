@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GravityGame", "GravityGame\GravityGame.csproj", "{95EEFD45-8C3E-43D6-870D-F9DCC8A2D583}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GlslIncludeProcessor", "GlslIncludeProcessor\GlslIncludeProcessor.csproj", "{66BF19FB-07BD-4A3D-884E-730CE1A74B9B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,5 +15,9 @@ Global
 		{95EEFD45-8C3E-43D6-870D-F9DCC8A2D583}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{95EEFD45-8C3E-43D6-870D-F9DCC8A2D583}.Release|Any CPU.Build.0 = Release|Any CPU
 		{95EEFD45-8C3E-43D6-870D-F9DCC8A2D583}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{66BF19FB-07BD-4A3D-884E-730CE1A74B9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66BF19FB-07BD-4A3D-884E-730CE1A74B9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66BF19FB-07BD-4A3D-884E-730CE1A74B9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66BF19FB-07BD-4A3D-884E-730CE1A74B9B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

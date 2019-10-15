@@ -29,13 +29,15 @@ namespace GravityGame.Guis
 
 		public override void Draw(RenderTarget target, RenderStates states)
 		{
+			base.Draw(target, states);
+			
 			foreach (GuiEntry entry in Entries)
 			{
 				target.Draw(entry);
 			}
 		}
 
-		public override Vector2i GetAbsolutePosition(GuiEntry child)
+		public override Vector2i GetChildAbsolutePosition(GuiEntry child)
 		{
 			int index = Entries.IndexOf(child);
 
@@ -48,7 +50,7 @@ namespace GravityGame.Guis
 
 			padding_above += Entries[index].Margin.Top;
 
-			return Parent.GetAbsolutePosition(this) + new Vector2i(Entries[index].Margin.Left, index * LineHeight + padding_above);
+			return GetAbsolutePosition() + new Vector2i(Entries[index].Margin.Left, index * LineHeight + padding_above);
 		}
 	}
 }

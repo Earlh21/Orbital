@@ -1,0 +1,11 @@
+﻿<Project ToolsVersion="4.0" DefaultTargets="Build" Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net48</TargetFramework>
+    </PropertyGroup>
+    
+    <Target Name="Copy" AfterTargets="Build">
+        <Copy SourceFiles="$(OutDir)GlslIncludeProcessor.exe" DestinationFolder="$(SolutionDir)GravityGame\Tools"></Copy>
+    </Target>
+
+</Project>

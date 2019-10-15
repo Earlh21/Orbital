@@ -1,3 +1,4 @@
+using Microsoft.Win32.SafeHandles;
 using SFML.Graphics;
 using SFML.System;
 
@@ -6,29 +7,39 @@ namespace GravityGame.Guis
 	public abstract class GuiEntry : Drawable
 	{
 		public Container Parent { get; internal set; }
-
 		public Margin Margin { get; set; }
 		public virtual Vector2i Size { get; }
 
-		public abstract void Draw(RenderTarget target, RenderStates states);
+		public Color BackgroundColor { get; set; } = Color.Transparent;
+		public Color BorderColor { get; set; } = Color.Transparent;
+		public int BorderThickness { get; set; }
+
+		public virtual void Draw(RenderTarget target, RenderStates states)
+		{
+			Vector2i size = Size;
+			Vector2f world_size = Program.ScreenSizeToWorld(size);
+			
+			RectangleShape background = new RectangleShape(world_size);
+			background.FillColor = BackgroundColor;
+			background.OutlineColor = BorderColor;
+			background.OutlineThickness = BorderThickness;
+
+			background.Position = Program.ScreenPositionToWorld(GetAbsolutePosition());
+			target.Draw(background);
+		}
 
 		public GuiEntry()
 		{
 		}
 
-		public GuiEntry(Vector2i size)
-		{
-			Size = size;
-		}
-
-		public virtual Vector2i GetAbsolutePosition(GuiEntry child)
+		public Vector2i GetAbsolutePosition()
 		{
 			if (Parent == null)
 			{
 				return new Vector2i(Margin.Left, Margin.Top);
 			}
-			
-			return Parent.GetAbsolutePosition(this);
+
+			return Parent.GetChildAbsolutePosition(this);
 		}
 	}
 }

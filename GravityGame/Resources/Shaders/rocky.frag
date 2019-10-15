@@ -1,4 +1,6 @@
 #version 130
+#include lib\rand.frag
+#include lib\noise.frag
 
 uniform sampler2D texture;
 uniform sampler2D land_texture;
@@ -12,67 +14,6 @@ uniform float water_percentage;
 uniform float ice_percentage;
 uniform float time;
 uniform float radius;
-
-float rand2D(in vec2 co){
-    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
-}
-float rand3D(in vec3 co){
-    return fract(sin(dot(co.xyz ,vec3(12.9898,78.233,144.7272))) * 43758.5453);
-}
-
-float simple_interpolate(in float a, in float b, in float x)
-{
-    return a + smoothstep(0.0,1.0,x) * (b-a);
-}
-float interpolatedNoise3D(in float x, in float y, in float z)
-{
-    float integer_x = x - fract(x);
-    float fractional_x = x - integer_x;
-
-    float integer_y = y - fract(y);
-    float fractional_y = y - integer_y;
-
-    float integer_z = z - fract(z);
-    float fractional_z = z - integer_z;
-
-    float v1 = rand3D(vec3(integer_x, integer_y, integer_z));
-    float v2 = rand3D(vec3(integer_x+1.0, integer_y, integer_z));
-    float v3 = rand3D(vec3(integer_x, integer_y+1.0, integer_z));
-    float v4 = rand3D(vec3(integer_x+1.0, integer_y +1.0, integer_z));
-
-    float v5 = rand3D(vec3(integer_x, integer_y, integer_z+1.0));
-    float v6 = rand3D(vec3(integer_x+1.0, integer_y, integer_z+1.0));
-    float v7 = rand3D(vec3(integer_x, integer_y+1.0, integer_z+1.0));
-    float v8 = rand3D(vec3(integer_x+1.0, integer_y +1.0, integer_z+1.0));
-
-    float i1 = simple_interpolate(v1,v5, fractional_z);
-    float i2 = simple_interpolate(v2,v6, fractional_z);
-    float i3 = simple_interpolate(v3,v7, fractional_z);
-    float i4 = simple_interpolate(v4,v8, fractional_z);
-
-    float ii1 = simple_interpolate(i1,i2,fractional_x);
-    float ii2 = simple_interpolate(i3,i4,fractional_x);
-
-    return simple_interpolate(ii1 , ii2 , fractional_y);
-}
-
-float Noise3D(in vec3 coord, in float wavelength)
-{
-    return interpolatedNoise3D(coord.x/wavelength, coord.y/wavelength, coord.z/wavelength);
-}
-
-float OctaveNoise3D(vec3 coord, float wavelength, int octaves, float wavelength_change)
-{
-    float val = 0;
-
-    for(int i = 0; i < octaves; i++)
-    {
-        val += Noise3D(coord, wavelength);
-        wavelength *= wavelength_change;
-    }
-
-    return val / octaves;
-}
 
 float invlerp(float a, float b, float value)
 {
@@ -117,8 +58,8 @@ void main()
 
     //Get uv values for the textures using the real xy coordinates
     //We want the same texture resolution for every planet
-    vec2 landuv = mod(xy * 10 / textureSize(land_texture, 0), 1);
-    vec2 iceuv = mod(xy * 10 / textureSize(ice_texture, 0), 1);
+    vec2 landuv = mod(xy * 40 / textureSize(land_texture, 0), 1);
+    vec2 iceuv = mod(xy * 40 / textureSize(ice_texture, 0), 1);
 
     //UV displacement from the 
     vec2 dist = abs(uv - 0.5) * 2;
@@ -135,7 +76,7 @@ void main()
     else
     {
         //Pixel is part of the planet
-        float noise = OctaveNoise3D(vec3(uv.x, uv.y, seed), 0.15, 6, 0.5);
+        float noise = perlinOctave(vec3(uv.x, uv.y, seed), 0.15, 6, 0.5);
 
         if(noise < water_percentage)
         {
@@ -161,7 +102,7 @@ void main()
             vec4 depth_color = vec4((noise - 0.8) * 0.4, (noise - 0.8) * 0.4, (noise - 0.8) * 0.4, 1);
             vec4 base_color = tex_color + depth_color;
             
-            float molten_noise = Noise3D(vec3(uv.x, uv.y, seed + time / 40), 0.1) * 0.2;
+            float molten_noise = perlin(vec3(uv.x, uv.y, seed + time / 40), 0.1) * 0.2;
             float molten_value = clamp(invlerp(600, 8000, temp), 0, 1);
 
             //Shift molten value over time

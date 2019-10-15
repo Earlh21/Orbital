@@ -8,8 +8,6 @@ namespace GravityGame.Guis
 	{
 		protected List<GuiEntry> Entries { get; set; }
 
-		public abstract override void Draw(RenderTarget target, RenderStates states);
-
 		public Container()
 		{
 			Entries = new List<GuiEntry>();
@@ -20,5 +18,7 @@ namespace GravityGame.Guis
 			Entries.Add(entry);
 			entry.Parent = this;
 		}
+
+		public abstract Vector2i GetChildAbsolutePosition(GuiEntry child);
 	}
 }
