@@ -4,8 +4,16 @@ namespace GlslIncludeProcessor
 {
 	public class Shader
 	{
-		private Tree<String> includes;
+		private DependencyTree<String> includes;
+
+		private void FindDependencies(string file)
+		{
+			string[] lines =
+		}
 		
-		
+		private void AddDependencies(TreeNode<string> node, string file)
+		{
+			
+		}
 	}
 }
