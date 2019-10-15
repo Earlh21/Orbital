@@ -21,6 +21,7 @@ namespace GravityGame
 			Iron,
 			Nickel,
 			Silicon,
+			Osmium,
 			Basic
 		}
 
@@ -73,6 +74,8 @@ namespace GravityGame
 						return 10.0f;
 					case CompoundType.Silicon:
 						return 3.0f;
+					case CompoundType.Osmium:
+						return 100.0f;
 					default:
 						return 1.0f;
 				}

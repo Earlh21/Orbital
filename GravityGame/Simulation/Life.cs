@@ -5,7 +5,7 @@ namespace GravityGame
     public class Life
     {
         private static int last_faction;
-        private static int max_tech_level = 12;
+        private static int max_tech_level = 10;
         
         public static float growth_rate = 1;
 

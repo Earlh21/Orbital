@@ -21,7 +21,7 @@ namespace GravityGame
 			if (heat_change_sign > 0 || target.Life.TechLevel > 2)
 			{
 				color = Color.Red;
-				heat_change = 5000 + Mathf.Pow(target.Life.TechLevel, 1.5f) * 1250;
+				heat_change = 5000 + Mathf.Pow(target.Life.TechLevel, 1.8f) * 1250;
 			}
 			else
 			{

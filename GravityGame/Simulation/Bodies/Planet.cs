@@ -177,8 +177,8 @@ namespace GravityGame
 
         private void FireMatter(Scene scene, Body target)
         {
-            float speed = Mathf.Sqrt(2 * Mathf.G * Mass / Radius) * (10.0f + Life.TechLevel / 2.0f);
-            float mass = 12 + Life.TechLevel * 6;
+            float speed = Mathf.Sqrt(2 * Mathf.G * Mass / Radius) * (6.0f + Life.TechLevel / 8.0f);
+            float mass = 22 + Life.TechLevel * 12;
             
             float distance = Distance(target);
             float time = distance / speed;
@@ -186,7 +186,7 @@ namespace GravityGame
             float angle = Mathf.AngleTo(Position, other_position);
             
             Vector2f velocity = speed * new Vector2f(Mathf.Cos(angle), Mathf.Sin(angle));
-            Composition composition = Composition.Single(Compound.CompoundType.Nickel, mass);
+            Composition composition = Composition.Single(Compound.CompoundType.Osmium, mass);
             Planet bullet = new Planet(Position + velocity.Unit() * Radius * 2.5f, velocity, composition, 100000);
             
             scene.AddBody(bullet);
@@ -201,7 +201,7 @@ namespace GravityGame
             if (heat_change_sign > 0 || target.Life.TechLevel > 2)
             {
                 color = Color.Red;
-                heat_change = 10000 + Mathf.Pow(Life.TechLevel, 1.5f) * 2500;
+                heat_change = 10000 + Mathf.Pow(Life.TechLevel, 1.8f) * 2500;
             }
             else
             {

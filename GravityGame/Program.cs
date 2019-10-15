@@ -196,7 +196,11 @@ namespace GravityGame
             }
             else if (args.Code == Keyboard.Key.Escape)
             {
-                scene.Deselect();
+                if (scene.Selected != null)
+                {
+                    ViewOffset += scene.Selected.Position.InvY();
+                    scene.Deselect();
+                }
             }
             else if(args.Code == Keyboard.Key.P)
             {
@@ -251,6 +255,7 @@ namespace GravityGame
             
             float angle = NextFloatAbs(R, 2 * Mathf.PI);
             float vel_var = 1 + NextFloat(R, velocity_variance);
+            float dist_val = (float)R.NextDouble();
             float distance = NextFloatAbs(R, radius) + inner_radius;
             float n_mass = mass + NextFloat(R, mass_variance);
                     
