@@ -84,6 +84,11 @@ namespace GlslIncludeProcessor
 			main.Insert(2, Environment.NewLine);
 			for (int i = include_lines.Length - 1; i >= 0; i--)
 			{
+				if (include_lines[i].Equals("#lib"))
+				{
+					continue;
+				}
+				
 				main.Insert(2, include_lines[i]);
 			}
 		}
@@ -94,8 +99,6 @@ namespace GlslIncludeProcessor
 
 			if (dependency == null)
 			{
-				//Get rid of the #lib tag
-				lines.RemoveAt(0);
 				return String.Join(Environment.NewLine, lines);
 			}
 
