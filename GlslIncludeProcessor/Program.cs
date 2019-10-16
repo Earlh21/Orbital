@@ -12,7 +12,8 @@ namespace GlslIncludeProcessor
 
 			foreach (String file in files)
 			{
-				StaticShader.ProcessShader(file);
+				Shader shader = new Shader(file);
+				File.WriteAllText(file, shader.Process());
 			}
 		}
 	}

@@ -47,7 +47,25 @@ namespace GlslIncludeProcessor
 
 			return false;
 		}
-		
+
+		public List<T> PreOrder()
+		{
+			List<T> traversal = new List<T>();
+
+			PreOrderHelper(traversal, Root);
+			return traversal;
+		}
+
+		private void PreOrderHelper(List<T> traversal, TreeNode<T> node)
+		{
+			traversal.Add(node.Value);
+
+			foreach (TreeNode<T> child in node.children)
+			{
+				PreOrderHelper(traversal, node);
+			}
+		}
+
 		private bool HasAncestor(TreeNode<T> node, T value)
 		{
 			if (node.Value.Equals(value))
