@@ -1,6 +1,6 @@
 #version 130
-#include lib\rand.frag
 #include lib\noise.frag
+#include lib\stochastic.frag
 
 uniform sampler2D texture;
 uniform sampler2D land_texture;
@@ -97,7 +97,7 @@ void main()
             //Pixel is land
             
             //Get the texture color at the pixel
-            vec4 tex_color = texture2D(land_texture, landuv);
+            vec4 tex_color = stochasticSample(land_texture, landuv);
             //Recolor to be brighter at higher spots
             vec4 depth_color = vec4((noise - 0.8) * 0.4, (noise - 0.8) * 0.4, (noise - 0.8) * 0.4, 1);
             vec4 base_color = tex_color + depth_color;

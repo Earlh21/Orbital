@@ -7,7 +7,7 @@ namespace GlslIncludeProcessor
 	{
 		//Args - Directory to process, extensions to process
 		static void Main(string[] args)
-		{
+		{	
 			String[] files = Directory.GetFiles(args[0], args[1], SearchOption.AllDirectories);
 
 			foreach (String file in files)

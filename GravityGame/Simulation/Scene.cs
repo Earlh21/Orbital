@@ -379,6 +379,19 @@ namespace GravityGame
 			{
 				target.Draw(star);
 			}
+			
+			Texture screen = new Texture(target.Size.X, target.Size.Y);
+			screen.Update((RenderWindow)target);
+			//screen.Update(new Image("C:\\Users\\Idrialite\\Pictures\\barcode_test.jpg"));
+			
+			Sprite blackhole = new Sprite(screen);
+			blackhole.Position = new Vector2f(0, 0);
+			blackhole.Scale = new Vector2f(1.0f / Program.ViewScale, 1.0f / Program.ViewScale);
+			
+			Shader blackhole_shader = new Shader(null, null, Program.GetResourcesDirectory() + "\\Shaders\\blackhole.frag");
+			blackhole_shader.SetUniform("screen", screen);
+			
+			target.Draw(blackhole, new RenderStates(blackhole_shader));
 		}
 
 		private void Iterate(float time)

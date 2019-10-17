@@ -1,5 +1,6 @@
 #lib
-vec4 tex2DStochastic(sampler2D tex, vec2 uv)
+#include rand.frag
+vec4 stochasticSample(sampler2D tex, vec2 uv)
 {
     //triangle vertices and blend weights
     //BW_vx[0...2].xyz = triangle verts
@@ -23,7 +24,7 @@ vec4 tex2DStochastic(sampler2D tex, vec2 uv)
     vec2 dy = dFdy(uv);
 
     //blend samples with calculated weights
-    return texture2D(tex, uv + rand2D(BW_vx[0].xy), dx, dy) * BW_vx[3].x +
-    texture2D(tex, uv + rand2D(BW_vx[1].xy), dx, dy) * BW_vx[3].y +
-    texture2D(tex, uv + rand2D(BW_vx[2].xy), dx, dy) * BW_vx[3].z;
+    return texture2D(tex, uv + rand2D(BW_vx[0].xy)) * BW_vx[3].x +
+    texture2D(tex, uv + rand2D(BW_vx[1].xy)) * BW_vx[3].y +
+    texture2D(tex, uv + rand2D(BW_vx[2].xy)) * BW_vx[3].z;
 }

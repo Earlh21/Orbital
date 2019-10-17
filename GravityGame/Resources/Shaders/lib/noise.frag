@@ -1,4 +1,5 @@
 #lib
+#include rand.frag
 float simpleInterpolate(in float a, in float b, in float x)
 {
     return a + smoothstep(0.0,1.0,x) * (b-a);

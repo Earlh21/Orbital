@@ -135,6 +135,9 @@
     <Content Include="Resources\Fonts\monsterrat.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\Shaders\blackhole.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\Shaders\circle.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

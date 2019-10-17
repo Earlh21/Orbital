@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -51,6 +52,7 @@ namespace GlslIncludeProcessor
 		
 		private List<String> FindDependencies(string file)
 		{
+			String dir = Path.GetDirectoryName(file);
 			string[] lines = File.ReadAllLines(file);
 
 			List<string> includes = new List<string>();
@@ -59,7 +61,7 @@ namespace GlslIncludeProcessor
 				if (line.StartsWith("#include"))
 				{
 					string[] args = line.Split(' ');
-					includes.Add(args[1]);
+					includes.Add(dir + "\\" + args[1]);
 				}
 			}
 
@@ -73,7 +75,11 @@ namespace GlslIncludeProcessor
 			foreach (string include in includes)
 			{
 				TreeNode<string> child = dependency.AddChild(node, include);
-				AddAllDependencies(child);
+
+				if (child != null)
+				{
+					AddAllDependencies(child);
+				}
 			}
 		}
 
@@ -84,12 +90,24 @@ namespace GlslIncludeProcessor
 			main.Insert(2, Environment.NewLine);
 			for (int i = include_lines.Length - 1; i >= 0; i--)
 			{
-				if (include_lines[i].Equals("#lib"))
+				if (include_lines[i].StartsWith("#"))
 				{
 					continue;
 				}
 				
 				main.Insert(2, include_lines[i]);
+			}
+		}
+
+		private void RemoveDirectives(List<String> lines)
+		{
+			for (int i = 0; i < lines.Count; i++)
+			{
+				if (lines[i].StartsWith("#include"))
+				{
+					lines.RemoveAt(i);
+					i--;
+				}
 			}
 		}
 
@@ -102,10 +120,19 @@ namespace GlslIncludeProcessor
 				return String.Join(Environment.NewLine, lines);
 			}
 
-			foreach (string include in dependency.PreOrder())
+			List<string> traversal = dependency.Traversal();
+			traversal.Reverse();
+			foreach (string include in traversal)
 			{
+				if (include.Equals(dependency.Root.Value))
+				{
+					continue;
+				}
+				
 				InsertDependency(lines, include);
 			}
+			
+			RemoveDirectives(lines);
 
 			return String.Join(Environment.NewLine, lines);
 		}

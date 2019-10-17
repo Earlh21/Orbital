@@ -24,7 +24,7 @@ namespace GravityGame
         private static float spawn_radius = 5;
         private static Vector2f mouse_original_pos;
         private static Vector2f mouse_fire_offset;
-        private const float add_mass_period = 0.2f;
+        private const float add_mass_period = 0.15f;
         private static float add_mass_time = 0.0f;
 
         public static float ViewScale { get; private set; } = 2.5f;
@@ -194,7 +194,7 @@ namespace GravityGame
 
         private static void GenerateDisk(int n)
         {
-            Star star = new Star(new Vector2f(0, 0), new Vector2f(0, 0), 100000);
+            Star star = new Star(new Vector2f(0, 0), new Vector2f(0, 0), 1000000);
             scene.AddBody(star);
             scene.ForceBodyBufferInsert();
                 
