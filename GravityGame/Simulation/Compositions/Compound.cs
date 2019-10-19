@@ -81,7 +81,7 @@ namespace GravityGame
 				}
 			}
 		}
-
+		
 		public Colorf Color
 		{
 			get

@@ -27,11 +27,12 @@ namespace GravityGame
         private const float add_mass_period = 0.15f;
         private static float add_mass_time = 0.0f;
 
-        public static float ViewScale { get; private set; } = 2.5f;
+        public static float ViewScale { get; private set; } = 1.0f;
         public static Vector2f ViewOffset { get; private set; } = new Vector2f(0, 0);
         public static Random R { get; private set; }
         public static Font Font { get; private set; }
         public static float Time { get; private set; }
+        public static Vector2f ViewSize => view.Size;
 
         //TODO: Multithread drawing and updating?
         //TODO: Add a leaderboard for number of planets colonized
