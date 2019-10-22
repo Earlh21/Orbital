@@ -8,7 +8,7 @@ namespace GravityGame
 {
 	public class BlackHole : RenderBody
 	{
-		public BlackHole(Vector2f position, Vector2f velocity, float mass) :base(position,new Vector2f(0, 0), Composition.Basic(mass))
+		public BlackHole(Vector2f position, Vector2f velocity, float mass) :base(position,velocity, Composition.Basic(mass))
 		{
 			
 		}
