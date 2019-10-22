@@ -116,7 +116,7 @@ namespace GravityGame
 
         private void FireShip(Scene scene, Body target)
         {
-            Life life = new Life(Temperature, Life.Faction, Life.TechLevel, 100);
+            Life life = new Life(Life);
 
             Star star = scene.GetMainStar();
 
@@ -337,7 +337,7 @@ namespace GravityGame
                     FireLaserSatellite(scene);
                 }
                 
-                Life.Update(time, Temperature);
+                Life.Update(time, Temperature, Type);
             }
             else
             {
@@ -351,7 +351,7 @@ namespace GravityGame
 
         public void EvolveLife()
         {
-            Life = new Life(Temperature);
+            Life = new Life(Temperature, Type);
         }
 
         protected override Shader GetShader()

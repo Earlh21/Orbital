@@ -59,7 +59,7 @@ namespace GravityGame
                     return;
                 }
                 
-                Life.Update(time, Temperature);
+                Life.Update(time, Temperature, Life.NormalType);
             }
         }
 

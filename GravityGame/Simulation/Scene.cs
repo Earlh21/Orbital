@@ -381,9 +381,6 @@ namespace GravityGame
 			{
 				target.Draw(star);
 			}
-			
-			BlackHole hole = new BlackHole(new Vector2f(0, 0), new Vector2f(0, 0), 100000000);
-			target.Draw(hole);
 		}
 
 		private void Iterate(float time)

@@ -106,13 +106,6 @@ namespace GravityGame
             {
                 planet.Life = ship.Life;
             }
-            else if(planet.Life.Faction == ship.Life.Faction)
-            {
-                if (planet.Life.TechLevel < ship.Life.TechLevel)
-                {
-                    planet.Life.TechLevel = ship.Life.TechLevel;
-                }
-            }
 
             ship.Exists = false;
             return planet;

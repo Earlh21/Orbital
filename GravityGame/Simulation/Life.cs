@@ -8,43 +8,58 @@ namespace GravityGame
         private static int max_tech_level = 10;
         
         public static float growth_rate = 1;
-
-        private readonly int faction;
         
         public float Science { get; private set; } = 0;
-        public float Population { get; set; }
-        public float NormalTemp { get; set; }
-        public int TechLevel { get; set; }
+        public float Population { get; private set; }
+        public float NormalTemp { get; private set; }
+        public int TechLevel { get; private set; }
+        public Planet.PlanetType NormalType { get; }
         public float TempMultiplier { get; set; }
         public float ScienceMultiplier { get; set; }
         public bool IsDead => Population < 2;
-        
-        public int Faction => faction;
+        public int Faction { get; }
 
-        public Life(float temperature, float temp_multiplier = 1.0f, float science_multiplier = 1.0f)
+        /// <summary>
+        /// Generations a new faction and creates a Life instance for it.
+        /// </summary>
+        /// <param name="temperature">normal temperature</param>
+        /// <param name="normal_type">normal planet type</param>
+        /// <param name="temp_multiplier">temperature tolerance multiplier</param>
+        /// <param name="science_multiplier">science gain multiplier</param>
+        public Life(float temperature, Planet.PlanetType normal_type, float temp_multiplier = 1.0f, float science_multiplier = 1.0f)
         {
             NormalTemp = temperature;
             last_faction++;
-            faction = last_faction;
+            Faction = last_faction;
             TechLevel = 1;
             Population = 2;
             TempMultiplier = temp_multiplier;
             ScienceMultiplier = science_multiplier;
+            NormalType = normal_type;
         }
 
-        public Life(float temperature, int faction, int tech_level, float population, float temp_multiplier = 1.0f)
+        /// <summary>
+        /// Creates a new Life instance that copies values from a given Life instance.
+        /// </summary>
+        /// <param name="original">instance to copy</param>
+        /// <returns>created life instance</returns>
+        public Life(Life original)
         {
-            NormalTemp = temperature;
-            this.faction = faction;
-            TechLevel = tech_level;
-            Population = population;
-            TempMultiplier = temp_multiplier;
+            NormalTemp = original.NormalTemp;
+            Faction = original.Faction;
+            TechLevel = original.TechLevel;
+            Population = 10;
+            TempMultiplier = original.TempMultiplier;
+            ScienceMultiplier = original.ScienceMultiplier;
+            NormalType = original.NormalType;
         }
 
-        public float GetCarryingCapacity(float temperature)
+        public float GetCarryingCapacity(float temperature, Planet.PlanetType planet_type)
         {
-            float min_temp = NormalTemp - 50 * TechLevel * TempMultiplier;
-            float max_temp = NormalTemp + 100 * TechLevel * TechLevel * TempMultiplier;
+            float type_modifier = planet_type == NormalType ? 1.0f : TechLevel * 0.1f;
+            
+            float min_temp = NormalTemp - 50 * TechLevel * TempMultiplier * type_modifier;
+            float max_temp = NormalTemp + 100 * TechLevel * TechLevel * TempMultiplier * type_modifier;
 
             float max_population = 2000 + 1000000 * (TechLevel - 1) * (TechLevel - 1);
 
@@ -64,11 +79,11 @@ namespace GravityGame
             return capacity;
         }
         
-        public void Update(float time, float temperature)
+        public void Update(float time, float temperature, Planet.PlanetType planet_type)
         {
             NormalTemp += Mathf.Sign(NormalTemp - temperature) * 0.1f * time;
                 
-            float growth = time * growth_rate * Population * (1 - Population / GetCarryingCapacity(temperature));
+            float growth = time * growth_rate * Population * (1 - Population / GetCarryingCapacity(temperature, planet_type));
 
             if (Population < 2)
             {

@@ -60,10 +60,8 @@
   <ItemGroup>
     <Compile Include="Extension\Vector2fExtension.cs" />
     <Compile Include="Extension\Vector2iExtension.cs" />
-    <Compile Include="File\IOManager.cs" />
     <Compile Include="Format\Format.cs" />
     <Compile Include="Graphics\Arrow.cs" />
-    <Compile Include="Graphics\BlackHoleShader.cs" />
     <Compile Include="Graphics\CircleShader.cs" />
     <Compile Include="Graphics\Color\Colorf.cs" />
     <Compile Include="Graphics\Color\Gradient.cs" />
@@ -84,7 +82,6 @@
     <Compile Include="Math\Rectangle.cs" />
     <Compile Include="Math\VectorField.cs" />
     <Compile Include="Math\VectorFieldL.cs" />
-    <Compile Include="Simulation\Bodies\BlackHole.cs" />
     <Compile Include="Simulation\Bodies\Body.cs" />
     <Compile Include="Simulation\Bodies\LaserSatellite.cs" />
     <Compile Include="Simulation\Bodies\OrbitShip.cs" />

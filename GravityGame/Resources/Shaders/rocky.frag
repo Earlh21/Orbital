@@ -66,7 +66,7 @@ void main()
     float r = sqrt(dist.x * dist.x + dist.y * dist.y);
 
     vec4 planet_color;
-
+    
     if(r > radius_percent)
     {
         //Pixel is empty space
