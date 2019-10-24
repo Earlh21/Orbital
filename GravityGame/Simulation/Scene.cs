@@ -18,7 +18,6 @@ namespace GravityGame
 		private List<Star> star_cache;
 		private List<RenderBody> body_buffer;
 		private List<Effect> effect_buffer;
-		private Body selected;
 
 		private List<Thread> forces_threads;
 		private List<AutoResetEvent> forces_handles;
@@ -28,7 +27,8 @@ namespace GravityGame
 		public bool DrawOutlines { get; set; }
 		public QuadTree QuadTree { get; private set; }
 		public bool DrawText { get; set; }
-		public Body Selected => selected;
+		public Body Selected { get; private set; }
+	
 
 		public List<RenderBody> Bodies { get; set; }
 
@@ -171,7 +171,7 @@ namespace GravityGame
 		{
 			if (body.IsSelected)
 			{
-				selected = null;
+				Selected = null;
 			}
 
 			Bodies.Remove(body);
@@ -188,61 +188,74 @@ namespace GravityGame
 
 		public void Deselect()
 		{
-			if (selected != null)
+			if (Selected != null)
 			{
-				selected.IsSelected = false;
-				selected = null;
+				Selected.IsSelected = false;
+				Selected = null;
 			}
 		}
 
-		public bool SelectAt(Vector2f position)
+		public Body Lookup(Vector2f position, float radius)
 		{
-			bool found = false;
-
-			foreach (RenderBody body in Bodies)
+			Body closest = null;
+			float min_distance = float.MaxValue;
+			
+			foreach (Body body in Bodies)
 			{
-				if (body.Contains(position))
-				{
-					Select(body);
+				float distance = body.Distance(position) - body.Radius;
 
-					found = true;
-					break;
+				if (distance < radius && distance < min_distance)
+				{
+					closest = body;
+					min_distance = distance;
 				}
 			}
 
-			return found;
+			return closest;
+		}
+		
+		public bool SelectAt(Vector2f position, float radius)
+		{
+			Body closest = Lookup(position, radius);
+
+			if (closest != null)
+			{
+				Select(closest);
+			}
+			
+			return closest != null;
 		}
 
 		public Vector2f GetSelectedPosition()
 		{
-			if (selected == null)
+			if (Selected == null)
 			{
 				return new Vector2f(0, 0);
 			}
 
-			return selected.Position;
+			return Selected.Position;
 		}
 
 		public Vector2f GetSelectedVelocity()
 		{
-			if (selected == null)
+			if (Selected == null)
 			{
 				return new Vector2f(0, 0);
 			}
 
-			return selected.Velocity;
+			return Selected.Velocity;
 		}
 
 		public void Select(Body body)
 		{
-			if (selected != null)
+			if (Selected != null)
 			{
-				selected.IsSelected = false;
+				Selected.IsSelected = false;
 			}
 
 			if (body.IsSelectable)
 			{
-				selected = body;
+				Selected = body;
 				body.IsSelected = true;
 			}
 		}

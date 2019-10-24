@@ -14,6 +14,8 @@ namespace GravityGame
     //TODO: Try to find some way to simplify dealing with the selected object or at least make variables more descriptive
     internal class Program
     {
+        private static bool can_fire = false;
+        
         public static RenderWindow window;
         private static View view;
         private static Scene scene;
@@ -127,17 +129,6 @@ namespace GravityGame
                     arr.PrimitiveType = PrimitiveType.Lines;
 
                     window.Draw(arr);
-                }
-
-                if (!panning)
-                {
-                    CircleShape ghost = new CircleShape();
-                    ghost.Radius = spawn_radius;
-                    ghost.FillColor = new Color(0, 255, 0, 100);
-                    ghost.OutlineColor = new Color(0, 255, 0, 100);
-                    ghost.Position = firing ? InvY(scene.GetSelectedPosition()) + mouse_fire_offset : GetMouseCoordsWorld();
-                    ghost.Position -= new Vector2f(spawn_radius, spawn_radius);
-                    window.Draw(ghost);
                 }
 
                 //window.Draw(gui);
@@ -273,8 +264,6 @@ namespace GravityGame
             float velocity_variance = 0.1f;
             
             float angle = NextFloatAbs(R, 2 * Mathf.PI);
-            float vel_var = 1 + NextFloat(R, velocity_variance);
-            float dist_val = (float)R.NextDouble();
             float distance = NextFloatAbs(R, radius) + inner_radius;
             float n_mass = mass + NextFloat(R, mass_variance);
                     
@@ -361,15 +350,16 @@ namespace GravityGame
                 if (args.Button == Mouse.Button.Left)
                 {
                     Vector2f mouse_pos = GetMouseCoordsWorld();
-                    bool found = scene.SelectAt(InvY(mouse_pos));
+                    bool found = scene.SelectAt(InvY(mouse_pos), 30 * ViewScale);
 
-                    if (!found)
+                    if (!found && can_fire)
                     {
                         firing = true;
 
                         mouse_fire_offset = GetMouseCoordsRelative();
                     }
-                    else
+
+                    if (found)
                     {
                         ViewOffset = new Vector2f(0, 0);
                     }

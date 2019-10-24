@@ -85,21 +85,25 @@ namespace GravityGame
 		{
 			double random = Program.R.NextDouble();
 
-			if (random < 0.25)
+			if (random < 0.2)
 			{
 				return Demeanor.Normal;
 			}
-			else if (random < 0.5)
+			else if (random < 0.4)
 			{
 				return Demeanor.Colonial;
 			}
-			else if(random < 0.75)
+			else if(random < 0.6)
 			{
 				return Demeanor.Scientist;
 			}
-			else
+			else if (random < 0.8)
 			{
 				return Demeanor.Individual;
+			}
+			else
+			{
+				return Demeanor.Hardy;
 			}
 		}
 		
@@ -145,6 +149,7 @@ namespace GravityGame
 			Colonial,
 			Individual,
 			Scientist,
+			Hardy,
 			Normal
 		}
 
@@ -193,6 +198,14 @@ namespace GravityGame
 						SatelliteChance = 1 / 60.0f;
 						TemperatureMultiplier = 1.0f;
 						ScienceMultiplier = 0.8f;
+						break;
+					case Demeanor.Hardy:
+						ShipChance = 1 / 10.0f;
+						LaserChance = 1 / 9.0f;
+						MatterChance = 1 / 70.0f;
+						SatelliteChance = 1 / 60.0f;
+						TemperatureMultiplier = 3.0f;
+						ScienceMultiplier = 1.1f;
 						break;
 					default:
 						ShipChance = -1;

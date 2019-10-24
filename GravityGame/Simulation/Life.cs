@@ -56,7 +56,7 @@ namespace GravityGame
 
         public float GetCarryingCapacity(float temperature, Planet.PlanetType planet_type)
         {
-            float type_modifier = planet_type == NormalType ? 1.0f : TechLevel * 0.1f;
+            float type_modifier = planet_type == NormalType ? 1.0f : TechLevel * 0.08f;
             
             float min_temp = NormalTemp - 50 * TechLevel * TempMultiplier * type_modifier;
             float max_temp = NormalTemp + 100 * TechLevel * TechLevel * TempMultiplier * type_modifier;
@@ -102,7 +102,7 @@ namespace GravityGame
 
         private static float GetScienceRequired(int tech_level)
         {
-            return 60.0f + tech_level * 12.0f;
+            return 60.0f + tech_level * 18.0f;
         }
     }
 }
