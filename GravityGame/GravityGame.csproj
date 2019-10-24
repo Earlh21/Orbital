@@ -104,6 +104,8 @@
     <Compile Include="Simulation\Life.cs" />
     <Compile Include="Simulation\CollisionPair.cs" />
     <Compile Include="Simulation\ISelectable.cs" />
+    <Compile Include="Simulation\Regions\PlanetTypeMap.cs" />
+    <Compile Include="Simulation\Regions\PlanetTypeRing.cs" />
     <Compile Include="Simulation\Scene.cs" />
     <Compile Include="Simulation\PointMass.cs" />
     <Compile Include="Program.cs" />

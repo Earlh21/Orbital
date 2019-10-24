@@ -18,6 +18,11 @@ namespace GravityGame
             return (float) Math.Pow(val, exponent);
         }
 
+        public static float Round(float a)
+        {
+            return (float) Math.Round(a);
+        }
+
         public static float Sign(float a)
         {
             if (a == 0)

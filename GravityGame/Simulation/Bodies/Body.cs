@@ -216,7 +216,7 @@ namespace GravityGame
 
             return collisions;
         }
-
+        
         public Vector2f GetForceFrom(QuadTree tree, float theta)
         {
             Vector2f total_force = new Vector2f(0, 0);
