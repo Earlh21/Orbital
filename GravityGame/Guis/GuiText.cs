@@ -29,10 +29,13 @@ namespace GravityGame.Guis
 			
 			Text text = new Text(Contents, Font);
 
-			text.Position = Program.ScreenPositionToWorld(GetAbsolutePosition());
 			text.CharacterSize = 80;
 			text.Scale = new Vector2f(GetRealScale(Program.window), GetRealScale(Program.window));
 			text.FillColor = Color;
+			
+			FloatRect bounds = text.GetGlobalBounds();
+			Vector2f offset = new Vector2f(bounds.Left, bounds.Top);
+			text.Position = Program.ScreenPositionToWorld(GetAbsolutePosition()) - offset;
 			
 			target.Draw(text);
 		}

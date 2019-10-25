@@ -75,8 +75,10 @@
     <Compile Include="Guis\Container.cs" />
     <Compile Include="Guis\Gui.cs" />
     <Compile Include="Guis\GuiEntry.cs" />
+    <Compile Include="Guis\Bar.cs" />
     <Compile Include="Guis\Margin.cs" />
     <Compile Include="Guis\GuiText.cs" />
+    <Compile Include="Guis\PrebuiltGuis\PlanetInfoGui.cs" />
     <Compile Include="Math\Mathf.cs" />
     <Compile Include="Math\QuadTree.cs" />
     <Compile Include="Math\Rectangle.cs" />

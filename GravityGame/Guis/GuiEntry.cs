@@ -16,6 +16,11 @@ namespace GravityGame.Guis
 
 		public virtual void Draw(RenderTarget target, RenderStates states)
 		{
+			if (this is BasicContainer basic)
+			{
+				int d = 3;
+			}
+			
 			Vector2i size = Size;
 			Vector2f world_size = Program.ScreenSizeToWorld(size);
 			

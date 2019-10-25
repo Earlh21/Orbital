@@ -14,7 +14,7 @@ namespace GravityGame
         
         protected float LifeTime { get; private set; }
         
-        public override bool IsSelectable => false;
+        public override bool IsSelectable => true;
 
         public override bool DoesGravity => false;
         public Life Life { get; set; }

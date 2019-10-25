@@ -353,7 +353,7 @@ namespace GravityGame
         {
             Life = new Life(Temperature, Type);
         }
-
+        
         protected override Shader GetShader()
         {
             RockyShader.Temperature = Temperature;

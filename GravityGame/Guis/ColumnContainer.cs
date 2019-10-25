@@ -23,7 +23,7 @@ namespace GravityGame.Guis
 					max_width = width > max_width ? width : max_width;
 				}
 				
-				return new Vector2i(height, max_width);
+				return new Vector2i(max_width, height);
 			}
 		}
 

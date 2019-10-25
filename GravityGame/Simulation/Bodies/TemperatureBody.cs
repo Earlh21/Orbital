@@ -59,7 +59,7 @@ namespace GravityGame
 
         public float GetHeatFlowFrom(Star star)
         {
-            return star.Area * 150000.0f / Mathf.Pow(Distance(star), 2);
+            return star.Area * 100000.0f / Mathf.Pow(Distance(star), 2);
         }
 
         protected override Color GetColor()

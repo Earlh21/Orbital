@@ -7,6 +7,7 @@ using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
 using GravityGame.Guis;
+using GravityGame.Guis.PrebuiltGuis;
 
 namespace GravityGame
 {
@@ -29,6 +30,8 @@ namespace GravityGame
         private const float add_mass_period = 0.15f;
         private static float add_mass_time = 0.0f;
 
+        private static PlanetTypeMap planet_type_map;
+
         public static float ViewScale { get; private set; } = 1.0f;
         public static Vector2f ViewOffset { get; private set; } = new Vector2f(0, 0);
         public static Random R { get; private set; }
@@ -45,12 +48,10 @@ namespace GravityGame
             
             window = new RenderWindow(new VideoMode(800, 600), "The Game of Life", Styles.Default, settings);
             view = new View();
-
             Font = new Font(GetResourcesDirectory() + "\\Fonts\\monsterrat.ttf");
-
             R = new Random();
-            
             scene = new Scene();
+            planet_type_map = new PlanetTypeMap(400, 30000, 18, 4000.0f);
 
             Gradient g = new Gradient();
             List<GradientKey> keys = new List<GradientKey>();
@@ -67,7 +68,7 @@ namespace GravityGame
             window.KeyPressed += OnKeyPress;
 
             Clock clock = new Clock();
-            float max_time_step = 1 / 60f;
+            float max_time_step = 1 / 100f;
             
             Gui gui = new Gui();
             GuiText text = new GuiText();
@@ -87,11 +88,13 @@ namespace GravityGame
             
             gui.Contents.AddEntry(column);
             
+            PlanetInfoGui planet_info = new PlanetInfoGui(null);
+            
             while (window.IsOpen)
             {
                 window.DispatchEvents();
 
-                float timestep = Math.Min(max_time_step, clock.ElapsedTime.AsSeconds());
+                float timestep = Math.Min(max_time_step, time_scale * clock.ElapsedTime.AsSeconds());
                 clock.Restart();
 
                 Time += timestep;
@@ -103,7 +106,8 @@ namespace GravityGame
                     AddMatter(true);
                 }
                 
-                scene.Update(time_scale * timestep, GetImportantArea());
+                scene.Update(timestep, GetImportantArea());
+                planet_type_map.Update(scene, timestep);
                     
                 if (panning)
                 {
@@ -131,6 +135,7 @@ namespace GravityGame
                     window.Draw(arr);
                 }
 
+                window.Draw(planet_info.GetGUI());
                 //window.Draw(gui);
                 
                 window.Display();
@@ -245,13 +250,8 @@ namespace GravityGame
         }
 
         private static void AddMatter(bool leech_mass)
-        {
-            float rand = (float)R.NextDouble();
-
-            bool gas = rand > 0.9f;
-            
+        {   
             Star star = scene.GetMainStar();
-
             if (star == null)
             {
                 return;
@@ -261,7 +261,6 @@ namespace GravityGame
             float inner_radius = 400;
             float mass = 100;
             float mass_variance = 50;
-            float velocity_variance = 0.1f;
             
             float angle = NextFloatAbs(R, 2 * Mathf.PI);
             float distance = NextFloatAbs(R, radius) + inner_radius;
@@ -269,9 +268,47 @@ namespace GravityGame
                     
             Vector2f n_position = new Vector2f((float)Math.Cos(angle), (float)Math.Sin(angle)) * distance;
 
-            Composition composition = gas ? Composition.Gas(n_mass) : Composition.Rocky(n_mass);
-            
+            Planet.PlanetType closest = planet_type_map.GetClosestType(n_position);
+            float rand = (float)R.NextDouble();
+            Planet.PlanetType type;
+            if (rand > 0.95f)
+            {
+                float rand2 = (float) R.NextDouble();
+
+                if (rand2 < 1.0f / 3.0f)
+                {
+                    type = Planet.PlanetType.Gas;
+                }
+                else if (rand2 < 2.0f / 3.0f)
+                {
+                    type = Planet.PlanetType.Ocean;
+                }
+                else
+                {
+                    type = Planet.PlanetType.Rocky;
+                }
+            }
+            else
+            {
+                type = closest;
+            }
+
+            Composition composition =
+                type == Planet.PlanetType.Gas ? Composition.Gas(n_mass) : Composition.Rocky(n_mass);
             Planet planet = new Planet(n_position, new Vector2f(0, 0), composition, 300);
+
+            float water_percent;
+            if (type == Planet.PlanetType.Ocean)
+            {
+                water_percent = (float) R.NextDouble() * 0.1f + 0.9f;
+                planet.WaterArea = planet.Area * water_percent;
+            }
+            else
+            {
+                water_percent = (float) R.NextDouble() * 0.2f;
+                planet.WaterArea = planet.Area * water_percent;
+            }
+            
             planet.AutoOrbit(star);
             scene.AddBody(planet);
 

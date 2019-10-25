@@ -27,8 +27,33 @@ namespace GravityGame
             sprite.Position = Position.InvY() - new Vector2f(Radius + TexturePadding, Radius + TexturePadding);
             
             target.Draw(sprite, new RenderStates(GetShader()));
-            
-            //TODO: Put outline drawing back
+
+            //Will probably need this for debugging later
+            /**if (this is Planet planet)
+            {
+                CircleShape circle = new CircleShape();
+                circle.Radius = 30;
+                circle.SetPointCount(8);
+
+                Color color;
+                if (planet.Type == Planet.PlanetType.Gas)
+                {
+                    color = Color.Green;
+                }
+                else if (planet.Type == Planet.PlanetType.Rocky)
+                {
+                    color = Color.Yellow;
+                }
+                else
+                {
+                    color = Color.Blue;
+                }
+
+                circle.FillColor = color;
+                circle.Position = (Position - new Vector2f(circle.Radius, circle.Radius)).InvY();
+				
+                target.Draw(circle);
+            }**/
         }
 
         protected virtual Color GetColor()

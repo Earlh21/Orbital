@@ -13,10 +13,11 @@ namespace GravityGame.Guis
 			Entries = new List<GuiEntry>();
 		}
 		
-		public virtual void AddEntry(GuiEntry entry)
+		public virtual GuiEntry AddEntry(GuiEntry entry)
 		{
 			Entries.Add(entry);
 			entry.Parent = this;
+			return entry;
 		}
 
 		public abstract Vector2i GetChildAbsolutePosition(GuiEntry child);
