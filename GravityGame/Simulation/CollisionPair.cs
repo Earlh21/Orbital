@@ -134,7 +134,7 @@ namespace GravityGame
             if (body.IsSelected)
             {
                 scene.Deselect();
-                scene.SelectAt(star.Position, 0);
+                scene.Select(star);
             }
             
             //Add mass of planet to star
@@ -172,7 +172,7 @@ namespace GravityGame
             if (smaller.IsSelected)
             {
                 scene.Deselect();
-                scene.SelectAt(bigger.Position, 0);
+                scene.Select(bigger);
             }
                 
             //Add mass of smaller to bigger

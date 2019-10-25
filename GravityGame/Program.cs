@@ -350,7 +350,7 @@ namespace GravityGame
                 if (args.Button == Mouse.Button.Left)
                 {
                     Vector2f mouse_pos = GetMouseCoordsWorld();
-                    bool found = scene.SelectAt(InvY(mouse_pos), 30 * ViewScale);
+                    bool found = scene.Select(scene.Lookup(InvY(mouse_pos), 30 / ViewScale));
 
                     if (!found && can_fire)
                     {

@@ -204,7 +204,7 @@ namespace GravityGame
 						LaserChance = 1 / 9.0f;
 						MatterChance = 1 / 70.0f;
 						SatelliteChance = 1 / 60.0f;
-						TemperatureMultiplier = 3.0f;
+						TemperatureMultiplier = 1.5f;
 						ScienceMultiplier = 1.1f;
 						break;
 					default:

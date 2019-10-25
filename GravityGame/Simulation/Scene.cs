@@ -213,18 +213,6 @@ namespace GravityGame
 
 			return closest;
 		}
-		
-		public bool SelectAt(Vector2f position, float radius)
-		{
-			Body closest = Lookup(position, radius);
-
-			if (closest != null)
-			{
-				Select(closest);
-			}
-			
-			return closest != null;
-		}
 
 		public Vector2f GetSelectedPosition()
 		{
@@ -246,18 +234,20 @@ namespace GravityGame
 			return Selected.Velocity;
 		}
 
-		public void Select(Body body)
+		public bool Select(Body body)
 		{
 			if (Selected != null)
 			{
 				Selected.IsSelected = false;
 			}
 
-			if (body.IsSelectable)
+			if (body != null && body.IsSelectable)
 			{
 				Selected = body;
 				body.IsSelected = true;
 			}
+
+			return body != null;
 		}
 
 		public bool MakeStarAt(Vector2f position)

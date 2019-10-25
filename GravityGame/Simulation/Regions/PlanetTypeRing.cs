@@ -9,7 +9,7 @@ namespace GravityGame
 		private float Radius { get; }
 		private float AngleOffset { get; set; } = 0;
 		private List<PlanetTypeRegion> Types { get; }
-
+		
 		public PlanetTypeRing(List<Planet.PlanetType> types, float radius)
 		{
 			Types = new List<PlanetTypeRegion>();
@@ -20,7 +20,7 @@ namespace GravityGame
 
 			Radius = radius;
 		}
-
+		
 		public void Update(Scene scene, float timestep)
 		{
 			Star star = scene.GetMainStar();
@@ -30,8 +30,10 @@ namespace GravityGame
 			AngleOffset += angular_speed * timestep;
 		}
 		
-		public Planet.PlanetType GetClosestType(float angle)
+		public Planet.PlanetType GetClosestType(Vector2f position)
 		{
+			float angle = Mathf.Atan2(position.Y, position.X);
+			
 			float angle_increment = 2 * Mathf.PI / Types.Count;
 			int index = (int) Mathf.Round((angle - AngleOffset) / angle_increment);
 
