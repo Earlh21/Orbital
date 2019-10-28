@@ -31,6 +31,7 @@ namespace GravityGame
         private static float add_mass_time = 0.0f;
 
         private static PlanetTypeMap planet_type_map;
+        private static PlanetInfoGui planet_info;
 
         public static float ViewScale { get; private set; } = 1.0f;
         public static Vector2f ViewOffset { get; private set; } = new Vector2f(0, 0);
@@ -88,8 +89,6 @@ namespace GravityGame
             
             gui.Contents.AddEntry(column);
             
-            PlanetInfoGui planet_info = new PlanetInfoGui(null);
-            
             while (window.IsOpen)
             {
                 window.DispatchEvents();
@@ -135,8 +134,20 @@ namespace GravityGame
                     window.Draw(arr);
                 }
 
-                window.Draw(planet_info.GetGUI());
-                //window.Draw(gui);
+                if (planet_info != null)
+                {
+                    Gui planet_info_gui = planet_info.GetGUI();
+
+                    if (planet_info_gui == null)
+                    {
+                        planet_info = null;
+                    }
+                    else
+                    {
+                        planet_info.Update();
+                        window.Draw(planet_info.GetGUI());
+                    }
+                }
                 
                 window.Display();
             }
@@ -399,6 +410,13 @@ namespace GravityGame
                     if (found)
                     {
                         ViewOffset = new Vector2f(0, 0);
+
+                        Body selected = scene.Selected;
+
+                        if (selected is Planet selected_planet)
+                        {
+                            planet_info = new PlanetInfoGui(selected_planet);
+                        }
                     }
                 }
                 else if (args.Button == Mouse.Button.Right)

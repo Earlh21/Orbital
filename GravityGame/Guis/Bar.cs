@@ -12,7 +12,7 @@ namespace GravityGame.Guis
 		{
 			get
 			{
-				return new Vector2i(width + Margin.Left + Margin.Right, height + Margin.Top + Margin.Bottom);
+				return new Vector2i(width, height);
 			}
 		}
 

@@ -177,8 +177,8 @@ namespace GravityGame
 
         private void FireMatter(Scene scene, Body target)
         {
-            float speed = Mathf.Sqrt(2 * Mathf.G * Mass / Radius) * (3.0f + Life.TechLevel / 8.0f);
-            float mass = 22 + Life.TechLevel * 12;
+            float speed = Mathf.Sqrt(2 * Mathf.G * Mass / Radius) * (3.5f + Life.TechLevel / 6.0f);
+            float mass = 30 + Life.TechLevel * 12;
             
             float distance = Distance(target);
             float time = distance / speed;
