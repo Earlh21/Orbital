@@ -94,10 +94,10 @@ namespace GravityGame.Guis.PrebuiltGuis
 
 		public void Update()
 		{
-			mass_text.Contents = "Mass: " + planet.Mass.ToString();
-			radius_text.Contents = "Radius: " + planet.Radius.ToString();
-			density_text.Contents = "Density: " + planet.Density.ToString();
-			temperature_text.Contents = "Temperature: " + planet.Temperature.ToString() + "K";
+			mass_text.Contents = "Mass: " + planet.Mass;
+			radius_text.Contents = "Radius: " + planet.Radius;
+			density_text.Contents = "Density: " + planet.Density;
+			temperature_text.Contents = "Temperature: " + planet.Temperature + "K";
 		}
 		
 		private void FormatTitle(GuiText text)
