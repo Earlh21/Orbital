@@ -48,7 +48,7 @@ namespace GravityGame.Guis
 
 			padding_left += Entries[index].Margin.Left;
 
-			return GetAbsolutePosition() + new Vector2i(Entries[index].Margin.Left, index * ColumnWidth + padding_left);
+			return GetAbsolutePosition() + new Vector2i(index * ColumnWidth + padding_left, Entries[index].Margin.Top);
 		}
 	}
 }

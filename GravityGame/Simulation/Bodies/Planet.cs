@@ -67,7 +67,7 @@ namespace GravityGame
             }
         }
 
-        private static float life_chance = 1 / 300.0f;
+        private static float life_chance = 1 / 1200.0f;
         private Civilizations.DemeanorData demeanor_data;
 
         private Life life;

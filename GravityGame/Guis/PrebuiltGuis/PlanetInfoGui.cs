@@ -16,6 +16,11 @@ namespace GravityGame.Guis.PrebuiltGuis
 		private GuiText density_text;
 		private GuiText temperature_text;
 
+		private PropertyText mass_property;
+		private PropertyText radius_property;
+		private PropertyText density_property;
+		private PropertyText temperature_property;
+
 		public PlanetInfoGui(Planet planet)
 		{
 			if (planet == null)
@@ -55,24 +60,21 @@ namespace GravityGame.Guis.PrebuiltGuis
 
 			main_column.AddEntry(bar2);
 			
-			mass_text = new GuiText();
-			mass_text.Margin = new Margin(2, 0, 0, 0);
-			radius_text = new GuiText();
-			radius_text.Margin = new Margin(2, 0, 0, 0);
-			density_text = new GuiText();
-			density_text.Margin = new Margin(2, 0, 0, 0);
-			temperature_text = new GuiText();
-			temperature_text.Margin = new Margin(2, 0, 0, 0);
-			
-			FormatSmallText(mass_text);
-			FormatSmallText(radius_text);
-			FormatSmallText(density_text);
-			FormatSmallText(temperature_text);
+			mass_property = new PropertyText("Mass: ", planet.Mass, "", FormatSmallText);
+			FormatProperty(mass_property);
+			mass_property.Margin = new Margin(2, 0, 0, 0);
+			radius_property = new PropertyText("Radius: ", planet.Radius, "", FormatSmallText);
+			FormatProperty(radius_property);
+			radius_property.Margin = new Margin(2, 0, 0, 0);
+			density_property = new PropertyText("Density: ", planet.Density, "", FormatSmallText);
+			FormatProperty(density_property);
+			density_property.Margin = new Margin(2, 0, 0, 0);
+			temperature_property = new PropertyText("Temperature: ", planet.Temperature, " K", FormatSmallText);
 
-			main_column.AddEntry(mass_text);
-			main_column.AddEntry(radius_text);
-			main_column.AddEntry(density_text);
-			main_column.AddEntry(temperature_text);
+			main_column.AddEntry(mass_property);
+			main_column.AddEntry(radius_property);
+			main_column.AddEntry(density_property);
+			main_column.AddEntry(temperature_property);
 			
 			GuiText composition_text = new GuiText();
 			composition_text.Contents = "Composition";
@@ -86,18 +88,21 @@ namespace GravityGame.Guis.PrebuiltGuis
 			bar3.Color = new Color(200, 200, 200, 255);
 
 			main_column.AddEntry(bar2);
-			
-			
 		}
-		
-		
 
 		public void Update()
 		{
-			mass_text.Contents = "Mass: " + planet.Mass;
-			radius_text.Contents = "Radius: " + planet.Radius;
-			density_text.Contents = "Density: " + planet.Density;
-			temperature_text.Contents = "Temperature: " + planet.Temperature + "K";
+			mass_property.Value = planet.Mass;
+			radius_property.Value = planet.Radius;
+			density_property.Value = planet.Density;
+			temperature_property.Value = planet.Temperature;
+
+			temperature_property.Value = 1;
+		}
+
+		private void FormatProperty(PropertyText property)
+		{
+			property.DecimalColor = new Color(200, 200, 200, 255);
 		}
 		
 		private void FormatTitle(GuiText text)
@@ -129,6 +134,99 @@ namespace GravityGame.Guis.PrebuiltGuis
 			}
 			
 			return gui;
+		}
+
+		private class PropertyText : RowContainer
+		{
+			private GuiText prepend_text;
+			private GuiText unit_text;
+			private GuiText decimal_text;
+			private GuiText append_text;
+
+			public Color AppendColor
+			{
+				get => append_text.Color;
+				set => append_text.Color = value;
+			}
+
+			public Color PrependColor
+			{
+				get => prepend_text.Color;
+				set => prepend_text.Color = value;
+			}
+
+			public Color UnitColor
+			{
+				get => unit_text.Color;
+				set => unit_text.Color = value;
+			}
+
+			public Color DecimalColor
+			{
+				get => decimal_text.Color;
+				set => decimal_text.Color = value;
+			}
+
+			public float Value
+			{
+				set
+				{
+					unit_text.Contents = ((int) value).ToString();
+
+					string decimal_part = (value - (int) value).ToString();
+
+					int length = decimal_part.Length;
+					string d_text = ".";
+					if (length > 3)
+					{
+						d_text += decimal_part.Substring(2, 2);
+					}
+					else if (length == 3)
+					{
+						d_text += decimal_part.Substring(2, 1) + "0";
+					}
+					else if(length == 1)
+					{
+						d_text += "00";
+					}
+					else
+					{
+						throw new Exception("Failure to parse decimal.");
+					}
+
+					decimal_text.Contents = d_text;
+				}
+			}
+			
+			public PropertyText(string prepend, float value, string append, Action<GuiText> format)
+			{
+				prepend_text = new GuiText();
+				format(prepend_text);
+				prepend_text.Contents = prepend;
+
+				unit_text = new GuiText();
+				format(unit_text);
+				
+				decimal_text = new GuiText();
+				decimal_text.Margin = new Margin(0, 0, 0, 2);
+				format(decimal_text);
+				
+				append_text = new GuiText();
+				format(append_text);
+				append_text.Contents = append;
+
+				Value = value;
+
+				PrependColor = Color.White;
+				UnitColor = Color.White;
+				DecimalColor = Color.White;
+				AppendColor = Color.White;
+				
+				AddEntry(prepend_text);
+				AddEntry(unit_text);
+				AddEntry(decimal_text);
+				AddEntry(append_text);
+			}
 		}
 	}
 }
