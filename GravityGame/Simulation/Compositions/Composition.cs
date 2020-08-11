@@ -93,6 +93,23 @@ namespace GravityGame
 			}
 		}
 
+		public Compound.CompoundType GetLargestType()
+		{
+			float largest_mass = float.MinValue;
+			Compound.CompoundType largest_type = Compound.CompoundType.Basic;
+
+			foreach (Compound compound in Compounds)
+			{
+				if (compound.Mass > largest_mass)
+				{
+					largest_mass = compound.Mass;
+					largest_type = compound.Type;
+				}
+			}
+
+			return largest_type;
+		}
+
 		private void SubtractCompound(Compound c)
 		{
 			int index = compounds.FindIndex(x => x.Type == c.Type);

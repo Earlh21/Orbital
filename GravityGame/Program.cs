@@ -15,6 +15,7 @@ namespace GravityGame
     //TODO: Try to find some way to simplify dealing with the selected object or at least make variables more descriptive
     internal class Program
     {
+        private const float ADD_MASS_PERIOD = 0.15f;
         private static bool can_fire = false;
         
         public static RenderWindow window;
@@ -27,7 +28,6 @@ namespace GravityGame
         private static float spawn_radius = 5;
         private static Vector2f mouse_original_pos;
         private static Vector2f mouse_fire_offset;
-        private const float add_mass_period = 0.15f;
         private static float add_mass_time = 0.0f;
 
         private static PlanetTypeMap planet_type_map;
@@ -71,24 +71,6 @@ namespace GravityGame
             Clock clock = new Clock();
             float max_time_step = 1 / 100f;
             
-            Gui gui = new Gui();
-            GuiText text = new GuiText();
-            GuiText text2 = new GuiText();
-            GuiText text3 = new GuiText();
-            ColumnContainer column = new ColumnContainer();
-            
-            column.BackgroundColor = Color.Blue;
-            
-            TextTest(text);
-            TextTest(text2);
-            TextTest(text3);
-            
-            column.AddEntry(text);
-            column.AddEntry(text2);
-            column.AddEntry(text3);
-            
-            gui.Contents.AddEntry(column);
-            
             while (window.IsOpen)
             {
                 window.DispatchEvents();
@@ -99,9 +81,9 @@ namespace GravityGame
                 Time += timestep;
                 
                 add_mass_time += timestep;
-                while (add_mass_time > add_mass_period)
+                while (add_mass_time > ADD_MASS_PERIOD)
                 {
-                    add_mass_time -= add_mass_period;
+                    add_mass_time -= ADD_MASS_PERIOD;
                     AddMatter(true);
                 }
                 
@@ -151,14 +133,6 @@ namespace GravityGame
                 
                 window.Display();
             }
-        }
-
-        private static void TextTest(GuiText text)
-        {
-            text.Font = Font;
-            text.Color = Color.White;
-            text.FontSize = 1;
-            text.Contents = "Test";
         }
 
         public static Vector2f ScreenPositionToWorld(Vector2i pos)
@@ -226,12 +200,11 @@ namespace GravityGame
                 {
                     ViewOffset += scene.Selected.Position.InvY();
                     scene.Deselect();
+                    planet_info = null;
                 }
             }
             else if(args.Code == Keyboard.Key.P)
             {
-                Random R = new Random(1);
-                
                 Console.Write("Enter number of planets: ");
 
                 int n = Convert.ToInt32(Console.ReadLine());

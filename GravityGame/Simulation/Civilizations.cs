@@ -56,7 +56,6 @@ namespace GravityGame
 			faction_count[faction] += 1;
 		}
 		
-		//TODO: Avoid colors that don't contrast the temperature colors
 		private static Color RandomColor()
 		{
 			int red = Program.R.Next(200) + 30;

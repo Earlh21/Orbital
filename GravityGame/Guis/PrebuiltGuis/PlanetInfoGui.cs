@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using SFML.Graphics;
 
 namespace GravityGame.Guis.PrebuiltGuis
@@ -9,12 +10,13 @@ namespace GravityGame.Guis.PrebuiltGuis
 		private Planet planet;
 
 		private ColumnContainer main_column;
-		private ColumnContainer composition_column;
 
 		private GuiText mass_text;
 		private GuiText radius_text;
 		private GuiText density_text;
 		private GuiText temperature_text;
+
+		private List<GuiText> compound_texts;
 
 		public PlanetInfoGui(Planet planet)
 		{
@@ -33,7 +35,7 @@ namespace GravityGame.Guis.PrebuiltGuis
 			main_column.Margin = new Margin(5, 5, 5, 5);
 			
 			GuiText planet_name = new GuiText();
-			planet_name.Contents = "Planet Name";
+			planet_name.Contents = planet.Name;
 			FormatTitle(planet_name);
 
 			main_column.AddEntry(planet_name);
@@ -87,7 +89,7 @@ namespace GravityGame.Guis.PrebuiltGuis
 
 			main_column.AddEntry(bar2);
 			
-			
+			compound_texts = new List<GuiText>();
 		}
 		
 		
@@ -98,6 +100,26 @@ namespace GravityGame.Guis.PrebuiltGuis
 			radius_text.Contents = "Radius: " + planet.Radius;
 			density_text.Contents = "Density: " + planet.Density;
 			temperature_text.Contents = "Temperature: " + planet.Temperature + "K";
+
+			foreach (GuiText compound_text in compound_texts)
+			{
+				main_column.RemoveEntry(compound_text);
+			}
+			
+			compound_texts.Clear();
+			
+			foreach(Compound compound in planet.Compounds)
+			{
+				GuiText text = new GuiText();
+				
+				text.Margin = new Margin(2, 0, 0, 0);
+				FormatSmallText(text);
+
+				main_column.AddEntry(text);
+
+				text.Contents = compound.Type + ": " + (compound.Mass / planet.Mass);
+				compound_texts.Add(text);
+			}
 		}
 		
 		private void FormatTitle(GuiText text)

@@ -20,6 +20,13 @@ namespace GravityGame.Guis
 			return entry;
 		}
 
+		public virtual GuiEntry RemoveEntry(GuiEntry entry)
+		{
+			Entries.Remove(entry);
+			entry.Parent = null;
+			return entry;
+		}
+
 		public abstract Vector2i GetChildAbsolutePosition(GuiEntry child);
 	}
 }

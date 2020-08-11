@@ -5,11 +5,13 @@ namespace GravityGame
 {
     public static class Mathf
     {
-        public static float PI = (float) Math.PI;
+        public const float PI = (float) Math.PI;
         public static float AmbientTemp = 2.73f;
         public static float Insulation = 150.0f;
         public static float G = 360.0f;
         public static Gradient TemperatureColorGradient;
+        //TODO: This needs to be energy...
+        //TODO: Also, "internal energy," not "heat"
         //Amount of momentum converted into heat on collision
         public static float HeatRatio = 0.1f;
         

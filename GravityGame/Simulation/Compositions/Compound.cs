@@ -157,7 +157,14 @@ namespace GravityGame
 		{
 			int index = Program.R.Next(RockTypes.Count);
 			
-			return new Compound(RockTypes[index], mass);
+			Compound compound = new Compound(RockTypes[index], mass);
+
+			if (compound.Type == CompoundType.Basic)
+			{
+				return GetRandomRockyCompound(mass);
+			}
+
+			return compound;
 		}
 
 		public static Compound GetRandomGasCompound(float mass)

@@ -9,6 +9,7 @@ using SFML.System;
 
 namespace GravityGame
 {
+	//TODO: Just go back to building the quadtree every frame. This is too complicated and shouldn't even provide any performance benefit.
 	public class QuadTree : Drawable
 	{
 		public QuadTree TopLeft { get; set; }
@@ -445,7 +446,6 @@ namespace GravityGame
 		}
 
 		//TODO: Add a max height
-		//TODO: Make the user give an array to fill instead of returning a list
 		public int FindNearbyBodies(Vector2f position, int tree_height, BodyFilter filter, Body[] buffer)
 		{
 			QuadTree leaf = SearchPosition(position);
