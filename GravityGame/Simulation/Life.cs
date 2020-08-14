@@ -100,7 +100,7 @@ namespace GravityGame
 
         private static float GetScienceRequired(int tech_level)
         {
-            return 50.0f + tech_level * 7.0f;
+            return 50.0f + tech_level * 8.0f;
         }
     }
 }

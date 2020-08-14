@@ -7,9 +7,12 @@ namespace GravityGame
 {
     public class RenderBody : Body, Drawable
     {
-        private Texture texture;
+        private CircleShape outline = new CircleShape();
         private Sprite sprite;
-        public bool DrawOutline { get; set; } = false;
+            
+        private Texture texture;
+        
+        public bool DrawOutline { get; set; }
         public virtual Color? OutlineColor => null;
         public virtual uint TexturePadding => 45;
 
@@ -26,7 +29,8 @@ namespace GravityGame
         public RenderBody(Vector2f position, Vector2f velocity, Composition composition) : base(position,
             velocity, composition)
         {
-            
+            outline.FillColor = Color.Transparent;
+            outline.SetPointCount(14);
         }
 
         public virtual void Draw(RenderTarget target, RenderStates states)
@@ -38,34 +42,27 @@ namespace GravityGame
             
             sprite.Position = Position.InvY() - new Vector2f(Radius + TexturePadding, Radius + TexturePadding);
             
-            target.Draw(sprite, new RenderStates(GetShader()));
-
-            //Will probably need this for debugging later
-            /**if (this is Planet planet)
+            if (DrawOutline)
             {
-                CircleShape circle = new CircleShape();
-                circle.Radius = 30;
-                circle.SetPointCount(8);
+                //TODO: Ships should have smaller outlines
+                const float base_outline_size = 8.0f;
+                const float thickness_percent = 0.14f;
+                
+                Color? color = OutlineColor;
+                if (color == null)
+                {
+                    return;
+                }
+                
+                outline.Radius = base_outline_size / Program.ViewScale;
+                outline.OutlineThickness = thickness_percent * outline.Radius;
+                outline.OutlineColor = color.Value;
+                outline.Position = Position.InvY() - new Vector2f(outline.Radius, outline.Radius);
 
-                Color color;
-                if (planet.Type == Planet.PlanetType.Gas)
-                {
-                    color = Color.Green;
-                }
-                else if (planet.Type == Planet.PlanetType.Rocky)
-                {
-                    color = Color.Yellow;
-                }
-                else
-                {
-                    color = Color.Blue;
-                }
-
-                circle.FillColor = color;
-                circle.Position = (Position - new Vector2f(circle.Radius, circle.Radius)).InvY();
-				
-                target.Draw(circle);
-            }**/
+                target.Draw(outline);
+            }
+            
+            target.Draw(sprite, new RenderStates(GetShader()));
         }
 
         protected virtual Color GetColor()

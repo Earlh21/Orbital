@@ -23,7 +23,16 @@ namespace GravityGame
         public override bool DoesGravity => false;
         public Life Life { get; set; }
         public bool HasLife => Life != null;
-        public override Color? OutlineColor => new Color(0, 200, 0, 100);
+
+        public override Color? OutlineColor
+        {
+            get
+            {
+                Color color = Civilizations.GetColor(Life.Faction);
+                color.A = 100;
+                return color;
+            }
+        }
         public override uint TexturePadding => 0;
 
         public Ship(Vector2f position, Vector2f velocity, Life life) : base(position, velocity, Composition.Basic(10), life.NormalTemp)

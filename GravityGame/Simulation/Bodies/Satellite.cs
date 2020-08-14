@@ -12,7 +12,17 @@ namespace GravityGame
 
 		public override bool DoesGravity => false;
 		public bool DrawText { get; set; }
-		public override Color? OutlineColor => new Color(0, 200, 0, 100);
+
+		public override Color? OutlineColor
+		{
+			get
+			{
+				Color color = Civilizations.GetColor(Faction);
+				color.A = 60;
+				return color;
+				
+			}
+		}
 		public override uint TexturePadding => 0;
 
 		public Satellite(Vector2f position, Vector2f velocity, Planet home, int faction) : base(position, velocity,

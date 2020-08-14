@@ -99,7 +99,7 @@ namespace GravityGame
 		}
 
 		public bool HasLife => Life != null;
-		public override Color? OutlineColor => HasLife ? (Color?) Civilizations.GetColor(Life.Faction) : null;
+		public override Color? OutlineColor => HasLife ? (Color?) Civilizations.GetColor(Life.Faction) : Color.Green;
 
 		public string Name { get; set; }
 

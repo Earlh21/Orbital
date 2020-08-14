@@ -175,28 +175,28 @@ namespace GravityGame
 						ScienceMultiplier = 1.0f;
 						break;
 					case Demeanor.Scientist:
-						ShipChance = 1 / 12.0f;
-						LaserChance = 1 / 9.0f;
+						ShipChance = 1 / 14.0f;
+						LaserChance = 1 / 11.0f;
 						MatterChance = 1 / 75.0f;
 						SatelliteChance = 1 / 60.0f;
-						TemperatureMultiplier = 1.2f;
-						ScienceMultiplier = 1.5f;
+						TemperatureMultiplier = 1.0f;
+						ScienceMultiplier = 1.6f;
 						break;
 					case Demeanor.Individual:
-						ShipChance = 1 / 15.0f;
+						ShipChance = 1 / 19.0f;
 						LaserChance = 1 / 6.0f;
 						MatterChance = 1 / 50.0f;
-						SatelliteChance = 1 / 20.0f;
+						SatelliteChance = 1 / 13.0f;
 						TemperatureMultiplier = 1.5f;
 						ScienceMultiplier = 1.2f;
 						break;
 					case Demeanor.Colonial:
-						ShipChance = 1 / 4.0f;
+						ShipChance = 1 / 4.5f;
 						LaserChance = 1 / 9.0f;
 						MatterChance = 1 / 70.0f;
 						SatelliteChance = 1 / 60.0f;
-						TemperatureMultiplier = 1.0f;
-						ScienceMultiplier = 0.8f;
+						TemperatureMultiplier = 1.1f;
+						ScienceMultiplier = 0.9f;
 						break;
 					case Demeanor.Hardy:
 						ShipChance = 1 / 10.0f;
