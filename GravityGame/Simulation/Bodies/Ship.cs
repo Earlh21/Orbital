@@ -9,6 +9,11 @@ namespace GravityGame
     //TODO: Make ships more accurate
     public class Ship : TemperatureBody, IDrawsText
     {
+        private Text temperature_text;
+        private Text population_text;
+        private Text tech_level_text;
+        private Text faction_text;
+        
         private float kill_time = 60.0f;
         
         protected float LifeTime { get; private set; }
@@ -24,6 +29,11 @@ namespace GravityGame
         public Ship(Vector2f position, Vector2f velocity, Life life) : base(position, velocity, Composition.Basic(10), life.NormalTemp)
         {
             Life = life;
+            
+            temperature_text = new Text("", Program.Font);
+            population_text = new Text("", Program.Font);
+            tech_level_text = new Text("", Program.Font);
+            faction_text = new Text("", Program.Font);
         }
 
         public override void Update(Scene scene, float time)
@@ -80,26 +90,31 @@ namespace GravityGame
             {
                 RenderWindow window = (RenderWindow) target;
 
-                Text temperature_text = new Text((int) Temperature + " K (S)", Program.Font);
+                temperature_text.DisplayedString = (int) Temperature + " K";
                 temperature_text.Color = Mathf.TemperatureColorGradient.GetColor(Temperature);
                 FormatText(temperature_text, 0, window);
 
                 target.Draw(temperature_text);
 
-                Text population_text = new Text(Format.PopulationText(Life.Population), Program.Font);
-                population_text.Color = Color.White;
-                Text tech_level_text = new Text(Life.TechLevel.ToString(), Program.Font);
-                tech_level_text.Color = Color.White;
-                Text faction_text = new Text(Civilizations.GetName(Life.Faction), Program.Font);
-                faction_text.Color = Civilizations.GetColor(Life.Faction);
+                if (HasLife)
+                {
+                    population_text.DisplayedString = Format.PopulationText(Life.Population);
+                    population_text.Color = Color.White;
 
-                FormatText(population_text, 1, window);
-                FormatText(tech_level_text, 2, window);
-                FormatText(faction_text, 3, window);
+                    tech_level_text.DisplayedString = Life.TechLevel + " | " + Civilizations.GetDemeanor(Life.Faction);
+                    tech_level_text.Color = Color.White;
 
-                window.Draw(population_text);
-                window.Draw(tech_level_text);
-                window.Draw(faction_text);
+                    faction_text.DisplayedString = Civilizations.GetName(Life.Faction) + " (S)";
+                    faction_text.Color = Civilizations.GetColor(Life.Faction);
+
+                    FormatText(population_text, 1, window);
+                    FormatText(tech_level_text, 2, window);
+                    FormatText(faction_text, 3, window);
+
+                    target.Draw(population_text);
+                    target.Draw(tech_level_text);
+                    target.Draw(faction_text);
+                }
             }
         }
     }

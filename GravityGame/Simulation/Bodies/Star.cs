@@ -29,7 +29,7 @@ namespace GravityGame
 			StarShader.DimColor = new Colorf(214f / 255f, 102f / 255f, 12f / 255f, 1.0f);
 			StarShader.BrightColor = Colorf.FromColor(Color.White);
 			
-			StarShader.Load(texture);
+			StarShader.Load(Texture);
 			return StarShader.Shader;
 		}
 	}

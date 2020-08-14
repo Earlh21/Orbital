@@ -5,6 +5,7 @@ namespace GravityGame
 {
 	public class HeatLaserEffect : Effect
 	{
+		private Vertex[] line_vertices = new Vertex[2];
 		private Body original;
 		private Body target;
 		private Colorf colorf;
@@ -35,14 +36,17 @@ namespace GravityGame
 			}
 		}
 
-		public override void Draw(RenderTarget target, RenderStates states)
+		public override void Draw(RenderTarget render_target, RenderStates states)
 		{
 			Colorf interp = Colorf.Interpolate(colorf, new Colorf(0, 0, 0, 0), LifeTime / KillTime);
 
-			Vertex a = new Vertex(original.Position.InvY(), interp.ToColor());
-			Vertex b = new Vertex(this.target.Position.InvY(), interp.ToColor());
-			Vertex[] vertices = {a, b};
-			target.Draw(vertices, PrimitiveType.Lines);
+			line_vertices[0].Position = original.Position.InvY();
+			line_vertices[0].Color = interp.ToColor();
+
+			line_vertices[1].Position = target.Position.InvY();
+			line_vertices[1].Color = interp.ToColor();
+			
+			render_target.Draw(line_vertices, PrimitiveType.Lines);
 		}
 	}
 }

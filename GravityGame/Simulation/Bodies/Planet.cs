@@ -15,6 +15,11 @@ namespace GravityGame
 			Ocean
 		}
 
+		private Text temperature_text;
+		private Text population_text;
+		private Text tech_level_text;
+		private Text faction_text;
+
 		/**
          * The seed used by the shader to generate a height map.
          */
@@ -123,13 +128,16 @@ namespace GravityGame
 			}
 
 			Name += composition.GetLargestType().ToString()[0];
-
 			Name += "-";
-
 			for (int i = 0; i < 6; i++)
 			{
 				Name += Program.R.Next(10).ToString();
 			}
+			
+			temperature_text = new Text("", Program.Font);
+			population_text = new Text("", Program.Font);
+			tech_level_text = new Text("", Program.Font);
+			faction_text = new Text("", Program.Font);
 		}
 
 		private void FormatText(Text text, float level, RenderWindow window)
@@ -251,7 +259,7 @@ namespace GravityGame
 			{
 				RenderWindow window = (RenderWindow) target;
 
-				Text temperature_text = new Text((int) Temperature + " K", Program.Font);
+				temperature_text.DisplayedString = (int) Temperature + " K";
 				temperature_text.Color = Mathf.TemperatureColorGradient.GetColor(Temperature);
 				FormatText(temperature_text, 0, window);
 
@@ -259,21 +267,22 @@ namespace GravityGame
 
 				if (HasLife)
 				{
-					Text population_text = new Text(Format.PopulationText(Life.Population), Program.Font);
+					population_text.DisplayedString = Format.PopulationText(Life.Population);
 					population_text.Color = Color.White;
-					Text tech_level_text = new Text(Life.TechLevel + " | " + Civilizations.GetDemeanor(Life.Faction),
-						Program.Font);
+
+					tech_level_text.DisplayedString = Life.TechLevel + " | " + Civilizations.GetDemeanor(Life.Faction);
 					tech_level_text.Color = Color.White;
-					Text faction_text = new Text(Civilizations.GetName(Life.Faction), Program.Font);
+
+					faction_text.DisplayedString = Civilizations.GetName(Life.Faction);
 					faction_text.Color = Civilizations.GetColor(Life.Faction);
 
 					FormatText(population_text, 1, window);
 					FormatText(tech_level_text, 2, window);
 					FormatText(faction_text, 3, window);
 
-					window.Draw(population_text);
-					window.Draw(tech_level_text);
-					window.Draw(faction_text);
+					target.Draw(population_text);
+					target.Draw(tech_level_text);
+					target.Draw(faction_text);
 				}
 			}
 		}
@@ -384,7 +393,7 @@ namespace GravityGame
 			RockyShader.AtmosphereColor = GetGasColor();
 			RockyShader.AtmosphereStrength = Mathf.Clamp(0, 1, Mathf.InvLerp(0.0f, 0.3f, GasPercent));
 
-			RockyShader.Load(texture);
+			RockyShader.Load(Texture);
 			return RockyShader.Shader;
 		}
 	}

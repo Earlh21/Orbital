@@ -7,10 +7,21 @@ namespace GravityGame
 {
     public class RenderBody : Body, Drawable
     {
-        protected Texture texture;
+        private Texture texture;
+        private Sprite sprite;
         public bool DrawOutline { get; set; } = false;
         public virtual Color? OutlineColor => null;
         public virtual uint TexturePadding => 45;
+
+        protected Texture Texture
+        {
+            get => texture;
+            set
+            {
+                texture = value;
+                sprite = new Sprite(value);
+            }
+        }
         
         public RenderBody(Vector2f position, Vector2f velocity, Composition composition) : base(position,
             velocity, composition)
@@ -19,8 +30,12 @@ namespace GravityGame
         }
 
         public virtual void Draw(RenderTarget target, RenderStates states)
-        {            
-            Sprite sprite = new Sprite(texture);
+        {
+            if (sprite == null)
+            {
+                return;
+            }
+            
             sprite.Position = Position.InvY() - new Vector2f(Radius + TexturePadding, Radius + TexturePadding);
             
             target.Draw(sprite, new RenderStates(GetShader()));
@@ -64,7 +79,7 @@ namespace GravityGame
         //TODO: Levels of detail
         protected virtual Shader GetShader()
         {
-            CircleShader.Load(texture, Colorf.FromColor(GetColor()));
+            CircleShader.Load(Texture, Colorf.FromColor(GetColor()));
             return CircleShader.Shader;
         }
 
@@ -72,7 +87,7 @@ namespace GravityGame
         {
             base.OnRadiusChange();
             uint size = (uint) (Radius * 2) + TexturePadding * 2;
-            texture = new Texture(size, size);
+            Texture = new Texture(size, size);
         }
     }
 }

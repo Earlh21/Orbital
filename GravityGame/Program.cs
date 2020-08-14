@@ -69,6 +69,7 @@ namespace GravityGame
             Clock clock = new Clock();
             float max_time_step = 1 / 100f;
             
+            //TODO: Prompt the user for a number of planets immediately or cap framerate
             while (Window.IsOpen)
             {
                 Window.DispatchEvents();
