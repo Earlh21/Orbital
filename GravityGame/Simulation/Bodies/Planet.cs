@@ -122,7 +122,7 @@ namespace GravityGame
 					break;
 			}
 
-			Name += composition.GetLargestType().ToString().Substring(0, 1);
+			Name += composition.GetLargestType().ToString()[0];
 
 			Name += "-";
 
@@ -250,7 +250,6 @@ namespace GravityGame
 			if (DrawText)
 			{
 				RenderWindow window = (RenderWindow) target;
-				View view = window.GetView();
 
 				Text temperature_text = new Text((int) Temperature + " K", Program.Font);
 				temperature_text.Color = Mathf.TemperatureColorGradient.GetColor(Temperature);

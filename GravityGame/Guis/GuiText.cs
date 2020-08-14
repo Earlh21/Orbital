@@ -17,7 +17,7 @@ namespace GravityGame.Guis
 				Text text = new Text(Contents, Font);
 
 				text.CharacterSize = 80;
-				text.Scale = new Vector2f(GetRealScale(Program.window), GetRealScale(Program.window));
+				text.Scale = new Vector2f(GetRealScale(Program.Window), GetRealScale(Program.Window));
 				FloatRect bounds = text.GetGlobalBounds();
 				return Program.WorldSizeToScreen(new Vector2f(bounds.Width, bounds.Height));
 			}
@@ -30,7 +30,7 @@ namespace GravityGame.Guis
 			Text text = new Text(Contents, Font);
 
 			text.CharacterSize = 80;
-			text.Scale = new Vector2f(GetRealScale(Program.window), GetRealScale(Program.window));
+			text.Scale = new Vector2f(GetRealScale(Program.Window), GetRealScale(Program.Window));
 			text.FillColor = Color;
 			
 			FloatRect bounds = text.GetGlobalBounds();

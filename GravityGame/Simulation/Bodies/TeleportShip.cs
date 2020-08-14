@@ -6,14 +6,13 @@ namespace GravityGame
 	public class TeleportShip : Ship
 	{
 		private Body target;
-		private bool teleported = false;
+		private bool teleported;
 		private float distance_from_target = 100.0f;
 		private float max_teleport_distance = 800.0f;
 		
 		public TeleportShip(Vector2f position, Vector2f velocity, Life life, Body target) : base(position,  velocity, life)
 		{
 			this.target = target;
-			float distance = Distance(target);
 		}
 
 		public override void Update(Scene scene, float time)

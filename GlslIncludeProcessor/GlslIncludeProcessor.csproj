@@ -4,9 +4,6 @@
         <TargetFramework>net48</TargetFramework>
     </PropertyGroup>
     <ItemGroup>
-      <Folder Include="TestFiles" />
-    </ItemGroup>
-    <ItemGroup>
       <PackageReference Include="NUnit" Version="3.12.0" />
     </ItemGroup>
     

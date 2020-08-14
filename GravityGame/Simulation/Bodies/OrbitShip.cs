@@ -12,15 +12,13 @@ namespace GravityGame
 		private float deorbit_time = 1000;
 		private float stop_time = 1000;
 		private float start_radius = 300;
-		private bool begun = false;
+		private bool begun;
 		private float thruster_acceleration = 80.0f;
 		private float orbit_acceleration = 130.0f;
 		
 		public OrbitShip(Vector2f position, Vector2f velocity, Life life, Body target) : base(position,  velocity, life)
 		{
 			this.target = target;
-			float distance = Distance(target);
-
 		}
 		
 		public override void Update(Scene scene, float time)
@@ -48,7 +46,7 @@ namespace GravityGame
 				float velocity = Mathf.Sqrt(acceleration * Distance(target));
 
 				float angle = Mathf.AngleTo(Position, target.Position);
-				Vector2f velocity_unit = new Vector2f(Mathf.Cos(angle + Mathf.PI / 2), (float)Mathf.Sin(angle + Mathf.PI / 2));
+				Vector2f velocity_unit = new Vector2f(Mathf.Cos(angle + Mathf.PI / 2), Mathf.Sin(angle + Mathf.PI / 2));
 				Vector2f target_vel = target.Velocity + velocity_unit * velocity;
 
 				Vector2f accel_dir = target_vel - Velocity;

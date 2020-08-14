@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Dynamic;
 using GravityGame.Extension;
 using SFML.Graphics;
 using SFML.System;
@@ -15,7 +14,7 @@ namespace GravityGame
 	public class PlanetTypeRing : Drawable
 	{
 		private float Radius { get; }
-		private float AngleOffset { get; set; } = 0;
+		private float AngleOffset { get; set; }
 		private List<PlanetTypeRegion> Regions { get; }
 		
 		public PlanetTypeRing(List<Planet.PlanetType> types, float radius)

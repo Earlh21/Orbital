@@ -1,5 +1,3 @@
-using System;
-using System.Runtime.CompilerServices;
 using SFML.Graphics;
 using SFML.System;
 
@@ -41,7 +39,6 @@ namespace GravityGame
 
         private void UpdateTemperature(float time)
         {
-            
             if (Temperature == Mathf.AmbientTemp)
             {
                 return;

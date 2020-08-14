@@ -1,8 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Runtime.ConstrainedExecution;
-using System.Runtime.Remoting.Messaging;
 using GravityGame.Extension;
 using SFML.System;
 
@@ -56,11 +53,6 @@ namespace GravityGame
             Position = position;
         }
 
-        private Vector2f SlopeFunction(Vector2f pos, float t)
-        {
-            return Velocity + Acceleration * t;
-        }
-        
         public void Iterate(float time)
         {
             Position += Momentum * time / Mass;
@@ -152,13 +144,11 @@ namespace GravityGame
             Momentum = Mass * (target.Velocity + velocity_unit * velocity);
         }
 
-        public List<CollisionPair> GetCollisions(QuadTree tree)
+        public void GetCollisions(QuadTree tree, List<CollisionPair> collisions)
         {
-            List<CollisionPair> collisions = new List<CollisionPair>();
-
             if (tree == null)
             {
-                return collisions;
+                return;
             }
 
             if (tree.IsLeaf)
@@ -173,13 +163,11 @@ namespace GravityGame
             }
             else
             {
-                collisions.AddRange(GetCollisions(tree.TopLeft));
-                collisions.AddRange(GetCollisions(tree.TopRight));
-                collisions.AddRange(GetCollisions(tree.BottomLeft));
-                collisions.AddRange(GetCollisions(tree.BottomRight));
+                GetCollisions(tree.TopLeft, collisions);
+                GetCollisions(tree.TopRight, collisions);
+                GetCollisions(tree.BottomLeft, collisions);
+                GetCollisions(tree.BottomRight, collisions);
             }
-
-            return collisions;
         }
 
         public void Translate(Vector2f amount)
@@ -187,36 +175,6 @@ namespace GravityGame
             Position += amount;
         }
 
-        public static List<CollisionPair> GetAllCollisions(QuadTree tree)
-        {
-            List<CollisionPair> collisions = new List<CollisionPair>();
-
-            if (tree == null)
-            {
-                return collisions;
-            }
-
-            if (tree.IsLeaf)
-            {
-                if (tree.HasNode)
-                {
-                    if (tree.Node.Exists)
-                    {
-                        return tree.Node.GetCollisions(tree.Node.GetSmallestContainingTree(tree));
-                    }
-                }
-            }
-            else
-            {
-                collisions.AddRange(GetAllCollisions(tree.TopLeft));
-                collisions.AddRange(GetAllCollisions(tree.TopRight));
-                collisions.AddRange(GetAllCollisions(tree.BottomLeft));
-                collisions.AddRange(GetAllCollisions(tree.BottomRight));
-            }
-
-            return collisions;
-        }
-        
         public Vector2f GetForceFrom(QuadTree tree, float theta)
         {
             Vector2f total_force = new Vector2f(0, 0);

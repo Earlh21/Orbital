@@ -1,5 +1,3 @@
-using NUnit.Framework;
-
 namespace GravityGame
 {
     public static class Format

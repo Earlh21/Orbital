@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using GravityGame.Extension;
-using NUnit.Framework.Constraints;
 using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
@@ -18,17 +16,16 @@ namespace GravityGame
         private const float ADD_MASS_PERIOD = 0.15f;
         private static bool can_fire = false;
         
-        public static RenderWindow window;
         private static View view;
         private static Scene scene;
         private static float time_scale = 1;
-        
-        private static bool panning = false;
-        private static bool firing = false;
+
+        private static bool panning;
+        private static bool firing;
         private static float spawn_radius = 5;
         private static Vector2f mouse_original_pos;
         private static Vector2f mouse_fire_offset;
-        private static float add_mass_time = 0.0f;
+        private static float add_mass_time;
 
         private static PlanetTypeMap planet_type_map;
         private static PlanetInfoGui planet_info;
@@ -38,6 +35,7 @@ namespace GravityGame
         public static Random R { get; private set; }
         public static Font Font { get; private set; }
         public static float Time { get; private set; }
+        public static RenderWindow Window { get; private set; }
         public static Vector2f ViewSize => view.Size;
 
         //TODO: Multithread drawing and updating?
@@ -47,7 +45,7 @@ namespace GravityGame
             ContextSettings settings = new ContextSettings();
             settings.AntialiasingLevel = 8;
             
-            window = new RenderWindow(new VideoMode(800, 600), "The Game of Life", Styles.Default, settings);
+            Window = new RenderWindow(new VideoMode(800, 600), "The Game of Life", Styles.Default, settings);
             view = new View();
             Font = new Font(GetResourcesDirectory() + "\\Fonts\\monsterrat.ttf");
             R = new Random();
@@ -62,18 +60,18 @@ namespace GravityGame
             g.Keys = keys;
             Mathf.TemperatureColorGradient = g;
 
-            window.Closed += OnClose;
-            window.MouseWheelMoved += OnMouseWheelScroll;
-            window.MouseButtonPressed += OnMouseButtonPress;
-            window.MouseButtonReleased += OnMouseButtonRelease;
-            window.KeyPressed += OnKeyPress;
+            Window.Closed += OnClose;
+            Window.MouseWheelMoved += OnMouseWheelScroll;
+            Window.MouseButtonPressed += OnMouseButtonPress;
+            Window.MouseButtonReleased += OnMouseButtonRelease;
+            Window.KeyPressed += OnKeyPress;
 
             Clock clock = new Clock();
             float max_time_step = 1 / 100f;
             
-            while (window.IsOpen)
+            while (Window.IsOpen)
             {
-                window.DispatchEvents();
+                Window.DispatchEvents();
 
                 float timestep = Math.Min(max_time_step, time_scale * clock.ElapsedTime.AsSeconds());
                 clock.Restart();
@@ -100,8 +98,8 @@ namespace GravityGame
                 //Start drawing
                 UpdateView();
                 
-                window.Clear();
-                window.Draw(scene);
+                Window.Clear();
+                Window.Draw(scene);
 
                 if (firing)
                 {
@@ -113,12 +111,12 @@ namespace GravityGame
 
                     arr.PrimitiveType = PrimitiveType.Lines;
 
-                    window.Draw(arr);
+                    Window.Draw(arr);
                 }
 
                 if (planet_info != null)
                 {
-                    Gui planet_info_gui = planet_info.GetGUI();
+                    Gui planet_info_gui = planet_info.GetGui();
 
                     if (planet_info_gui == null)
                     {
@@ -127,23 +125,23 @@ namespace GravityGame
                     else
                     {
                         planet_info.Update();
-                        window.Draw(planet_info.GetGUI());
+                        Window.Draw(planet_info.GetGui());
                     }
                 }
                 
-                window.Display();
+                Window.Display();
             }
         }
 
         public static Vector2f ScreenPositionToWorld(Vector2i pos)
         {
-            return window.MapPixelToCoords(pos);
+            return Window.MapPixelToCoords(pos);
         }
 
         public static Vector2f ScreenSizeToWorld(Vector2i size)
         {
-            float uvx = (float) size.X / window.Size.X;
-            float uvy = (float) size.Y / window.Size.Y;
+            float uvx = (float) size.X / Window.Size.X;
+            float uvy = (float) size.Y / Window.Size.Y;
             
             return new Vector2f(uvx, uvy).Multiply(view.Size);
         }
@@ -151,7 +149,7 @@ namespace GravityGame
         public static Vector2i WorldSizeToScreen(Vector2f size)
         {
             Vector2f uv = size.Divide(view.Size);
-            return new Vector2i((int)(uv.X * window.Size.X), (int)(uv.Y * window.Size.Y));
+            return new Vector2i((int)(uv.X * Window.Size.X), (int)(uv.Y * Window.Size.Y));
         }
         
         private static Rectangle GetImportantArea()
@@ -164,9 +162,9 @@ namespace GravityGame
 
         public static void UpdateView()
         {
-            view.Size = (Vector2f) window.Size / ViewScale;
+            view.Size = (Vector2f) Window.Size / ViewScale;
             view.Center = scene.Selected == null ? ViewOffset : InvY(scene.GetSelectedPosition()) + ViewOffset;
-            window.SetView(view);
+            Window.SetView(view);
         }
 
         public static void OnClose(object sender, EventArgs e)
@@ -210,7 +208,7 @@ namespace GravityGame
                 int n = Convert.ToInt32(Console.ReadLine());
                 GenerateDisk(n);
             }
-            else if(args.Code == Keyboard.Key.Return)
+            else if(args.Code == Keyboard.Key.Enter)
             {
                 if (Keyboard.IsKeyPressed(Keyboard.Key.LShift))
                 {
@@ -221,7 +219,7 @@ namespace GravityGame
                     ViewOffset = new Vector2f(0, 0);
                 }
             }
-            else if(args.Code == Keyboard.Key.BackSpace)
+            else if(args.Code == Keyboard.Key.Backspace)
             {
                 scene.DrawText = !scene.DrawText;
             }
@@ -246,9 +244,9 @@ namespace GravityGame
             float mass = 100;
             float mass_variance = 50;
             
-            float angle = NextFloatAbs(R, 2 * Mathf.PI);
-            float distance = NextFloatAbs(R, radius) + inner_radius;
-            float n_mass = mass + NextFloat(R, mass_variance);
+            float angle = NextFloatAbs(2 * Mathf.PI);
+            float distance = NextFloatAbs(radius) + inner_radius;
+            float n_mass = mass + NextFloat(mass_variance);
                     
             Vector2f n_position = new Vector2f((float)Math.Cos(angle), (float)Math.Sin(angle)) * distance;
 
@@ -312,15 +310,15 @@ namespace GravityGame
             return GetDirectory() + "Resources";
         }
         
-        private static float NextFloat(Random R, float amplitude)
+        private static float NextFloat(float amplitude)
         {
             float t = ((float)R.NextDouble() - 0.5f) * 2;
             return t * amplitude;
         }
 
-        private static float NextFloatAbs(Random R, float amplitude)
+        private static float NextFloatAbs(float amplitude)
         {
-            return Math.Abs(NextFloat(R, amplitude));
+            return Math.Abs(NextFloat(amplitude));
         }
         
         public static void OnMouseWheelScroll(object sender, EventArgs e)
@@ -396,7 +394,7 @@ namespace GravityGame
                 {
                     panning = true;
                     
-                    window.SetMouseCursorVisible(false);
+                    Window.SetMouseCursorVisible(false);
                     mouse_original_pos = (Vector2f)Mouse.GetPosition();
                 }
                 else if(args.Button == Mouse.Button.Middle)
@@ -410,8 +408,8 @@ namespace GravityGame
 
         public static Vector2f GetMouseCoordsWorld()
         {
-            Vector2i mouse = Mouse.GetPosition(window);
-            return window.MapPixelToCoords(mouse, view);
+            Vector2i mouse = Mouse.GetPosition(Window);
+            return Window.MapPixelToCoords(mouse, view);
         }
 
         public static Vector2f GetMouseCoordsRelative()
@@ -449,7 +447,7 @@ namespace GravityGame
             {
                 panning = false;
 
-                window.SetMouseCursorVisible(true);
+                Window.SetMouseCursorVisible(true);
             }
         }
     }

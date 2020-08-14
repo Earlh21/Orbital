@@ -1,4 +1,3 @@
-using System.Reflection.Emit;
 using GravityGame.Extension;
 using SFML.Graphics;
 using SFML.System;
@@ -8,7 +7,7 @@ namespace GravityGame
 	public class ThrusterShip : Ship
 	{
 		private Body target;
-		private bool started_burn = false;
+		private bool started_burn;
 		private float thruster_start_time = 5.0f;
 		private float thruster_end_time = 18.0f;
 		private float thruster_acceleration = 100.0f;

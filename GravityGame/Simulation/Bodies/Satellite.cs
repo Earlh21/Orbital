@@ -43,7 +43,7 @@ namespace GravityGame
 
 			float angle = Mathf.AngleTo(Position, Home.Position);
 			Vector2f velocity_unit =
-				new Vector2f(Mathf.Cos(angle + Mathf.PI / 2), (float) Mathf.Sin(angle + Mathf.PI / 2));
+				new Vector2f(Mathf.Cos(angle + Mathf.PI / 2), Mathf.Sin(angle + Mathf.PI / 2));
 			Vector2f target_vel = Home.Velocity + velocity_unit * velocity;
 
 			Vector2f accel_dir = target_vel - Velocity;

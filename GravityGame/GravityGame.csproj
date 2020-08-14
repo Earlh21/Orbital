@@ -75,7 +75,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Extension\Vector2fExtension.cs" />
-    <Compile Include="Extension\Vector2iExtension.cs" />
     <Compile Include="Format\Format.cs" />
     <Compile Include="Graphics\Arrow.cs" />
     <Compile Include="Graphics\CircleShader.cs" />

@@ -8,11 +8,6 @@ namespace GravityGame
 		public float LifeTime { get; private set; }
 		public bool Remove => LifeTime > KillTime;
 
-		public Effect()
-		{
-			
-		}
-
 		public virtual void Update(float time)
 		{
 			LifeTime += time;

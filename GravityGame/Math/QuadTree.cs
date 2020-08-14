@@ -1,15 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using NUnit.Framework.Internal.Commands;
 using SFML.Graphics;
 using SFML.System;
 
 namespace GravityGame
 {
-	//TODO: Just go back to building the quadtree every frame. This is too complicated and shouldn't even provide any performance benefit.
 	public class QuadTree : Drawable
 	{
 		public QuadTree TopLeft { get; set; }
@@ -18,12 +13,8 @@ namespace GravityGame
 		public QuadTree BottomRight { get; set; }
 		public QuadTree Parent { get; set; }
 
-		private PointMass center_of_mass;
-		private int body_count;
-		private bool iteration = false;
-
-		public PointMass CenterOfMass => center_of_mass;
-		public int BodyCount => body_count;
+		public PointMass CenterOfMass { get; private set; }
+		public int BodyCount { get; private set; }
 
 		public Rectangle Domain { get; set; }
 		public Vector2f Position => Domain.Position;
@@ -38,6 +29,18 @@ namespace GravityGame
 		public bool IsRoot => Parent != null;
 
 		public Body Node { get; set; }
+
+		public QuadTree(Vector2f position, Vector2f size, QuadTree parent)
+		{
+			Domain = new Rectangle(position, size);
+			Parent = parent;
+		}
+
+		public QuadTree(Rectangle domain, QuadTree parent)
+		{
+			Domain = domain;
+			Parent = parent;
+		}
 
 		public QuadTree Search(Body body)
 		{
@@ -165,20 +168,20 @@ namespace GravityGame
 			{
 				if (HasNode && Node.DoesGravity)
 				{
-					center_of_mass = new PointMass(Node.Position, Node.Mass);
+					CenterOfMass = new PointMass(Node.Position, Node.Mass);
 
-					body_count = 1;
+					BodyCount = 1;
 					return;
 				}
 				else
 				{
-					center_of_mass = new PointMass(new Vector2f(0, 0), 0);
-					body_count = 0;
+					CenterOfMass = new PointMass(new Vector2f(0, 0), 0);
+					BodyCount = 0;
 					return;
 				}
 			}
 
-			body_count = 0;
+			BodyCount = 0;
 
 			TopLeft.CalculateCenterOfMass();
 			TopRight.CalculateCenterOfMass();
@@ -187,15 +190,15 @@ namespace GravityGame
 
 			PointMass[] points_mass = new PointMass[4];
 			points_mass[0] = TopLeft.CenterOfMass;
-			body_count += TopLeft.body_count;
+			BodyCount += TopLeft.BodyCount;
 			points_mass[1] = TopRight.CenterOfMass;
-			body_count += TopRight.body_count;
+			BodyCount += TopRight.BodyCount;
 			points_mass[2] = BottomLeft.CenterOfMass;
-			body_count += BottomLeft.body_count;
+			BodyCount += BottomLeft.BodyCount;
 			points_mass[3] = BottomRight.CenterOfMass;
-			body_count += BottomRight.body_count;
+			BodyCount += BottomRight.BodyCount;
 
-			center_of_mass = PointMass.CenterOfMass(points_mass);
+			CenterOfMass = PointMass.CenterOfMass(points_mass);
 		}
 
 		public void Insert(Body node)
@@ -209,12 +212,10 @@ namespace GravityGame
 			{
 				if (IsLeaf)
 				{
-					BottomLeft = new QuadTree(Position, Size / 2, this, iteration);
-					BottomRight = new QuadTree(Position + new Vector2f(BottomLeft.Size.X, 0), BottomLeft.Size, this,
-						iteration);
-					TopLeft = new QuadTree(Position + new Vector2f(0, BottomLeft.Size.Y), BottomLeft.Size, this,
-						iteration);
-					TopRight = new QuadTree(Position + BottomLeft.Size, BottomLeft.Size, this, iteration);
+					BottomLeft = new QuadTree(Position, Size / 2, this);
+					BottomRight = new QuadTree(Position + new Vector2f(BottomLeft.Size.X, 0), BottomLeft.Size, this);
+					TopLeft = new QuadTree(Position + new Vector2f(0, BottomLeft.Size.Y), BottomLeft.Size, this);
+					TopRight = new QuadTree(Position + BottomLeft.Size, BottomLeft.Size, this);
 				}
 
 				if (TopLeft.ContainsBody(node))
@@ -263,24 +264,10 @@ namespace GravityGame
 			return Domain.FullyContains(node);
 		}
 
-		public QuadTree(Vector2f position, Vector2f size, QuadTree parent, bool iteration)
-		{
-			Domain = new Rectangle(position, size);
-			Parent = parent;
-			this.iteration = iteration;
-		}
-
-		public QuadTree(Rectangle domain, QuadTree parent, bool iteration)
-		{
-			Domain = domain;
-			Parent = parent;
-			this.iteration = iteration;
-		}
-
+		
 		public void Draw(RenderTarget target, RenderStates states)
 		{
 			RenderWindow window = (RenderWindow) target;
-			View view = window.GetView();
 
 			RectangleShape rs = new RectangleShape();
 			rs.Position = new Vector2f(X, -Y - Height);
@@ -297,105 +284,6 @@ namespace GravityGame
 				target.Draw(BottomLeft);
 				target.Draw(TopRight);
 			}
-		}
-
-		private void ConsolidateUp()
-		{
-			QuadTree parent = Parent;
-
-			if (parent == null)
-			{
-				return;
-			}
-
-			int nodes = 0;
-			Body node = null;
-
-			if (!parent.TopLeft.IsLeaf)
-			{
-				nodes = 100;
-				goto Skip;
-			}
-			else
-			{
-				if (parent.TopLeft.HasNode)
-				{
-					nodes++;
-					node = parent.TopLeft.Node;
-				}
-			}
-
-			if (!parent.TopRight.IsLeaf)
-			{
-				nodes = 100;
-				goto Skip;
-			}
-			else
-			{
-				if (parent.TopRight.HasNode)
-				{
-					nodes++;
-					node = parent.TopRight.Node;
-				}
-			}
-
-			if (!parent.BottomLeft.IsLeaf)
-			{
-				nodes = 100;
-				goto Skip;
-			}
-			else
-			{
-				if (parent.BottomLeft.HasNode)
-				{
-					nodes++;
-					node = parent.BottomLeft.Node;
-				}
-			}
-
-			if (!parent.BottomRight.IsLeaf)
-			{
-				nodes = 100;
-				goto Skip;
-			}
-			else
-			{
-				if (parent.BottomRight.HasNode)
-				{
-					nodes++;
-					node = parent.BottomRight.Node;
-				}
-			}
-			
-			Skip:
-
-			if (nodes < 2)
-			{
-				parent.TopLeft = null;
-				parent.TopRight = null;
-				parent.BottomLeft = null;
-				parent.BottomRight = null;
-
-				if (nodes == 1)
-				{
-					parent.Node = node;
-				}
-				
-				parent.ConsolidateUp();
-			}
-		}
-
-		public void Remove(Body body)
-		{
-			QuadTree leaf = Search(body);
-
-			if (leaf == null)
-			{
-				return;
-			}
-			
-			leaf.Node = null;
-			leaf.ConsolidateUp();
 		}
 
 		public QuadTree SearchPosition(Vector2f position)
@@ -429,23 +317,8 @@ namespace GravityGame
 				}
 			}
 		}
-
-		public void UpdateBody(Body body)
-		{
-			QuadTree containing = Search(body);
-
-			if (!containing.ContainsPoint(body.Position))
-			{
-				containing.Remove(body);
-				//TODO: Start inserting farther down instead of at the root since the body probably hasn't moved much
-				if (Domain.ContainsPoint(body.Position))
-				{
-					Insert(body);
-				}
-			}
-		}
-
-		//TODO: Add a max height
+		
+		//TODO: Max distance
 		public int FindNearbyBodies(Vector2f position, int tree_height, BodyFilter filter, Body[] buffer)
 		{
 			QuadTree leaf = SearchPosition(position);
@@ -493,8 +366,6 @@ namespace GravityGame
 
 		private int FindBodies(BodyFilter filter, int current_count, Body[] buffer)
 		{
-			List<Body> bodies = new List<Body>();
-
 			if (current_count >= buffer.Length)
 			{
 				return current_count;
@@ -522,18 +393,6 @@ namespace GravityGame
 			current_count = BottomRight.FindBodies(filter, current_count, buffer);
 
 			return current_count;
-		}
-
-		public QuadTree FindSmallestContainingTree(Body body)
-		{
-			QuadTree leaf = Search(body);
-
-			while (!leaf.FullyContains(body))
-			{
-				leaf = leaf.Parent;
-			}
-
-			return leaf;
 		}
 	}
 }

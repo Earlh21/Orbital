@@ -1,5 +1,4 @@
 using SFML.Graphics;
-using SFML.Graphics.Glsl;
 
 namespace GravityGame.Graphics
 {

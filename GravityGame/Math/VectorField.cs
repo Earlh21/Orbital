@@ -1,5 +1,4 @@
 using SFML.System;
-using System;
 using GravityGame.Extension;
 using GravityGame.Graphics;
 using SFML.Graphics;
@@ -41,14 +40,18 @@ namespace GravityGame
         {
             Vector2i index = GetIndex(point_mass.Position);
 
-            TryAffectCell(point_mass, index.X - 1, index.Y + 1);
-            TryAffectCell(point_mass, index.X - 1, index.Y);
-            TryAffectCell(point_mass, index.X - 1, index.Y - 1);
-            TryAffectCell(point_mass, index.X, index.Y - 1);
-            TryAffectCell(point_mass, index.X, index.Y + 1);
-            TryAffectCell(point_mass, index.X + 1, index.Y - 1);
-            TryAffectCell(point_mass, index.X + 1, index.Y);
-            TryAffectCell(point_mass, index.X + 1, index.Y + 1);
+            for (int i = -1; i <= 1; i++)
+            {
+                for (int j = -1; j <= 1; j++)
+                {
+                    if (i == 0 && j == 0)
+                    {
+                        continue;
+                    }
+                    
+                    TryAffectCell(point_mass, index.X + i, index.Y + j);
+                }
+            }
         }
 
         private void TryAffectCell(PointMass point_mass, int i, int j)

@@ -1,5 +1,3 @@
-using System;
-
 namespace GravityGame
 {
     public class Life
@@ -9,7 +7,7 @@ namespace GravityGame
         
         public static float growth_rate = 1;
         
-        public float Science { get; private set; } = 0;
+        public float Science { get; private set; }
         public float Population { get; private set; }
         public float NormalTemp { get; private set; }
         public int TechLevel { get; private set; }

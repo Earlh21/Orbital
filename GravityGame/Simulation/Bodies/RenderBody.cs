@@ -1,6 +1,3 @@
-using System;
-using System.Runtime.CompilerServices;
-using System.Text;
 using GravityGame.Extension;
 using GravityGame.Graphics;
 using SFML.Graphics;
@@ -64,7 +61,7 @@ namespace GravityGame
             }
             return Color.Green;
         }
-
+        //TODO: Levels of detail
         protected virtual Shader GetShader()
         {
             CircleShader.Load(texture, Colorf.FromColor(GetColor()));

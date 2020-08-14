@@ -1,8 +1,5 @@
 using System;
-using System.Net.Sockets;
-using System.Threading;
 using GravityGame.Extension;
-using NUnit.Framework;
 using SFML.System;
 
 namespace GravityGame
@@ -31,7 +28,6 @@ namespace GravityGame
 
             Type planet = typeof(Planet);
             Type star = typeof(Star);
-            Type ship = typeof(Ship);
 
             if (!A.DoesGravity && !B.DoesGravity)
             {
@@ -55,7 +51,7 @@ namespace GravityGame
 
             if ((A is Ship && b_type == planet) || (a_type == planet && B is Ship))
             {
-                return ResolvePlanetShip(scene);
+                return ResolvePlanetShip();
             }
 
             if (A is Ship && B is Ship)
@@ -63,7 +59,7 @@ namespace GravityGame
                 return null;
             }
 
-            throw new InvalidOperationException("Collision between two bodies was not covered: " + a_type.ToString() + " : " + b_type.ToString());
+            throw new InvalidOperationException("Collision between two types was not covered: " + a_type + " : " + b_type);
         }
 
         private Body ResolveSatelliteBody()
@@ -86,7 +82,7 @@ namespace GravityGame
             return body;
         }
         
-        private Body ResolvePlanetShip(Scene scene)
+        private Body ResolvePlanetShip()
         {
             Planet planet;
             Ship ship;

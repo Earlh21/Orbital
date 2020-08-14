@@ -1,4 +1,3 @@
-using System;
 using GravityGame.Extension;
 using SFML.Graphics;
 using SFML.System;
@@ -40,7 +39,7 @@ namespace GravityGame
                     return;
                 }
 
-                UpdateLife(scene, time);
+                UpdateLife(time);
             }
             else
             {
@@ -48,7 +47,7 @@ namespace GravityGame
             }
         }
 
-        private void UpdateLife(Scene scene, float time)
+        private void UpdateLife(float time)
         {
             if (HasLife)
             {
@@ -80,7 +79,6 @@ namespace GravityGame
             if (DrawText && HasLife)
             {
                 RenderWindow window = (RenderWindow) target;
-                View view = window.GetView();
 
                 Text temperature_text = new Text((int) Temperature + " K (S)", Program.Font);
                 temperature_text.Color = Mathf.TemperatureColorGradient.GetColor(Temperature);

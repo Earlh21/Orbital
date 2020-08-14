@@ -1,4 +1,3 @@
-using System.Xml;
 using SFML.System;
 
 namespace GravityGame

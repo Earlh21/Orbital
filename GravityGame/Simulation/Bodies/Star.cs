@@ -1,8 +1,6 @@
-using GravityGame.Extension;
 using GravityGame.Graphics;
 using SFML.Graphics;
 using SFML.System;
-using SFML.Window;
 
 namespace GravityGame
 {

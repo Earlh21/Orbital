@@ -1,7 +1,5 @@
-using System.ComponentModel.Design;
 using GravityGame.Extension;
 using SFML.Graphics;
-using SFML.System;
 
 namespace GravityGame
 {

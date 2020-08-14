@@ -1,9 +1,4 @@
 using System;
-using System.Dynamic;
-using System.Media;
-using System.Security.Authentication.ExtendedProtection;
-using NUnit.Framework;
-using SFML.Window;
 
 namespace GravityGame
 {
@@ -16,13 +11,13 @@ namespace GravityGame
 			Either
 		}
 		
-		public Type Type { get; private set; }
+		public Type Type { get; }
 
-		public LifeFilter HasLife { get; private set; }
+		public LifeFilter HasLife { get; }
 		
-		public int Faction { get; private set; }
+		public int Faction { get;  }
 		
-		public bool MatchFaction { get; private set; }
+		public bool MatchFaction { get; }
 
 		public BodyFilter(Type type, LifeFilter life_filter, int faction = -1, bool match_faction = true)
 		{

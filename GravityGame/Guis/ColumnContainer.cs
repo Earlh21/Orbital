@@ -1,5 +1,3 @@
-using System.Diagnostics;
-using System.Security.Principal;
 using SFML.Graphics;
 using SFML.System;
 

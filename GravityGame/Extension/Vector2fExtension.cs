@@ -1,5 +1,3 @@
-using System;
-using System.Runtime.CompilerServices;
 using SFML.System;
 
 namespace GravityGame.Extension

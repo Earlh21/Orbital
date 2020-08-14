@@ -1,4 +1,3 @@
-using Microsoft.Win32.SafeHandles;
 using SFML.Graphics;
 using SFML.System;
 
@@ -16,11 +15,6 @@ namespace GravityGame.Guis
 
 		public virtual void Draw(RenderTarget target, RenderStates states)
 		{
-			if (this is BasicContainer basic)
-			{
-				int d = 3;
-			}
-			
 			Vector2i size = Size;
 			Vector2f world_size = Program.ScreenSizeToWorld(size);
 			
@@ -31,10 +25,6 @@ namespace GravityGame.Guis
 
 			background.Position = Program.ScreenPositionToWorld(GetAbsolutePosition());
 			target.Draw(background);
-		}
-
-		public GuiEntry()
-		{
 		}
 
 		public Vector2i GetAbsolutePosition()

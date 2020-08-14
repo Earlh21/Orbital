@@ -143,7 +143,7 @@ namespace GravityGame.Guis.PrebuiltGuis
 			text.Color = Color.White;
 		}
 
-		public Gui GetGUI()
+		public Gui GetGui()
 		{
 			if (planet == null || !planet.Exists)
 			{

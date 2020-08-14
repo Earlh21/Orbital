@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-
+//TODO: Move to inner class
 namespace GlslIncludeProcessor
 {
 	public class TreeNode<T>

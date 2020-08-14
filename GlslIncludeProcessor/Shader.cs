@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 
@@ -10,17 +8,19 @@ namespace GlslIncludeProcessor
 	public class Shader
 	{
 		private DependencyTree<String> dependency;
-		private string file;
+		private string filename;
 
-		public Shader(string file)
+		public Shader(string filename)
 		{
 			bool is_lib = false;
 			
-			using (StreamReader reader = new StreamReader(file))
+			using (StreamReader reader = new StreamReader(filename))
 			{
-				while (true)
+				string line;
+				
+				while (reader.Peek() != -1)
 				{
-					string line = reader.ReadLine();
+					line = reader.ReadLine();
 
 					if (String.IsNullOrWhiteSpace(line))
 					{
@@ -43,11 +43,11 @@ namespace GlslIncludeProcessor
 			if (!is_lib)
 			{
 				dependency = new DependencyTree<string>();			
-				dependency.Root = new TreeNode<string>(null, file);
+				dependency.Root = new TreeNode<string>(null, filename);
 				AddAllDependencies(dependency.Root);
 			}
 
-			this.file = file;
+			this.filename = filename;
 		}
 		
 		private List<String> FindDependencies(string file)
@@ -113,7 +113,7 @@ namespace GlslIncludeProcessor
 
 		public string Process()
 		{
-			List<string> lines = File.ReadAllLines(file).ToList();
+			List<string> lines = File.ReadAllLines(filename).ToList();
 
 			if (dependency == null)
 			{
