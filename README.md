@@ -12,13 +12,13 @@ As the life on a planet increases its technology level, it will begin to send co
 
 There is no true user interaction. Players are simply meant to view the evolution of the system.
 
-## Simulation
+### Simulation
 
 To create planets, press 'P' and enter the number of planets in the console. 2000 is a good number.
 
 Shift + Scroll wheel to change the timescale. Shift + Enter to return to default time scale.
 
-## Camera
+### Camera
 
 Right click to pan.
 
@@ -26,7 +26,7 @@ Scroll wheel to zoom.
 
 Enter to return to the center of the system, or to your selected body.
 
-## Bodies
+### Bodies
 
 Click on a body to select it and view its details.
 
